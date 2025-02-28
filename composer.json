@@ -11,6 +11,7 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^v11.44.0",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "mll-lab/laravel-graphiql": "^3.2",
         "nuwave/lighthouse": "^6.50"
