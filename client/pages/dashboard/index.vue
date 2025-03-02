@@ -1,11 +1,11 @@
 <script setup lang="ts">
+const isMobile = inject("isMobile");
+
 const user = {
     avatar: "/api/placeholder/100/100",
-    email: "john.doe@example.com",
-    name: "John Doe",
-    role: "Seller",
+    name: "Ronald McDonald",
+    role: "Drunken Master",
 };
-
 const stats = [
     {
         change: "+5.2%",
@@ -36,72 +36,58 @@ const stats = [
         value: "8",
     },
 ];
-
 const recentListings = ref([
     {
-        date: "2025-02-24",
         id: 1,
         image: "/api/placeholder/150/100",
-        likes: 7,
         price: 299,
         status: "active",
         title: "Vintage Camera",
         views: 52,
     },
     {
-        date: "2025-02-20",
         id: 2,
         image: "/api/placeholder/150/100",
-        likes: 3,
         price: 149,
         status: "active",
         title: "Mechanical Keyboard",
         views: 28,
     },
     {
-        date: "2025-02-18",
         id: 3,
         image: "/api/placeholder/150/100",
-        likes: 1,
         price: 89,
         status: "pending",
         title: "Leather Backpack",
         views: 15,
     },
 ]);
-
 const recentActivity = ref([
     {
         color: "blue",
-        description: "Alex sent you a message about the vintage camera",
+        description: "Alex messaged about the camera",
         icon: "i-heroicons-envelope",
         id: 1,
-        time: "10 minutes ago",
-        title: "New message received",
-        type: "message",
+        time: "10m ago",
+        title: "New message",
     },
     {
         color: "emerald",
-        description: "Sarah made an offer of $250 for your mechanical keyboard",
+        description: "Sarah offered $250 for keyboard",
         icon: "i-heroicons-currency-dollar",
         id: 2,
-        time: "2 hours ago",
-        title: "New offer received",
-        type: "offer",
+        time: "2h ago",
+        title: "New offer",
     },
     {
         color: "amber",
-        description: "Your leather backpack listing was viewed 5 times",
+        description: "Backpack viewed 5 times",
         icon: "i-heroicons-eye",
         id: 3,
-        time: "1 day ago",
-        title: "New product view",
-        type: "view",
+        time: "1d ago",
+        title: "New views",
     },
 ]);
-
-const selectedTab = ref("overview");
-
 const sidebarLinks = [
     { icon: "i-heroicons-home", label: "Overview", value: "overview" },
     { icon: "i-heroicons-squares-2x2", label: "Listings", value: "listings" },
@@ -110,84 +96,60 @@ const sidebarLinks = [
         label: "Messages",
         value: "messages",
     },
-    { icon: "i-heroicons-currency-dollar", label: "Offers", value: "offers" },
     { icon: "i-heroicons-shopping-cart", label: "Orders", value: "orders" },
-    { icon: "i-heroicons-chart-bar", label: "Analytics", value: "analytics" },
     { icon: "i-heroicons-cog-6-tooth", label: "Settings", value: "settings" },
 ];
-
-const isSidebarOpen = ref(true);
-
-// Responsive sidebar control
+const selectedTab = ref("overview");
+const isSidebarOpen = ref(false);
 const toggleSidebar = () => {
     isSidebarOpen.value = !isSidebarOpen.value;
 };
-
-// For mobile view, close sidebar when clicking a link
-const handleLinkClick = (value: string) => {
+const handleLinkClick = (value) => {
     selectedTab.value = value;
-    if (window.innerWidth < 768) {
-        isSidebarOpen.value = false;
-    }
+    isSidebarOpen.value = false;
 };
+onMounted(() => {
+    isSidebarOpen.value = window.innerWidth >= 768;
+});
 </script>
 
 <template>
-    <div class="min-h-screen bg-gray-50 flex">
-        <!-- Sidebar -->
+    <div class="min-h-screen bg-gray-50 flex flex-col md:flex-row">
+        <!-- Mobile Overlay -->
         <div
-            class="fixed inset-y-0 left-0 z-50 transition-all duration-300 transform"
-            :class="
-                isSidebarOpen
-                    ? 'translate-x-0'
-                    : '-translate-x-full md:translate-x-0 md:w-16'
-            "
+            v-if="isSidebarOpen"
+            class="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+            @click="toggleSidebar"
+        />
+
+        <!-- Sidebar -->
+        <aside
+            class="fixed md:sticky top-0 h-screen z-50 w-64 transform transition-transform duration-300 md:translate-x-0"
+            :class="isSidebarOpen ? 'translate-x-0' : '-translate-x-full'"
         >
             <UCard
-                class="h-full rounded-none flex flex-col border-r border-gray-200 overflow-hidden"
-                :class="isSidebarOpen ? 'w-64' : 'w-16 md:w-16'"
+                class="h-full flex flex-col overflow-hidden rounded-none border-r"
             >
-                <!-- Logo -->
                 <div class="p-4 border-b flex items-center justify-between">
-                    <div class="flex items-center space-x-2">
-                        <span
-                            v-if="isSidebarOpen"
-                            class="text-primary font-bold text-2xl"
-                            >Market<span class="text-gray-800">Hub</span></span
-                        >
-                        <span v-else class="text-primary font-bold text-2xl"
-                            >M</span
-                        >
-                    </div>
+                    <span class="text-primary font-bold text-xl"
+                        >MarketHub</span
+                    >
                     <UButton
                         color="gray"
                         variant="ghost"
-                        icon="i-heroicons-bars-3"
+                        icon="i-heroicons-x-mark"
                         class="md:hidden"
                         @click="toggleSidebar"
                     />
                 </div>
-
-                <!-- User Info -->
-                <div class="p-4 border-b">
-                    <UButtonGroup v-if="isSidebarOpen" block class="mb-4">
-                        <UButton block>Switch to Buyer</UButton>
-                        <UButton block color="primary">Seller Mode</UButton>
-                    </UButtonGroup>
-                    <div
-                        class="flex items-center space-x-3"
-                        :class="isSidebarOpen ? '' : 'justify-center'"
-                    >
-                        <UAvatar :src="user.avatar" size="sm" />
-                        <div v-if="isSidebarOpen">
-                            <p class="font-medium text-sm">{{ user.name }}</p>
-                            <p class="text-xs text-gray-500">{{ user.role }}</p>
-                        </div>
+                <div class="p-4 border-b flex items-center space-x-3">
+                    <UAvatar :src="user.avatar" size="sm" />
+                    <div>
+                        <p class="font-medium text-sm">{{ user.name }}</p>
+                        <p class="text-xs text-gray-500">{{ user.role }}</p>
                     </div>
                 </div>
-
-                <!-- Navigation -->
-                <nav class="flex-1 py-4 overflow-y-auto">
+                <nav class="flex-1 py-2 overflow-y-auto">
                     <ul class="space-y-1 px-3">
                         <li v-for="link in sidebarLinks" :key="link.value">
                             <UButton
@@ -203,93 +165,90 @@ const handleLinkClick = (value: string) => {
                                         : 'ghost'
                                 "
                                 class="w-full justify-start"
-                                :class="isSidebarOpen ? '' : 'justify-center'"
                                 @click="handleLinkClick(link.value)"
+                                >{{ link.label }}</UButton
                             >
-                                <span v-if="isSidebarOpen">{{
-                                    link.label
-                                }}</span>
-                            </UButton>
                         </li>
                     </ul>
                 </nav>
-
-                <!-- Logout -->
                 <div class="p-4 border-t">
                     <UButton
                         icon="i-heroicons-arrow-right-on-rectangle"
                         color="gray"
                         variant="ghost"
                         class="w-full justify-start"
-                        :class="isSidebarOpen ? '' : 'justify-center'"
+                        >Logout</UButton
                     >
-                        <span v-if="isSidebarOpen">Logout</span>
-                    </UButton>
                 </div>
             </UCard>
-        </div>
+        </aside>
 
         <!-- Main Content -->
-        <main
-            class="flex-1 transition-all duration-300"
-            :class="isSidebarOpen ? 'md:ml-64' : 'md:ml-16'"
-        >
-            <!-- Topbar -->
-            <UHeader sticky class="border-b">
-                <template #left>
+        <main class="flex-1 min-w-0">
+            <div
+                class="sticky top-0 z-30 bg-white border-b px-4 py-3 flex items-center justify-between"
+            >
+                <div class="flex items-center">
                     <UButton
+                        v-if="isMobile"
                         color="gray"
                         variant="ghost"
                         icon="i-heroicons-bars-3"
-                        class="md:hidden"
                         @click="toggleSidebar"
                     />
-                    <h1 class="text-xl font-bold ml-2">Dashboard</h1>
-                </template>
-                <template #right>
-                    <div class="flex items-center space-x-4">
-                        <UButton
-                            icon="i-heroicons-bell"
-                            color="gray"
-                            variant="ghost"
-                        />
-                        <UInput
+                    <h1 class="text-xl font-bold ml-2 hidden sm:block">
+                        Dashboard
+                    </h1>
+                </div>
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <UButton
+                        icon="i-heroicons-bell"
+                        color="gray"
+                        variant="ghost"
+                    />
+                    <div class="relative hidden md:block">
+                        <input
+                            type="text"
                             placeholder="Search..."
-                            icon="i-heroicons-magnifying-glass"
-                            class="hidden md:block"
+                            class="pl-9 pr-4 py-2 rounded-md border border-gray-300 w-40 lg:w-64 text-sm focus:ring-1 focus:ring-primary-500 focus:border-primary-500 focus:outline-none"
                         />
-                        <UDropdown
-                            :items="[
-                                {
-                                    label: 'Profile',
-                                    icon: 'i-heroicons-user-circle',
-                                },
-                                {
-                                    label: 'Settings',
-                                    icon: 'i-heroicons-cog-6-tooth',
-                                },
-                                {
-                                    label: 'Logout',
-                                    icon: 'i-heroicons-arrow-right-on-rectangle',
-                                },
-                            ]"
-                        >
-                            <UAvatar :src="user.avatar" size="sm" />
-                        </UDropdown>
+                        <span class="absolute left-3 top-2.5 text-gray-400"
+                            ><UIcon name="i-heroicons-magnifying-glass"
+                        /></span>
                     </div>
-                </template>
-            </UHeader>
+                    <UDropdown
+                        :items="[
+                            {
+                                label: 'Profile',
+                                icon: 'i-heroicons-user-circle',
+                            },
+                            {
+                                label: 'Settings',
+                                icon: 'i-heroicons-cog-6-tooth',
+                            },
+                            {
+                                label: 'Logout',
+                                icon: 'i-heroicons-arrow-right-on-rectangle',
+                            },
+                        ]"
+                    >
+                        <UAvatar
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png"
+                            size="xs"
+                        />
+                    </UDropdown>
+                </div>
+            </div>
 
-            <!-- Page Content -->
-            <UContainer class="py-8">
+            <UContainer class="py-4 md:py-6">
                 <div v-if="selectedTab === 'overview'">
-                    <!-- Stats Cards -->
+                    <!-- Stats Grid -->
                     <div
-                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+                        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
                     >
                         <UCard
-                            v-for="(stat, index) in stats"
-                            :key="index"
+                            v-for="(stat, i) in stats"
+                            :key="i"
                             class="bg-white"
                         >
                             <div class="flex items-center justify-between">
@@ -297,7 +256,7 @@ const handleLinkClick = (value: string) => {
                                     <div class="text-sm text-gray-500">
                                         {{ stat.label }}
                                     </div>
-                                    <div class="text-2xl font-bold mt-1">
+                                    <div class="text-xl font-bold mt-1">
                                         {{ stat.value }}
                                     </div>
                                     <UBadge
@@ -307,147 +266,127 @@ const handleLinkClick = (value: string) => {
                                                 : 'red'
                                         "
                                         variant="subtle"
-                                        class="mt-2"
+                                        class="mt-1"
+                                        >{{ stat.change }}</UBadge
                                     >
-                                        {{ stat.change }}
-                                    </UBadge>
                                 </div>
                                 <UBadge
                                     :icon="stat.icon"
                                     :color="stat.color"
                                     variant="subtle"
-                                    size="xl"
+                                    size="lg"
                                 />
                             </div>
                         </UCard>
                     </div>
 
-                    <!-- Main Content -->
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- Recent Listings -->
-                        <UCard class="lg:col-span-2">
+                    <!-- Content Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        <!-- Listings Table -->
+                        <UCard class="lg:col-span-2 overflow-hidden">
                             <template #header>
                                 <div class="flex justify-between items-center">
-                                    <h2 class="text-lg font-medium">
+                                    <h2 class="text-base font-medium">
                                         Recent Listings
                                     </h2>
                                     <UButton
-                                        to="/listings"
                                         color="gray"
                                         variant="ghost"
                                         size="xs"
+                                        >View All</UButton
                                     >
-                                        View All
-                                    </UButton>
                                 </div>
                             </template>
-                            <div class="overflow-x-auto">
-                                <UTable
-                                    :rows="recentListings"
-                                    :columns="[
-                                        {
-                                            key: 'image',
-                                            label: '',
-                                            sortable: false,
-                                        },
-                                        {
-                                            key: 'title',
-                                            label: 'Title',
-                                            sortable: true,
-                                        },
-                                        {
-                                            key: 'price',
-                                            label: 'Price',
-                                            sortable: true,
-                                        },
-                                        {
-                                            key: 'status',
-                                            label: 'Status',
-                                            sortable: true,
-                                        },
-                                        {
-                                            key: 'views',
-                                            label: 'Views',
-                                            sortable: true,
-                                        },
-                                        {
-                                            key: 'actions',
-                                            label: '',
-                                            sortable: false,
-                                        },
-                                    ]"
+                            <div class="overflow-x-auto -mx-4 sm:mx-0">
+                                <table
+                                    class="min-w-full divide-y divide-gray-200"
                                 >
-                                    <template #image-data="{ row }">
-                                        <img
-                                            :src="row.image"
-                                            alt="Product"
-                                            class="w-12 h-12 object-cover rounded"
-                                        />
-                                    </template>
-                                    <template #price-data="{ row }">
-                                        ${{ row.price.toFixed(2) }}
-                                    </template>
-                                    <template #status-data="{ row }">
-                                        <UBadge
-                                            :color="
-                                                row.status === 'active'
-                                                    ? 'emerald'
-                                                    : 'amber'
-                                            "
-                                        >
-                                            {{ row.status }}
-                                        </UBadge>
-                                    </template>
-                                    <template #views-data="{ row }">
-                                        <div class="flex items-center">
-                                            <UIcon
-                                                name="i-heroicons-eye"
-                                                class="mr-1 text-gray-500"
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th
+                                                class="px-4 py-2 text-xs font-medium text-left text-gray-500"
                                             />
-                                            {{ row.views }}
-                                        </div>
-                                    </template>
-                                    <template #actions-data>
-                                        <UDropdown
-                                            :items="[
-                                                {
-                                                    label: 'Edit',
-                                                    icon: 'i-heroicons-pencil',
-                                                },
-                                                {
-                                                    label: 'Delete',
-                                                    icon: 'i-heroicons-trash',
-                                                },
-                                            ]"
+                                            <th
+                                                class="px-4 py-2 text-xs font-medium text-left text-gray-500"
+                                            >
+                                                Title
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-xs font-medium text-left text-gray-500"
+                                            >
+                                                Price
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-xs font-medium text-left text-gray-500 hidden sm:table-cell"
+                                            >
+                                                Status
+                                            </th>
+                                            <th
+                                                class="px-4 py-2 text-xs font-medium text-left text-gray-500 hidden sm:table-cell"
+                                            >
+                                                Views
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody
+                                        class="bg-white divide-y divide-gray-200"
+                                    >
+                                        <tr
+                                            v-for="item in recentListings"
+                                            :key="item.id"
                                         >
-                                            <UButton
-                                                color="gray"
-                                                variant="ghost"
-                                                icon="i-heroicons-ellipsis-horizontal"
-                                            />
-                                        </UDropdown>
-                                    </template>
-                                </UTable>
+                                            <td
+                                                class="px-4 py-2 whitespace-nowrap"
+                                            >
+                                                <img
+                                                    :src="item.image"
+                                                    class="w-10 h-10 rounded object-cover"
+                                                />
+                                            </td>
+                                            <td
+                                                class="px-4 py-2 whitespace-nowrap text-sm"
+                                            >
+                                                {{ item.title }}
+                                            </td>
+                                            <td
+                                                class="px-4 py-2 whitespace-nowrap text-sm"
+                                            >
+                                                ${{ item.price }}
+                                            </td>
+                                            <td
+                                                class="px-4 py-2 whitespace-nowrap hidden sm:table-cell"
+                                            >
+                                                <UBadge
+                                                    :color="
+                                                        item.status === 'active'
+                                                            ? 'emerald'
+                                                            : 'amber'
+                                                    "
+                                                    >{{ item.status }}</UBadge
+                                                >
+                                            </td>
+                                            <td
+                                                class="px-4 py-2 whitespace-nowrap text-sm hidden sm:table-cell"
+                                            >
+                                                <UIcon
+                                                    name="i-heroicons-eye"
+                                                    class="inline mr-1"
+                                                />{{ item.views }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </UCard>
 
-                        <!-- Recent Activity -->
+                        <!-- Activity -->
                         <UCard>
                             <template #header>
-                                <div class="flex justify-between items-center">
-                                    <h2 class="text-lg font-medium">
-                                        Recent Activity
-                                    </h2>
-                                    <UButton
-                                        color="gray"
-                                        variant="ghost"
-                                        size="xs"
-                                    >
-                                        View All
-                                    </UButton>
-                                </div>
+                                <h2 class="text-base font-medium">
+                                    Recent Activity
+                                </h2>
                             </template>
-                            <div class="space-y-4">
+                            <div class="space-y-3">
                                 <div
                                     v-for="activity in recentActivity"
                                     :key="activity.id"
@@ -466,106 +405,8 @@ const handleLinkClick = (value: string) => {
                                         <p class="text-gray-500 text-xs mt-1">
                                             {{ activity.description }}
                                         </p>
-                                        <p class="text-gray-400 text-xs mt-1">
+                                        <p class="text-gray-400 text-xs">
                                             {{ activity.time }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </UCard>
-                    </div>
-
-                    <!-- Quick Actions -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                        <UCard>
-                            <template #header>
-                                <h2 class="text-lg font-medium">
-                                    Quick Actions
-                                </h2>
-                            </template>
-                            <div class="space-y-4">
-                                <UButton
-                                    block
-                                    icon="i-heroicons-plus"
-                                    color="primary"
-                                >
-                                    Create New Listing
-                                </UButton>
-                                <UButton
-                                    block
-                                    icon="i-heroicons-chart-bar"
-                                    variant="outline"
-                                    color="gray"
-                                >
-                                    View Analytics
-                                </UButton>
-                                <UButton
-                                    block
-                                    icon="i-heroicons-chat-bubble-left-right"
-                                    variant="outline"
-                                    color="gray"
-                                >
-                                    Check Messages
-                                </UButton>
-                            </div>
-                        </UCard>
-
-                        <!-- Tips & Tricks -->
-                        <UCard class="col-span-1 md:col-span-2">
-                            <template #header>
-                                <h2 class="text-lg font-medium">
-                                    Tips for Sellers
-                                </h2>
-                            </template>
-                            <div class="space-y-4">
-                                <div class="flex items-start">
-                                    <UBadge
-                                        icon="i-heroicons-light-bulb"
-                                        color="amber"
-                                        variant="subtle"
-                                        class="mr-3 mt-1"
-                                    />
-                                    <div>
-                                        <h3 class="font-medium text-sm">
-                                            Use high-quality images
-                                        </h3>
-                                        <p class="text-gray-500 text-xs mt-1">
-                                            Listings with multiple high-quality
-                                            images get 2x more views.
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="flex items-start">
-                                    <UBadge
-                                        icon="i-heroicons-light-bulb"
-                                        color="amber"
-                                        variant="subtle"
-                                        class="mr-3 mt-1"
-                                    />
-                                    <div>
-                                        <h3 class="font-medium text-sm">
-                                            Detailed descriptions
-                                        </h3>
-                                        <p class="text-gray-500 text-xs mt-1">
-                                            Include all relevant details to
-                                            reduce buyer questions.
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="flex items-start">
-                                    <UBadge
-                                        icon="i-heroicons-light-bulb"
-                                        color="amber"
-                                        variant="subtle"
-                                        class="mr-3 mt-1"
-                                    />
-                                    <div>
-                                        <h3 class="font-medium text-sm">
-                                            Respond quickly
-                                        </h3>
-                                        <p class="text-gray-500 text-xs mt-1">
-                                            Sellers who respond within 2 hours
-                                            are 50% more likely to make a sale.
                                         </p>
                                     </div>
                                 </div>
@@ -574,20 +415,17 @@ const handleLinkClick = (value: string) => {
                     </div>
                 </div>
 
-                <!-- Placeholder for other tabs -->
-                <div
-                    v-if="selectedTab !== 'overview'"
-                    class="flex flex-col items-center justify-center py-12"
-                >
+                <!-- Other tabs placeholder -->
+                <div v-if="selectedTab !== 'overview'" class="text-center py-8">
                     <UIcon
                         :name="
                             sidebarLinks.find(
                                 (link) => link.value === selectedTab,
                             )?.icon || ''
                         "
-                        class="text-6xl text-gray-300 mb-4"
+                        class="text-4xl text-gray-300 mb-4"
                     />
-                    <h2 class="text-2xl font-bold text-gray-700">
+                    <h2 class="text-xl font-bold text-gray-700">
                         {{
                             sidebarLinks.find(
                                 (link) => link.value === selectedTab,
@@ -599,11 +437,10 @@ const handleLinkClick = (value: string) => {
                     </p>
                     <UButton
                         color="primary"
-                        class="mt-6"
+                        class="mt-4"
                         @click="selectedTab = 'overview'"
+                        >Return to Overview</UButton
                     >
-                        Return to Overview
-                    </UButton>
                 </div>
             </UContainer>
         </main>

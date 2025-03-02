@@ -1,5 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+    apollo: {
+        autoImports: true,
+        clients: {
+            default: { httpEndpoint: import.meta.env.API_URL + "/graphql" },
+        },
+    },
     colorMode: {
         classPrefix: "",
         classSuffix: "-mode",
@@ -15,16 +21,17 @@ export default defineNuxtConfig({
     css: ["~/assets/css/main.css"],
     devtools: { enabled: true },
     imports: { dirs: ["~/stores", "~/utils", "~/composables/*/*.{ts,js}"] },
-    srcDir: "client/",
     modules: [
         "@nuxtjs/color-mode",
         "@nuxt/eslint",
         "@nuxt/ui",
         "@nuxtjs/tailwindcss",
+        "@nuxtjs/apollo",
     ],
     postcss: {
         plugins: {
             autoprefixer: {},
         },
     },
+    srcDir: "client/",
 });
