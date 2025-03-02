@@ -1,11 +1,27 @@
 <script setup lang="ts">
 const isMobile = inject("isMobile");
 
-const user = {
-    avatar: "/api/placeholder/100/100",
-    name: "Ronald McDonald",
-    role: "Drunken Master",
-};
+// const user = {
+//     avatar: "/api/placeholder/100/100",
+//     name: "Ronald McDonald",
+//     role: "Drunken Master",
+// };
+
+import { useAuthStore } from "@/stores/auth";
+import { storeToRefs } from "pinia";
+const authStore = useAuthStore();
+
+// Use `storeToRefs` to keep reactivity
+const { user, isAuthenticated } = storeToRefs(authStore);
+
+
+// const user = ref({
+//     avatar: "/api/placeholder/100/100",
+//     email: "john.doe@example.com",
+//     name:  "john",
+//     role: "Seller",
+// });
+
 const stats = [
     {
         change: "+5.2%",
@@ -147,6 +163,22 @@ onMounted(() => {
                     <div>
                         <p class="font-medium text-sm">{{ user.name }}</p>
                         <p class="text-xs text-gray-500">{{ user.role }}</p>
+
+                <!-- User Info -->
+                <div class="p-4 border-b">
+                    <UButtonGroup v-if="isSidebarOpen" block class="mb-4">
+                        <UButton block>Switch to Buyer</UButton>
+                        <UButton block color="primary">Seller Mode</UButton>
+                    </UButtonGroup>
+                    <div
+                        class="flex items-center space-x-3"
+                        :class="isSidebarOpen ? '' : 'justify-center'"
+                    >
+                        <!-- <UAvatar :src="user.avatar" size="sm" /> -->
+                        <div v-if="isSidebarOpen">
+                            <p class="font-medium text-sm">{{ user?.name }}</p>
+                            <!-- <p class="text-xs text-gray-500">{{ user.role }}</p> -->
+                        </div>
                     </div>
                 </div>
                 <nav class="flex-1 py-2 overflow-y-auto">
