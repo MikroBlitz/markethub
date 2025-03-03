@@ -14,8 +14,8 @@ class AuthController extends Controller
     public function login(Request $request): JsonResponse
     {
         $request->validate([
-            'email' => 'required|emailmax:255',
-            'password' => 'required|string|min:255'
+            'email' => 'required|max:255',
+            'password' => 'required|string|min:8'
         ]);
 
 
@@ -32,7 +32,8 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Login Successful',
             'token_type' => 'Bearer',
-            'token' => $token
+            'token' => $token,
+            'user' => $user,
         ],200);
     }
 
