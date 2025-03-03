@@ -1,28 +1,27 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { useAuthStore } from "@/stores/auth";
 // import { useRouter } from "vue-router";
 import { useFetch } from "#app";
-import { reactive } from 'vue'
 
 // Define interfaces for API response
 interface LoginResponse {
-  token: string;
-  user: {
-    name: string;
-    email: string;
-  };
+    token: string;
+    user: {
+        name: string;
+        email: string;
+    };
 }
 
 interface FormState {
-  email: string
-  password: string
-   rememberMe: boolean
+    email: string;
+    password: string;
+    rememberMe: boolean;
 }
 const formState = reactive<FormState>({
-  email: '',
-  password: '',
-  rememberMe: false,
+    email: "admin@mail.com",
+    password: "admin1234",
+    rememberMe: false,
 });
 
 // const email = ref<string>("");
@@ -32,37 +31,44 @@ const errorMessage = ref<string>("");
 // const router = useRouter();
 const authStore = useAuthStore();
 
-
-
 const login = async (): Promise<void> => {
-  if (!formState.email || !formState.password) {
-    errorMessage.value = "Email and password are required";
-    return;
-  }
-
-  isLoading.value = true;
-  errorMessage.value = "";
-
-  try {
-    const { data, error } = await useFetch<LoginResponse>("http://localhost:8000/api/login", {
-      method: "POST",
-      body: JSON.stringify({ email: formState.email, password: formState.password }),
-      headers: { "Content-Type": "application/json" },
-    });
-
-    if (error.value) throw new Error(error.value.message);
-
-    if (data.value?.token) {
-      authStore.setUser(data.value.user, data.value.token);
-      navigateTo("/dashboard");
-    } else {
-      errorMessage.value = "Invalid email or password";
+    if (!formState.email || !formState.password) {
+        errorMessage.value = "Email and password are required";
+        return;
     }
-  } catch (err) {
-    errorMessage.value = err instanceof Error ? err.message : "Login failed. Please try again.";
-  } finally {
-    isLoading.value = false;
-  }
+
+    isLoading.value = true;
+    errorMessage.value = "";
+
+    try {
+        const { data, error } = await useFetch<LoginResponse>(
+            "http://localhost:8000/api/login",
+            {
+                body: JSON.stringify({
+                    email: formState.email,
+                    password: formState.password,
+                }),
+                headers: { "Content-Type": "application/json" },
+                method: "POST",
+            },
+        );
+
+        if (error.value) throw new Error(error.value.message);
+
+        if (data.value?.token) {
+            authStore.setUser(data.value.user, data.value.token);
+            navigateTo("/dashboard");
+        } else {
+            errorMessage.value = "Invalid email or password";
+        }
+    } catch (err) {
+        errorMessage.value =
+            err instanceof Error
+                ? err.message
+                : "Login failed. Please try again.";
+    } finally {
+        isLoading.value = false;
+    }
 };
 </script>
 

@@ -1,19 +1,18 @@
 <script setup lang="ts">
-const isMobile = inject("isMobile");
-
 // const user = {
 //     avatar: "/api/placeholder/100/100",
 //     name: "Ronald McDonald",
 //     role: "Drunken Master",
 // };
 
-import { useAuthStore } from "@/stores/auth";
 import { storeToRefs } from "pinia";
+import { useAuthStore } from "@/stores/auth";
+
+const isMobile = inject("isMobile");
 const authStore = useAuthStore();
 
 // Use `storeToRefs` to keep reactivity
-const { user, isAuthenticated } = storeToRefs(authStore);
-
+const { isAuthenticated, user } = storeToRefs(authStore);
 
 // const user = ref({
 //     avatar: "/api/placeholder/100/100",
@@ -163,6 +162,8 @@ onMounted(() => {
                     <div>
                         <p class="font-medium text-sm">{{ user.name }}</p>
                         <p class="text-xs text-gray-500">{{ user.role }}</p>
+                    </div>
+                </div>
 
                 <!-- User Info -->
                 <div class="p-4 border-b">
