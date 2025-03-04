@@ -158,11 +158,11 @@ onMounted(() => {
                     />
                 </div>
                 <div class="p-4 border-b flex items-center space-x-3">
-                    <UAvatar :src="user.avatar" size="sm" />
+                    <!-- <UAvatar :src="user.avatar" size="sm" />
                     <div>
                         <p class="font-medium text-sm">{{ user.name }}</p>
                         <p class="text-xs text-gray-500">{{ user.role }}</p>
-                    </div>
+                    </div> -->
                 </div>
 
                 <!-- User Info -->
