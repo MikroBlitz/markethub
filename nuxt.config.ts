@@ -39,6 +39,7 @@ export default defineNuxtConfig({
         public: {
             API_URL: import.meta.env.API_URL,
         },
+        API_URL: import.meta.env.API_URL,
     },
     srcDir: "client/",
 });

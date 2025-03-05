@@ -16,7 +16,7 @@ const errorMessage = ref<string>("");
 const authStore = useAuthStore();
 
 if (authStore.isAuthenticated) {
-    navigateTo("/dashboard");
+    navigateTo("/dashboard"); // Redirect to dashboard if already logged in
 }
 
 const login = async (): Promise<void> => {
