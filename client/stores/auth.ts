@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-
+import { useRouter } from 'vue-router'
 interface User {
   name: string
   email: string
@@ -20,6 +20,8 @@ export const useAuthStore = defineStore('auth', {
     logout() {
       this.user = null
       this.token = null
+
+      navigateTo('/login') // Redirect to login page
     },
   },
 
