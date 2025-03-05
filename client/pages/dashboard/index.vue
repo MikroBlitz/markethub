@@ -4,6 +4,9 @@
 //     name: "Ronald McDonald",
 //     role: "Drunken Master",
 // };
+definePageMeta({
+  middleware: 'auth',
+})
 
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "@/stores/auth";
@@ -20,6 +23,10 @@ const { isAuthenticated, user } = storeToRefs(authStore);
 //     name:  "john",
 //     role: "Seller",
 // });
+
+const handleLogout = () => {
+    authStore.logout()
+}
 
 const stats = [
     {
@@ -210,6 +217,7 @@ onMounted(() => {
                         color="gray"
                         variant="ghost"
                         class="w-full justify-start"
+                        @click="handleLogout"
                         >Logout</UButton
                     >
                 </div>

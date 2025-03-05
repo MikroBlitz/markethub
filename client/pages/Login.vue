@@ -4,6 +4,7 @@ import { useAuthStore } from "@/stores/auth";
 // import { useRouter } from "vue-router";
 import { useFetch } from "#app";
 
+  
 // Define interfaces for API response
 interface LoginResponse {
     token: string;
@@ -30,6 +31,11 @@ const isLoading = ref<boolean>(false);
 const errorMessage = ref<string>("");
 // const router = useRouter();
 const authStore = useAuthStore();
+
+
+if (authStore.isAuthenticated) {
+     navigateTo('/dashboard') // Redirect to dashboard if already logged in
+  };
 
 const login = async (): Promise<void> => {
     if (!formState.email || !formState.password) {
