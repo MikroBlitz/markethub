@@ -7,10 +7,11 @@ MarketHub is a marketplace for buying and selling anything you want. It's a comm
 1. Clone the repository
 2. Copy the `.env.example` file to `.env`
 3. Update the environment variables in the `.env` file
-4. Build/Run `docker compose down`
-`docker compose up -d --build`
-`docker-compose up -d`
-5. Open your browser and navigate to `http://localhost:8000`
+4. Run the following commands: bun start to run both the front-end and the back-end
+5. Open your browser and navigate to `http://localhost:3000` & `http://localhost:8000` for the front-end and back-end respectively
+6. Docker (Optional) Build/Run `docker compose down`
+     `docker compose up -d --build`
+     `docker-compose up -d`
 
 ## Resetting Docker Desktop on Debian
 
