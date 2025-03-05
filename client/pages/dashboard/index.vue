@@ -1,20 +1,9 @@
 <script setup lang="ts">
-// const user = {
-//     avatar: "/api/placeholder/100/100",
-//     name: "Ronald McDonald",
-//     role: "Drunken Master",
-// };
-definePageMeta({
-  middleware: 'auth',
-})
-
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "@/stores/auth";
 
 const isMobile = inject("isMobile");
 const authStore = useAuthStore();
-
-// Use `storeToRefs` to keep reactivity
 const { isAuthenticated, user } = storeToRefs(authStore);
 
 // const user = ref({
@@ -25,8 +14,8 @@ const { isAuthenticated, user } = storeToRefs(authStore);
 // });
 
 const handleLogout = () => {
-    authStore.logout()
-}
+    authStore.logout();
+};
 
 const stats = [
     {

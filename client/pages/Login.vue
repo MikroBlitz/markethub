@@ -1,41 +1,23 @@
 <script setup lang="ts">
+import { useFetch } from "#app";
 import { ref, reactive } from "vue";
 import { useAuthStore } from "@/stores/auth";
-// import { useRouter } from "vue-router";
-import { useFetch } from "#app";
 
-  
-// Define interfaces for API response
-interface LoginResponse {
-    token: string;
-    user: {
-        name: string;
-        email: string;
-    };
-}
+import type { LoginResponse, FormState } from "~/types/authTypes";
 
-interface FormState {
-    email: string;
-    password: string;
-    rememberMe: boolean;
-}
 const formState = reactive<FormState>({
     email: "admin@mail.com",
     password: "admin1234",
     rememberMe: false,
 });
 
-// const email = ref<string>("");
-// const password = ref<string>("");
 const isLoading = ref<boolean>(false);
 const errorMessage = ref<string>("");
-// const router = useRouter();
 const authStore = useAuthStore();
 
-
 if (authStore.isAuthenticated) {
-     navigateTo('/dashboard') // Redirect to dashboard if already logged in
-  };
+    navigateTo("/dashboard");
+}
 
 const login = async (): Promise<void> => {
     if (!formState.email || !formState.password) {
@@ -45,10 +27,11 @@ const login = async (): Promise<void> => {
 
     isLoading.value = true;
     errorMessage.value = "";
+    const config = useRuntimeConfig();
 
     try {
         const { data, error } = await useFetch<LoginResponse>(
-            "http://localhost:8000/api/login",
+            `${config.public.API_URL}/api/login`,
             {
                 body: JSON.stringify({
                     email: formState.email,
@@ -60,7 +43,6 @@ const login = async (): Promise<void> => {
         );
 
         if (error.value) throw new Error(error.value.message);
-
         if (data.value?.token) {
             authStore.setUser(data.value.user, data.value.token);
             navigateTo("/dashboard");

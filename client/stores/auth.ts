@@ -1,33 +1,32 @@
-import { defineStore } from 'pinia'
-import { useRouter } from 'vue-router'
+import { defineStore } from "pinia";
 interface User {
-  name: string
-  email: string
+    name: string;
+    email: string;
 }
 
-export const useAuthStore = defineStore('auth', {
-  state: () => ({
-    user: null as User | null,
-    token: null as string | null,
-  }),
+export const useAuthStore = defineStore("auth", {
+    actions: {
+        logout() {
+            this.user = null;
+            this.token = null;
 
-  actions: {
-    setUser(user: User, token: string) {
-      this.user = { ...user } // ✅ Ensure reactivity
-      this.token = token
+            navigateTo("/login");
+        },
+
+        setUser(user: User, token: string) {
+            this.user = { ...user };
+            this.token = token;
+        },
     },
 
-    logout() {
-      this.user = null
-      this.token = null
-
-      navigateTo('/login') // Redirect to login page
+    getters: {
+        isAuthenticated: (state) => !!state.token,
     },
-  },
 
-  getters: {
-    isAuthenticated: (state) => !!state.token,
-  },
+    persist: true,
 
-  persist: true, // ✅ Enables localStorage persistence
-})
+    state: () => ({
+        token: null as string | null,
+        user: null as User | null,
+    }),
+});
