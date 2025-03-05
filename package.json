@@ -5,6 +5,7 @@
     "scripts": {
         "build": "nuxt build",
         "dev": "nuxt dev",
+        "start": "concurrently \"nuxt dev\" \"php artisan serve\"",
         "generate": "nuxt generate",
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare"
@@ -28,7 +29,7 @@
         "@tailwindcss/vite": "^4.0.9",
         "autoprefixer": "^10.4.20",
         "axios": "^1.7.4",
-        "concurrently": "^9.0.1",
+        "concurrently": "^9.1.2",
         "eslint-plugin-perfectionist": "^4.9.0",
         "postcss": "^8.5.3",
         "prettier": "3.5.2",
