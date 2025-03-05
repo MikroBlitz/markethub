@@ -28,11 +28,16 @@ export default defineNuxtConfig({
         "@nuxtjs/tailwindcss",
         "@nuxtjs/apollo",
         "@pinia/nuxt",
-        '@pinia-plugin-persistedstate/nuxt'
+        "@pinia-plugin-persistedstate/nuxt",
     ],
     postcss: {
         plugins: {
             autoprefixer: {},
+        },
+    },
+    runtimeConfig: {
+        public: {
+            API_URL: import.meta.env.API_URL,
         },
     },
     srcDir: "client/",
