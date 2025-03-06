@@ -9,4 +9,9 @@ export default defineNuxtRouteMiddleware((to, from) => {
     ) {
         return navigateTo("/login");
     }
+
+     // If authenticated and trying to access login page, redirect to dashboard
+    if (authStore.isAuthenticated && to.path === '/login') {
+        return navigateTo('/dashboard')
+    }
 });
