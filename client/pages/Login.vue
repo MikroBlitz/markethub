@@ -15,10 +15,6 @@ const isLoading = ref<boolean>(false);
 const errorMessage = ref<string>("");
 const authStore = useAuthStore();
 
-if (authStore.isAuthenticated) {
-    navigateTo("/dashboard");
-}
-
 const login = async (): Promise<void> => {
     if (!formState.email || !formState.password) {
         errorMessage.value = "Email and password are required";
