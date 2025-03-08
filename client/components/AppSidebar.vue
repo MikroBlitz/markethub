@@ -155,7 +155,7 @@ const isOpen = ref(false);
 const route = useRoute();
 
 const mainMenuItems = [
-    { icon: "i-heroicons-home", label: "Dashboard", to: "/" },
+    { icon: "i-heroicons-home", label: "Dashboard", to: "/dashboard" },
     { icon: "i-heroicons-shopping-bag", label: "Products", to: "/products" },
     { icon: "i-heroicons-shopping-cart", label: "Orders", to: "/orders" },
 ];
