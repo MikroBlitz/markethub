@@ -2,7 +2,8 @@ type User {
     id: ID!
     name: String!
     email: String!
-    role: String!
+    password: String!
+    role: Role
     createdAt: DateTime!
     updatedAt: DateTime!
     deletedAt: DateTime
@@ -12,16 +13,24 @@ input UserInput {
     id: ID
     name: String
     email: String
-    role: String
+    password: String
+    role: Role
+}
+
+enum Role {
+    ADMIN @enum(value: 1)
+    GUEST @enum(value: 0)
+    SELLER @enum(value: 2)
+    BUYER @enum(value: 3)
 }
 
 type Query {
     users: [User]! @all
-    userPaginate: [User]! @paginate
+    usersPaginate: [User]! @paginate
 }
 
 type Mutation {
-    upsertUser(user: UserInput!): User! @upsert
+    upsertUser(input: UserInput! @spread): User! @upsert
     deleteUser(id: ID!): User! @delete
     restoreUser(id: ID!): User! @restore
 }
