@@ -8,7 +8,8 @@
         "start": "concurrently \"nuxt dev\" \"php artisan serve\"",
         "generate": "nuxt generate",
         "preview": "nuxt preview",
-        "postinstall": "nuxt prepare"
+        "postinstall": "nuxt prepare",
+        "codegen": "graphql-codegen --config codegen.ts"
     },
     "dependencies": {
         "@nuxt/eslint": "1.1.0",
@@ -25,6 +26,10 @@
         "vue-router": "latest"
     },
     "devDependencies": {
+        "@graphql-codegen/cli": "^5.0.5",
+        "@graphql-codegen/client-preset": "4.5.1",
+        "@graphql-codegen/introspection": "4.0.3",
+        "@parcel/watcher": "^2.5.0",
         "@nuxtjs/apollo": "^5.0.0-alpha.14",
         "@tailwindcss/vite": "^4.0.9",
         "autoprefixer": "^10.4.20",
