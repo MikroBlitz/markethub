@@ -1,17 +1,22 @@
-export default defineNuxtRouteMiddleware((to, from) => {
+export default defineNuxtRouteMiddleware((to, _from) => {
     const authStore = useAuthStore();
     const noAuthRoutes = ["/"];
+    const router = useRouter();
+    const validRoutes = router
+        .getRoutes()
+        .map((route) => route.path.toLowerCase());
+
+    const toPath = to.path.toLowerCase();
+
+    if (!validRoutes.includes(toPath)) return navigateTo("/dashboard");
 
     if (
         !authStore.isAuthenticated &&
-        !noAuthRoutes.includes(to.path) &&
-        to.path !== "/login"
-    ) {
+        !noAuthRoutes.includes(toPath) &&
+        toPath !== "/login"
+    )
         return navigateTo("/login");
-    }
 
-     // If authenticated and trying to access login page, redirect to dashboard
-    if (authStore.isAuthenticated && to.path === '/login') {
-        return navigateTo('/dashboard')
-    }
+    if (authStore.isAuthenticated && toPath === "/login")
+        return navigateTo("/dashboard");
 });
