@@ -1,61 +1,3 @@
-<script setup lang="ts">
-import { useFetch } from "#app";
-import { ref, reactive } from "vue";
-import { useAuthStore } from "@/stores/auth";
-
-import type { LoginResponse, FormState } from "~/types/authTypes";
-
-const formState = reactive<FormState>({
-    email: "admin@mail.com",
-    password: "admin1234",
-    rememberMe: false,
-});
-
-const isLoading = ref<boolean>(false);
-const errorMessage = ref<string>("");
-const authStore = useAuthStore();
-
-const login = async (): Promise<void> => {
-    if (!formState.email || !formState.password) {
-        errorMessage.value = "Email and password are required";
-        return;
-    }
-
-    isLoading.value = true;
-    errorMessage.value = "";
-    const config = useRuntimeConfig();
-
-    try {
-        const { data, error } = await useFetch<LoginResponse>(
-            `${config.public.API_URL}/api/login`,
-            {
-                body: JSON.stringify({
-                    email: formState.email,
-                    password: formState.password,
-                }),
-                headers: { "Content-Type": "application/json" },
-                method: "POST",
-            },
-        );
-
-        if (error.value) throw new Error(error.value.message);
-        if (data.value?.token) {
-            authStore.setUser(data.value.user, data.value.token);
-            navigateTo("/dashboard");
-        } else {
-            errorMessage.value = "Invalid email or password";
-        }
-    } catch (err) {
-        errorMessage.value =
-            err instanceof Error
-                ? err.message
-                : "Login failed. Please try again.";
-    } finally {
-        isLoading.value = false;
-    }
-};
-</script>
-
 <template>
     <div class="flex items-center justify-center min-h-screen bg-gray-50">
         <UCard class="w-full max-w-md">
@@ -68,7 +10,7 @@ const login = async (): Promise<void> => {
                 </div>
             </template>
 
-            <UForm :state="formState" @submit="login">
+            <UForm :validate="validate" :state="formState" @submit="onSubmit">
                 <UFormGroup label="Email" name="email">
                     <UInput
                         v-model="formState.email"
@@ -120,7 +62,7 @@ const login = async (): Promise<void> => {
 
             <template #footer>
                 <div class="text-center">
-                    <p class="text-gray-600">
+                    <p class="text-gray-600 text-sm">
                         Don't have an account?
                         <UButton to="/register" variant="link" color="primary">
                             Create an account
@@ -154,3 +96,88 @@ const login = async (): Promise<void> => {
         </UCard>
     </div>
 </template>
+
+<script setup lang="ts">
+import { z } from "zod";
+import { useFetch } from "#app";
+import { ref, reactive } from "vue";
+import { useAuthStore } from "@/stores/auth";
+
+import type { LoginResponse, FormState } from "~/types/authTypes";
+
+useHead({
+    meta: [
+        {
+            content:
+                "Login to your account. Sign in to your account and start trading with MarketHub.",
+            name: "Login",
+        },
+    ],
+    title: "MarketHub - Login",
+});
+
+const loginSchema = z.object({
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    rememberMe: z.boolean().optional(),
+});
+
+const formState = reactive<FormState>({
+    email: "admin@mail.com",
+    password: "admin1234",
+    rememberMe: false,
+});
+
+const validate = (state: FormState) => {
+    const result = loginSchema.safeParse(state);
+    if (result.success) return [];
+
+    return result.error.issues.map((issue) => ({
+        message: issue.message,
+        path: issue.path.join("."),
+    }));
+};
+
+const isLoading = ref<boolean>(false);
+const authStore = useAuthStore();
+const toast = useToast();
+
+const onSubmit = async () => {
+    const config = useRuntimeConfig();
+    const validationErrors = validate(formState);
+
+    if (validationErrors.length > 0) return;
+    isLoading.value = true;
+
+    try {
+        const { data, error } = await useFetch<LoginResponse>(
+            `${config.public.API_URL}/api/login`,
+            {
+                body: JSON.stringify({
+                    email: formState.email,
+                    password: formState.password,
+                }),
+                headers: { "Content-Type": "application/json" },
+                method: "POST",
+            },
+        );
+
+        if (error.value) throw new Error(error.value.data.message);
+        if (!data.value) return;
+        if (data.value.token) {
+            authStore.setUser(data.value.user, data.value.token);
+            navigateTo("/dashboard");
+        }
+    } catch (error) {
+        console.error(error);
+        toast.add({
+            color: "red",
+            description: error.message,
+            icon: "i-mdi-alert-circle-outline",
+            title: "Authentication failed",
+        });
+    } finally {
+        isLoading.value = false;
+    }
+};
+</script>

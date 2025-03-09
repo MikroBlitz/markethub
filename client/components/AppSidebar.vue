@@ -50,6 +50,40 @@
                         <nav class="space-y-6">
                             <div>
                                 <UDivider
+                                    label="ADMIN"
+                                    label-class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                                />
+                                <ul class="mt-3 space-y-1">
+                                    <li
+                                        v-for="(item, index) in adminItems"
+                                        :key="index"
+                                    >
+                                        <UButton
+                                            :icon="item.icon"
+                                            :to="item.to"
+                                            :color="
+                                                isActive(item.to)
+                                                    ? 'green'
+                                                    : 'gray'
+                                            "
+                                            :variant="
+                                                isActive(item.to)
+                                                    ? 'soft'
+                                                    : 'ghost'
+                                            "
+                                            class="w-full justify-start"
+                                            square
+                                            padded
+                                            @click="isOpen = false"
+                                        >
+                                            {{ item.label }}
+                                        </UButton>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <UDivider
                                     label="MAIN MENU"
                                     label-class="text-xs font-medium text-gray-500 dark:text-gray-400"
                                 />
@@ -164,6 +198,16 @@ const managementItems = [
     { icon: "i-heroicons-users", label: "Customers", to: "/customers" },
     { icon: "i-heroicons-chart-bar", label: "Analytics", to: "/analytics" },
     { icon: "i-heroicons-cog-6-tooth", label: "Settings", to: "/settings" },
+];
+
+const adminItems = [
+    { icon: "i-heroicons-user-circle", label: "Manage Users", to: "/users" },
+    { icon: "i-heroicons-user-circle", label: "Manage Roles", to: "/roles" },
+    {
+        icon: "i-heroicons-user-circle",
+        label: "Manage Permissions",
+        to: "/permissions",
+    },
 ];
 
 const isActive = (path: string) => {
