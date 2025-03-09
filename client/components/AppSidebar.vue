@@ -201,11 +201,11 @@ const managementItems = [
 ];
 
 const adminItems = [
-    { icon: "i-heroicons-user-circle", label: "Manage Users", to: "/users" },
-    { icon: "i-heroicons-user-circle", label: "Manage Roles", to: "/roles" },
+    { icon: "i-heroicons-user-circle", label: "Users", to: "/users" },
+    { icon: "i-heroicons-user-circle", label: "Roles", to: "/roles" },
     {
         icon: "i-heroicons-user-circle",
-        label: "Manage Permissions",
+        label: "Permissions",
         to: "/permissions",
     },
 ];
