@@ -1,9 +1,11 @@
 import { useFetch } from "#app";
 import { defineStore } from "pinia";
 
-import type { User } from "~/types/codegen/graphql";
 import type { FormState, LoginResponse } from "~/types/authTypes";
-
+interface User {
+    name: string;
+    email: string;
+}
 export const useAuthStore = defineStore("auth", {
     actions: {
         async login(formState: FormState) {
