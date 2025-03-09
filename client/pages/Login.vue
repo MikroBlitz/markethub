@@ -99,11 +99,11 @@
 
 <script setup lang="ts">
 import { z } from "zod";
-import { useFetch } from "#app";
 import { ref, reactive } from "vue";
 import { useAuthStore } from "@/stores/auth";
+import { useTimeoutFn } from "@vueuse/shared";
 
-import type { LoginResponse, FormState } from "~/types/authTypes";
+import type { FormState } from "~/types/authTypes";
 
 useHead({
     meta: [
@@ -143,33 +143,14 @@ const authStore = useAuthStore();
 const toast = useToast();
 
 const onSubmit = async () => {
-    const config = useRuntimeConfig();
     const validationErrors = validate(formState);
 
     if (validationErrors.length > 0) return;
     isLoading.value = true;
 
     try {
-        const { data, error } = await useFetch<LoginResponse>(
-            `${config.public.API_URL}/api/login`,
-            {
-                body: JSON.stringify({
-                    email: formState.email,
-                    password: formState.password,
-                }),
-                headers: { "Content-Type": "application/json" },
-                method: "POST",
-            },
-        );
-
-        if (error.value) throw new Error(error.value.data.message);
-        if (!data.value) return;
-        if (data.value.token) {
-            authStore.setUser(data.value.user, data.value.token);
-            navigateTo("/dashboard");
-        }
+        await authStore.login(formState);
     } catch (error) {
-        console.error(error);
         toast.add({
             color: "red",
             description: error.message,
@@ -177,7 +158,9 @@ const onSubmit = async () => {
             title: "Authentication failed",
         });
     } finally {
-        isLoading.value = false;
+        useTimeoutFn(() => {
+            isLoading.value = false;
+        }, 1000);
     }
 };
 </script>

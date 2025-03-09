@@ -18,8 +18,8 @@ input UserInput {
 }
 
 enum Role {
-    ADMIN @enum(value: 1)
     GUEST @enum(value: 0)
+    ADMIN @enum(value: 1)
     SELLER @enum(value: 2)
     BUYER @enum(value: 3)
 }
