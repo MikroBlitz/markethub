@@ -49,7 +49,9 @@ const userMenuItems = [
             click: () => {
                 auth.logout();
                 toast.add({
-                    title: "You have been logged out successfully.",
+                    color: "green",
+                    icon: "i-heroicons-check-circle",
+                    title: "You have been logged out.",
                 });
             },
             icon: "i-heroicons-arrow-right-on-rectangle",
