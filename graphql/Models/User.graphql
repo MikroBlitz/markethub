@@ -17,6 +17,12 @@ input UserInput {
     role: Role
 }
 
+input RegisterInput {
+    name: String
+    email: String
+    password: String
+}
+
 enum Role {
     GUEST @enum(value: 0)
     ADMIN @enum(value: 1)
@@ -30,6 +36,7 @@ type Query {
 }
 
 type Mutation {
+    registerUser(input: RegisterInput! @spread): User! @create #register controller
     upsertUser(input: UserInput! @spread): User! @upsert
     deleteUser(id: ID!): User! @delete
     restoreUser(id: ID!): User! @restore

@@ -1,6 +1,6 @@
 export default defineNuxtRouteMiddleware((to, _from) => {
     const authStore = useAuthStore();
-    const noAuthRoutes = ["/"];
+    const noAuthRoutes = ['/', '/register'];
     const router = useRouter();
     const validRoutes = router
         .getRoutes()
