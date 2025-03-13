@@ -31,8 +31,8 @@ export const usersPaginate = gql`
 `;
 
 export const upsertUser = gql`
-    mutation upsertUser($user: UserInput!) {
-        upsertUser(input: $user) {
+    mutation upsertUser($input: UserInput!) {
+        upsertUser(input: $input) {
             id
             name
             email
