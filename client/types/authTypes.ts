@@ -11,3 +11,9 @@ export interface FormState {
     password: string;
     rememberMe: boolean;
 }
+
+export interface FormStateRegister {
+    name: string;
+    email: string;
+    password: string;
+}

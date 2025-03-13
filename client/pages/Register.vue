@@ -10,7 +10,7 @@
                 </div>
             </template>
 
-            <UForm :state="formState" @submit="onSubmit">
+            <UForm :validate="validate" :state="formState" @submit="onSubmit">
                 <UFormGroup label="Name" name="name">
                     <UInput
                         v-model="formState.name"
@@ -22,7 +22,7 @@
                     />
                 </UFormGroup>
 
-                <UFormGroup label="Email" name="email">
+                <UFormGroup label="Email" name="email" class="mt-4">
                     <UInput
                         v-model="formState.email"
                         placeholder="Enter your email"
@@ -52,16 +52,16 @@
                     :loading="isLoading"
                     :disabled="!formState.email || !formState.password"
                 >
-                    Sign in
+                    Sign up
                 </UButton>
             </UForm>
 
             <template #footer>
                 <div class="text-center">
                     <p class="text-gray-600 text-sm">
-                        Don't have an account?
-                        <UButton to="/register" variant="link" color="primary">
-                            Create an account
+                        Already have an account?
+                        <UButton to="/login" variant="link" color="primary">
+                            Login
                         </UButton>
                     </p>
 
@@ -95,10 +95,11 @@
 
 <script setup lang="ts">
 import { ref, reactive } from "vue";
-
 import { upsertUser } from "~/graphql/User";
-
+import { z } from "zod";
 const isLoading = ref<boolean>(false);
+const toast = useToast();
+import type { FormStateRegister } from "~/types/authTypes";
 
 useHead({
     meta: [
@@ -108,7 +109,7 @@ useHead({
             name: "Login",
         },
     ],
-    title: "MarketHub - Login",
+    title: "MarketHub - Register",
 });
 
 const { mutate: registerUser } = useMutation(upsertUser)
@@ -120,6 +121,9 @@ const formState = reactive({
 });
 
 const onSubmit = async () => {
+    const validationErrors = validate(formState);
+
+    if (validationErrors.length > 0) return;
     try {
         const variables = {
             email: formState.email,
@@ -128,10 +132,34 @@ const onSubmit = async () => {
         };
 
         const response = await registerUser({ input: variables });
+
         console.log(response);
+        toast.add({
+            color: "green",
+            description: "Successfully registered",
+            icon: "i-mdi-check-circle-outline",
+            title: "Success",
+        });
         navigateTo('/login');
     } catch (error) {
         console.error(error);
+        
     }
 }
+
+const loginSchema = z.object({
+    name: z.string().regex(/^[a-z\s-]+$/i, 'Only contain letters, spaces, and hyphens.'),
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+});
+
+const validate = (state: FormStateRegister) => {
+    const result = loginSchema.safeParse(state);
+    if (result.success) return [];
+
+    return result.error.issues.map((issue) => ({
+        message: issue.message,
+        path: issue.path.join("."),
+    }));
+};
 </script>
