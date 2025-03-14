@@ -17,7 +17,7 @@
                         placeholder="Enter your name"
                         type="text"
                         autocomplete="name"
-                        icon="i-heroicons-envelope"
+                        icon="line-md:account"
                         required
                     />
                 </UFormGroup>
