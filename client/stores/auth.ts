@@ -6,9 +6,14 @@ interface User {
     name: string;
     email: string;
 }
-export const useAuthStore = defineStore("auth", {
-    actions: {
-        async login(formState: FormState) {
+
+export const useAuthStore = defineStore(
+    "auth",
+    () => {
+        const token = ref<string | null>(null);
+        const user = ref<User | null>(null);
+
+        async function login(formState: FormState) {
             const config = useRuntimeConfig();
             const { data, error } = await useFetch<LoginResponse>(
                 `${config.public.API_URL}/api/login`,
@@ -25,18 +30,18 @@ export const useAuthStore = defineStore("auth", {
             if (error.value) throw new Error(error.value.data.message);
             if (!data.value) return;
             if (data.value.token) {
-                this.setUser(data.value.user, data.value.token);
+                setUser(data.value.user, data.value.token);
                 navigateTo("/dashboard");
             }
-        },
+        }
 
-        async logout() {
+        async function logout() {
             const config = useRuntimeConfig();
             const { data, error } = await useFetch(
                 `${config.public.API_URL}/api/logout`,
                 {
                     headers: {
-                        Authorization: `Bearer ${this.token}`,
+                        Authorization: `Bearer ${token.value}`,
                         "Content-Type": "application/json",
                     },
                     method: "POST",
@@ -48,25 +53,31 @@ export const useAuthStore = defineStore("auth", {
                 throw new Error(error.value.data?.message || "Logout failed");
             }
             if (!data.value) return;
-            this.user = null;
-            this.token = null;
+            resetUser();
             navigateTo("/");
-        },
+        }
 
-        setUser(user: User, token: string) {
-            this.user = { ...user };
-            this.token = token;
-        },
+        function setUser(userData: User, userToken: string) {
+            user.value = { ...userData };
+            token.value = userToken;
+        }
+
+        function resetUser() {
+            user.value = null;
+            token.value = null;
+        }
+
+        const isAuthenticated = computed(() => !!token.value);
+
+        return {
+            isAuthenticated,
+            login,
+            logout,
+            token,
+            user,
+        };
     },
-
-    getters: {
-        isAuthenticated: (state) => !!state.token,
+    {
+        persist: true,
     },
-
-    persist: true,
-
-    state: () => ({
-        token: null as string | null,
-        user: null as User | null,
-    }),
-});
+);
