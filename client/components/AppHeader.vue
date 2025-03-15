@@ -51,6 +51,8 @@
 </template>
 
 <script setup lang="ts">
+import { useTimeoutFn } from "@vueuse/core";
+
 defineEmits(["toggle-sidebar"]);
 
 const auth = useAuthStore();
@@ -65,6 +67,12 @@ const userMenuItems = [
         {
             click: () => {
                 auth.logout();
+                useTimeoutFn(() => {
+                    toast.add({
+                        icon: "i-mdi-check-circle-outline",
+                        title: "Logged out successfully",
+                    });
+                }, 1000);
             },
             icon: "i-heroicons-arrow-right-on-rectangle",
             label: "Logout",

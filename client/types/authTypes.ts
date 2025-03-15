@@ -17,3 +17,12 @@ export interface FormStateRegister {
     email: string;
     password: string;
 }
+
+export interface User {
+    id?: string;
+    role?: null;
+    name: string;
+    email: string;
+    updated_at?: string;
+    created_at?: string;
+}
