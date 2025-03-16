@@ -103,7 +103,7 @@ import { ref, reactive } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useTimeoutFn } from "@vueuse/shared";
 
-import type { FormState } from "~/types/authTypes";
+import type { FormState } from "~/types/global";
 
 useHead({
     meta: [

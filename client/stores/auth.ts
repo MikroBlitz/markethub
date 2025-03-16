@@ -1,7 +1,7 @@
 import { useFetch } from "#app";
 import { defineStore } from "pinia";
 
-import type { FormState, LoginResponse } from "~/types/authTypes";
+import type { FormState, LoginResponse } from "~/types/global";
 interface User {
     name: string;
     email: string;

@@ -26,3 +26,7 @@ export interface User {
     updated_at?: string;
     created_at?: string;
 }
+
+export interface AnyObject {
+    [key: string]: any;
+}

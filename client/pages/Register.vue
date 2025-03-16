@@ -6,7 +6,9 @@
                     <h1 class="text-2xl font-bold">
                         Welcome to <span class="text-primary">MarketHub</span>
                     </h1>
-                    <p class="text-gray-500 mt-2">Register in to your account</p>
+                    <p class="text-gray-500 mt-2">
+                        Register in to your account
+                    </p>
                 </div>
             </template>
 
@@ -94,12 +96,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
-import { upsertUser } from "~/graphql/User";
 import { z } from "zod";
+import { ref, reactive } from "vue";
+
+import type { FormStateRegister } from "~/types/global";
+
+import { upsertUser } from "~/graphql/User";
 const isLoading = ref<boolean>(false);
 const toast = useToast();
-import type { FormStateRegister } from "~/types/authTypes";
 
 useHead({
     meta: [
@@ -112,12 +116,12 @@ useHead({
     title: "MarketHub - Register",
 });
 
-const { mutate: registerUser } = useMutation(upsertUser)
+const { mutate: registerUser } = useMutation(upsertUser);
 
 const formState = reactive({
-    email: '',
-    name: '',
-    password: ''
+    email: "",
+    name: "",
+    password: "",
 });
 
 const onSubmit = async () => {
@@ -140,16 +144,17 @@ const onSubmit = async () => {
             icon: "i-mdi-check-circle-outline",
             title: "Success",
         });
-        navigateTo('/login');
+        navigateTo("/login");
     } catch (error) {
         console.error(error);
-        
     }
-}
+};
 
 const loginSchema = z.object({
-    name: z.string().regex(/^[a-z\s-]+$/i, 'Only contain letters, spaces, and hyphens.'),
     email: z.string().email("Invalid email address"),
+    name: z
+        .string()
+        .regex(/^[a-z\s-]+$/i, "Only contain letters, spaces, and hyphens."),
     password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
