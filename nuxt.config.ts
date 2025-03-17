@@ -4,6 +4,7 @@ export default defineNuxtConfig({
         autoImports: true,
         clients: {
             default: { httpEndpoint: import.meta.env.API_URL + "/graphql" },
+            browserHttpEndpoint: "/graphql", // Ensures client-side fetching
         },
     },
     colorMode: {
