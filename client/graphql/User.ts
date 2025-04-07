@@ -19,6 +19,7 @@ export const usersPaginate = gql`
                 email
                 password
                 role
+                is_active
             }
             paginatorInfo {
                 currentPage
@@ -38,6 +39,7 @@ export const upsertUser = gql`
             email
             password
             role
+            is_active
         }
     }
 `;
