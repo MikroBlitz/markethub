@@ -4,6 +4,7 @@ type User {
     email: String!
     password: String!
     role: Role
+    is_active: Int!
     createdAt: DateTime!
     updatedAt: DateTime!
     deletedAt: DateTime
@@ -15,6 +16,7 @@ input UserInput {
     email: String
     password: String
     role: Role
+    is_active: Int
 }
 
 input RegisterInput {
