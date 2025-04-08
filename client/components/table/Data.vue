@@ -1,79 +1,3 @@
-<script lang="ts" setup>
-// Define props for the component
-const props = defineProps({
-    actions: {
-        default: () => [],
-        type: Array,
-    },
-    columns: {
-        required: true,
-        type: Array,
-    },
-    data: {
-        required: true,
-        type: Array,
-    },
-    filters: {
-        default: () => [],
-        type: Array,
-    },
-    loading: {
-        default: false,
-        type: Boolean,
-    },
-    totalItems: {
-        required: true,
-        type: Number,
-    },
-});
-
-// Emits for parent component to handle
-const emit = defineEmits([
-    "update:selectedRows",
-    "update:sort",
-    "update:page",
-    "update:pageCount",
-    "update:search",
-    "update:selectedStatus",
-    "resetFilters",
-    "select",
-]);
-
-// Selected Columns
-const selectedColumns = defineModel("selectedColumns");
-const columnsTable = computed(() =>
-    props.columns.filter((column) => selectedColumns.value.includes(column)),
-);
-const excludeSelectColumn = computed(() =>
-    props.columns.filter((v) => v.key !== "select"),
-);
-
-// Selected Rows
-const selectedRows = defineModel("selectedRows");
-
-function select(row) {
-    emit("select", row);
-}
-
-// Pagination
-const sort = defineModel("sort");
-const page = defineModel("page");
-const pageCount = defineModel("pageCount");
-const pageTotal = computed(() => props.totalItems);
-const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1);
-const pageTo = computed(() =>
-    Math.min(page.value * pageCount.value, pageTotal.value),
-);
-
-// Filters
-const search = defineModel("search");
-const selectedStatus = defineModel("selectedStatus");
-
-const resetFilters = () => {
-    emit("resetFilters");
-};
-</script>
-
 <template>
     <UCard
         class="w-full"
@@ -116,35 +40,8 @@ const resetFilters = () => {
             />
         </div>
 
-        <!-- Header and Action buttons -->
         <div class="flex justify-between items-center w-full px-4 py-3">
-            <div class="flex items-center gap-1.5">
-                <span class="text-sm leading-5">Rows per page:</span>
-
-                <USelect
-                    v-model="pageCount"
-                    :options="[5, 10, 20, 30, 40]"
-                    class="me-2 w-20"
-                    size="xs"
-                />
-            </div>
-
             <div class="flex gap-1.5 items-center">
-                <UDropdown
-                    v-if="selectedRows.length > 1"
-                    :items="actions"
-                    :ui="{ width: 'w-36' }"
-                >
-                    <UButton
-                        icon="i-heroicons-chevron-down"
-                        trailing
-                        color="gray"
-                        size="xs"
-                    >
-                        Mark as
-                    </UButton>
-                </UDropdown>
-
                 <USelectMenu
                     v-model="selectedColumns"
                     :options="excludeSelectColumn"
@@ -184,10 +81,21 @@ const resetFilters = () => {
             class="w-full"
             :ui="{
                 td: { base: 'max-w-[0] truncate' },
-                default: { checkbox: { color: 'gray' as any } },
+                default: { checkbox: { color: 'gray' as const } },
             }"
             @select="select"
         >
+            <!-- Dynamic cell renderer -->
+            <template
+                v-for="column in columnsTable"
+                #[`${column.key}-data`]="{ row }"
+            >
+                <template v-if="column.render">
+                    <component :is="getDynamicContent(column, row)" />
+                </template>
+            </template>
+
+            <!-- Pass through other slots -->
             <template v-for="(_, slot) in $slots" #[slot]="scope">
                 <slot :name="slot" v-bind="scope" />
             </template>
@@ -196,16 +104,27 @@ const resetFilters = () => {
         <!-- Number of rows & Pagination -->
         <template #footer>
             <div class="flex flex-wrap justify-between items-center">
-                <div>
-                    <span class="text-sm leading-5">
-                        Showing
-                        <span class="font-medium">{{ pageFrom }}</span>
-                        to
-                        <span class="font-medium">{{ pageTo }}</span>
-                        of
-                        <span class="font-medium">{{ pageTotal }}</span>
-                        results
-                    </span>
+                <div class="flex items-center gap-1.5">
+                    <span class="text-sm leading-5">Per page:</span>
+
+                    <USelect
+                        v-model="pageCount"
+                        :options="[10, 20, 50, 100]"
+                        class="me-2 w-20"
+                        size="xs"
+                    />
+
+                    <div>
+                        <span class="text-xs leading-5">
+                            Showing
+                            <span>{{ pageFrom }}</span>
+                            to
+                            <span>{{ pageTo }}</span>
+                            of
+                            <span>{{ pageTotal }}</span>
+                            results
+                        </span>
+                    </div>
                 </div>
 
                 <UPagination
@@ -226,3 +145,86 @@ const resetFilters = () => {
         </template>
     </UCard>
 </template>
+
+<script lang="ts" setup>
+import { h } from "vue";
+
+import type { Column, FilterOption, Sort } from "~/components/table/types";
+
+const props = defineProps({
+    columns: {
+        required: true,
+        type: Array as PropType<Column[]>,
+    },
+    data: {
+        required: true,
+        type: Array,
+    },
+    filters: {
+        default: () => [],
+        type: Array as PropType<FilterOption[]>,
+    },
+    loading: {
+        default: false,
+        type: Boolean,
+    },
+    totalItems: {
+        required: true,
+        type: Number,
+    },
+});
+
+const emit = defineEmits([
+    "update:selectedRows",
+    "update:sort",
+    "update:page",
+    "update:pageCount",
+    "update:search",
+    "update:selectedStatus",
+    "update:selectedColumns",
+    "resetFilters",
+    "select",
+]);
+
+const getDynamicContent = (column: Column, row: never) => {
+    if (!column.render) return null;
+
+    const result = column.render(row);
+    if (typeof result === "object" && result !== null) {
+        return result;
+    }
+
+    return h("span", {}, String(result));
+};
+
+const selectedColumns = defineModel<Column[]>("selectedColumns");
+const columnsTable = computed(() =>
+    props.columns.filter((column) => selectedColumns.value?.includes(column)),
+);
+const excludeSelectColumn = computed(() =>
+    props.columns.filter((v) => v.key !== "select"),
+);
+// eslint-disable-next-line vue/require-prop-types
+const selectedRows = defineModel("selectedRows");
+const select = (row: never) => emit("select", row);
+
+// Pagination
+const sort = defineModel<Sort>("sort");
+const page = defineModel<number>("page");
+const pageCount = defineModel<number>("pageCount");
+const pageTotal = computed(() => props.totalItems);
+const pageFrom = computed(() => {
+    if (!page.value || !pageCount.value) return 1;
+    return (page.value - 1) * pageCount.value + 1;
+});
+const pageTo = computed(() => {
+    if (!page.value || !pageCount.value) return pageCount.value;
+    return Math.min(page.value * pageCount.value, pageTotal.value);
+});
+
+// Filters
+const search = defineModel<string>("search");
+// eslint-disable-next-line vue/require-prop-types
+const selectedStatus = defineModel("selectedStatus");
+const resetFilters = () => emit("resetFilters");
+</script>

@@ -1,7 +1,7 @@
 <template>
-    <div class="flex flex-col items-center py-4 justify-center">
+    <div class="flex flex-col items-center py-2 justify-center">
         <div class="w-full max-w-[1400px] border-t rounded-lg">
-            <DataTable
+            <TableData
                 v-model:selected-rows="selectedRows"
                 v-model:sort="sort"
                 v-model:page="page"
@@ -12,8 +12,7 @@
                 :columns="columns"
                 :data="data"
                 :loading="loading"
-                :actions="actions"
-                :filters="todoStatus"
+                :filters="status"
                 :total-items="pageTotal"
                 @reset-filters="resetFilters"
                 @select="select"
@@ -26,83 +25,37 @@
                     </h2>
                 </template>
 
-                <template #completed-data="{ row }">
-                    <UBadge
-                        size="xs"
-                        :label="row.completed ? 'Completed' : 'In Progress'"
-                        :color="row.completed ? 'emerald' : 'orange'"
-                        variant="subtle"
-                    />
-                </template>
-
                 <template #actions-data="{ row }">
-                    <UButton
-                        v-if="!row.completed"
-                        icon="i-heroicons-check"
-                        size="2xs"
-                        color="emerald"
-                        variant="outline"
-                        :ui="{ rounded: 'rounded-full' }"
-                        square
-                    />
-
-                    <UButton
-                        v-else
-                        icon="i-heroicons-arrow-path"
-                        size="2xs"
-                        color="orange"
-                        variant="outline"
-                        :ui="{ rounded: 'rounded-full' }"
-                        square
-                    />
+                    <div class="flex gap-1 items-center">
+                        <UButton
+                            v-for="(action, index) in actions"
+                            :key="index"
+                            :icon="action.icon"
+                            size="2xs"
+                            :color="action.color"
+                            variant="outline"
+                            :ui="{ rounded: 'rounded-full' }"
+                            square
+                            @click="action.onClick(row)"
+                        />
+                    </div>
                 </template>
-            </DataTable>
+            </TableData>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
+import { useTimeoutFn } from "@vueuse/shared";
+
+import type { User, UsersPaginateQuery } from "~/types/codegen/graphql";
+
 import { usersPaginate } from "~/graphql/User";
-
-import DataTable from "./DataTable.vue";
-
-const columns = [
-    {
-        class: "w-2",
-        key: "select",
-    },
-    {
-        key: "id",
-        label: "#",
-        sortable: true,
-    },
-    {
-        key: "name",
-        label: "Name",
-        sortable: true,
-    },
-    {
-        key: "email",
-        label: "Email",
-        sortable: true,
-    },
-    {
-        key: "is_active",
-        label: "Status",
-        sortable: true,
-    },
-    {
-        key: "actions",
-        label: "Actions",
-        sortable: false,
-    },
-];
+import { columns, status } from "~/pages/users/columns";
 const selectedColumns = ref(columns);
+const selectedRows = ref<User[]>([]);
 
-// Selected Rows
-const selectedRows = ref([]);
-
-function select(row) {
+function select(row: User) {
     const index = selectedRows.value.findIndex((item) => item.id === row.id);
     if (index === -1) {
         selectedRows.value.push(row);
@@ -111,48 +64,19 @@ function select(row) {
     }
 }
 
-// Actions
-const actions = [
-    [
-        {
-            icon: "i-heroicons-check",
-            key: "completed",
-            label: "Completed",
-        },
-    ],
-    [
-        {
-            icon: "i-heroicons-arrow-path",
-            key: "uncompleted",
-            label: "In Progress",
-        },
-    ],
-];
-
-// Filters
-const todoStatus = [
-    {
-        key: 0,
-        label: "Inactive",
-        value: false,
-    },
-    {
-        key: 1,
-        label: "Active",
-        value: true,
-    },
-];
-
+const sort = ref({ column: "id", direction: "asc" as "asc" | "desc" });
+const page = ref(1);
+const pageCount = ref(10);
+const pageTotal = computed(() => {
+    if (!result.value?.usersPaginate?.paginatorInfo) return 0;
+    return result.value.usersPaginate.paginatorInfo.total;
+});
 const search = ref("");
 const selectedStatus = ref([]);
 const searchStatus = computed(() => {
-    if (selectedStatus.value?.length === 0) {
-        return "";
-    }
-
-    if (selectedStatus?.value?.length > 1) {
+    if (selectedStatus.value?.length === 0) return "";
+    if (selectedStatus.value?.length > 1)
         return `?completed=${selectedStatus.value[0].value}&completed=${selectedStatus.value[1].value}`;
-    }
 
     return `?completed=${selectedStatus.value[0].value}`;
 });
@@ -162,38 +86,59 @@ const resetFilters = () => {
     selectedStatus.value = [];
 };
 
-const data = ref([]);
-const { loading, refetch, result } = useQuery(usersPaginate, {
-    first: 10,
-    page: 1,
-});
+const data = ref<User[]>([]);
+const loading = ref(false);
+const result = ref({ usersPaginate });
 
 const fetchData = async () => {
     try {
         loading.value = true;
-        const res = await result.value;
-        data.value = res.usersPaginate.data;
+
+        const queryResult = await useAsyncQuery(usersPaginate, {
+            first: Number(pageCount.value),
+            page: page.value,
+        });
+
+        if (queryResult.data.value) {
+            result.value = queryResult.data.value as UsersPaginateQuery;
+            data.value = result.value.usersPaginate.data;
+        }
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching users:", error);
     } finally {
-        loading.value = false;
+        useTimeoutFn(() => (loading.value = false), 500);
     }
 };
 
-onMounted(() => {
-    fetchData();
-});
+const actions = [
+    {
+        color: "emerald",
+        icon: "mdi:pencil",
+        onClick: (row) => {
+            console.log("Edit", row);
+        },
+    },
+    {
+        color: "red",
+        icon: "mdi:delete",
+        onClick: (row) => {
+            console.log("Delete", row);
+        },
+    },
+];
+
+watch(
+    [page, pageCount, sort],
+    () => {
+        fetchData();
+    },
+    { deep: true },
+);
+
+onBeforeMount(() => fetchData());
+onMounted(() => fetchData());
 
 definePageMeta({
     layout: "app-layout",
-});
-
-// Pagination
-const sort = ref({ column: "id", direction: "asc" as const });
-const page = ref(1);
-const pageCount = ref(10);
-const pageTotal = computed(() => {
-    const res = result.value;
-    return res.usersPaginate.paginatorInfo.total;
 });
 </script>
