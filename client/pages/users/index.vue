@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col items-center py-4 justify-center">
+    <div class="flex flex-col items-center py-2 justify-center">
         <div class="w-full max-w-[1400px] border-t rounded-lg">
             <DataTable
                 v-model:selected-rows="selectedRows"
@@ -62,11 +62,30 @@
 </template>
 
 <script lang="ts" setup>
+import { useTimeoutFn } from "@vueuse/shared";
+
 import { usersPaginate } from "~/graphql/User";
 
 import DataTable from "./DataTable.vue";
 
-const columns = [
+// Define proper interface for columns
+interface Column {
+    key: string;
+    label?: string;
+    class?: string;
+    sortable?: boolean;
+}
+
+// Define interface for user data
+interface User {
+    id: number;
+    name: string;
+    email: string;
+    is_active: boolean;
+    completed?: boolean;
+}
+
+const columns: Column[] = [
     {
         class: "w-2",
         key: "select",
@@ -100,9 +119,9 @@ const columns = [
 const selectedColumns = ref(columns);
 
 // Selected Rows
-const selectedRows = ref([]);
+const selectedRows = ref<User[]>([]);
 
-function select(row) {
+function select(row: User) {
     const index = selectedRows.value.findIndex((item) => item.id === row.id);
     if (index === -1) {
         selectedRows.value.push(row);
@@ -150,7 +169,7 @@ const searchStatus = computed(() => {
         return "";
     }
 
-    if (selectedStatus?.value?.length > 1) {
+    if (selectedStatus.value?.length > 1) {
         return `?completed=${selectedStatus.value[0].value}&completed=${selectedStatus.value[1].value}`;
     }
 
@@ -162,23 +181,49 @@ const resetFilters = () => {
     selectedStatus.value = [];
 };
 
-const data = ref([]);
-const { loading, refetch, result } = useQuery(usersPaginate, {
-    first: 10,
-    page: 1,
+const data = ref<User[]>([]);
+const loading = ref(true);
+const result = ref({
+    usersPaginate: { data: [], paginatorInfo: { total: 0 } },
 });
 
 const fetchData = async () => {
     try {
         loading.value = true;
-        const res = await result.value;
-        data.value = res.usersPaginate.data;
+
+        const queryResult = await useAsyncQuery(usersPaginate, {
+            first: Number(pageCount.value),
+            page: page.value,
+        });
+
+        if (queryResult.data.value) {
+            result.value = queryResult.data.value;
+            data.value = result.value.usersPaginate.data;
+        }
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching users:", error);
     } finally {
-        loading.value = false;
+        useTimeoutFn(() => (loading.value = false), 500);
     }
 };
+
+const sort = ref({ column: "id", direction: "asc" as "asc" | "desc" });
+const page = ref(1);
+const pageCount = ref(10);
+const pageTotal = computed(() => {
+    if (!result.value?.usersPaginate?.paginatorInfo) {
+        return 0;
+    }
+    return result.value.usersPaginate.paginatorInfo.total;
+});
+
+watch(
+    [page, pageCount, sort],
+    () => {
+        fetchData();
+    },
+    { deep: true },
+);
 
 onMounted(() => {
     fetchData();
@@ -186,14 +231,5 @@ onMounted(() => {
 
 definePageMeta({
     layout: "app-layout",
-});
-
-// Pagination
-const sort = ref({ column: "id", direction: "asc" as const });
-const page = ref(1);
-const pageCount = ref(10);
-const pageTotal = computed(() => {
-    const res = result.value;
-    return res.usersPaginate.paginatorInfo.total;
 });
 </script>

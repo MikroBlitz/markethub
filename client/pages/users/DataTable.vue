@@ -1,79 +1,3 @@
-<script lang="ts" setup>
-// Define props for the component
-const props = defineProps({
-    actions: {
-        default: () => [],
-        type: Array,
-    },
-    columns: {
-        required: true,
-        type: Array,
-    },
-    data: {
-        required: true,
-        type: Array,
-    },
-    filters: {
-        default: () => [],
-        type: Array,
-    },
-    loading: {
-        default: false,
-        type: Boolean,
-    },
-    totalItems: {
-        required: true,
-        type: Number,
-    },
-});
-
-// Emits for parent component to handle
-const emit = defineEmits([
-    "update:selectedRows",
-    "update:sort",
-    "update:page",
-    "update:pageCount",
-    "update:search",
-    "update:selectedStatus",
-    "resetFilters",
-    "select",
-]);
-
-// Selected Columns
-const selectedColumns = defineModel("selectedColumns");
-const columnsTable = computed(() =>
-    props.columns.filter((column) => selectedColumns.value.includes(column)),
-);
-const excludeSelectColumn = computed(() =>
-    props.columns.filter((v) => v.key !== "select"),
-);
-
-// Selected Rows
-const selectedRows = defineModel("selectedRows");
-
-function select(row) {
-    emit("select", row);
-}
-
-// Pagination
-const sort = defineModel("sort");
-const page = defineModel("page");
-const pageCount = defineModel("pageCount");
-const pageTotal = computed(() => props.totalItems);
-const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1);
-const pageTo = computed(() =>
-    Math.min(page.value * pageCount.value, pageTotal.value),
-);
-
-// Filters
-const search = defineModel("search");
-const selectedStatus = defineModel("selectedStatus");
-
-const resetFilters = () => {
-    emit("resetFilters");
-};
-</script>
-
 <template>
     <UCard
         class="w-full"
@@ -123,7 +47,7 @@ const resetFilters = () => {
 
                 <USelect
                     v-model="pageCount"
-                    :options="[5, 10, 20, 30, 40]"
+                    :options="[10, 25, 50, 100]"
                     class="me-2 w-20"
                     size="xs"
                 />
@@ -184,7 +108,7 @@ const resetFilters = () => {
             class="w-full"
             :ui="{
                 td: { base: 'max-w-[0] truncate' },
-                default: { checkbox: { color: 'gray' as any } },
+                default: { checkbox: { color: 'gray' as const } },
             }"
             @select="select"
         >
@@ -226,3 +150,104 @@ const resetFilters = () => {
         </template>
     </UCard>
 </template>
+
+<script lang="ts" setup>
+// Define proper interfaces for TypeScript
+interface Column {
+    key: string;
+    label?: string;
+    class?: string;
+    sortable?: boolean;
+}
+
+interface FilterOption {
+    key: number;
+    label: string;
+    value: boolean;
+}
+
+interface Action {
+    key: string;
+    icon: string;
+    label: string;
+}
+
+interface Sort {
+    column: string;
+    direction: "asc" | "desc";
+}
+
+const props = defineProps({
+    actions: {
+        default: () => [],
+        type: Array as PropType<Action[][]>,
+    },
+    columns: {
+        required: true,
+        type: Array as PropType<Column[]>,
+    },
+    data: {
+        required: true,
+        type: Array,
+    },
+    filters: {
+        default: () => [],
+        type: Array as PropType<FilterOption[]>,
+    },
+    loading: {
+        default: false,
+        type: Boolean,
+    },
+    totalItems: {
+        required: true,
+        type: Number,
+    },
+});
+
+// Emits for parent component to handle
+const emit = defineEmits([
+    "update:selectedRows",
+    "update:sort",
+    "update:page",
+    "update:pageCount",
+    "update:search",
+    "update:selectedStatus",
+    "update:selectedColumns",
+    "resetFilters",
+    "select",
+]);
+
+// Selected Columns - Fix defineModel usage with proper types
+const selectedColumns = defineModel<Column[]>("selectedColumns");
+const columnsTable = computed(() =>
+    props.columns.filter((column) => selectedColumns.value.includes(column)),
+);
+const excludeSelectColumn = computed(() =>
+    props.columns.filter((v) => v.key !== "select"),
+);
+
+// Selected Rows
+const selectedRows = defineModel("selectedRows");
+
+function select(row) {
+    emit("select", row);
+}
+
+// Pagination
+const sort = defineModel<Sort>("sort");
+const page = defineModel<number>("page");
+const pageCount = defineModel<number>("pageCount");
+const pageTotal = computed(() => props.totalItems);
+const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1);
+const pageTo = computed(() =>
+    Math.min(page.value * pageCount.value, pageTotal.value),
+);
+
+// Filters
+const search = defineModel<string>("search");
+const selectedStatus = defineModel("selectedStatus");
+
+const resetFilters = () => {
+    emit("resetFilters");
+};
+</script>
