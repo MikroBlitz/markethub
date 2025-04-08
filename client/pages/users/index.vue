@@ -18,11 +18,16 @@
                 @select="select"
             >
                 <template #header>
-                    <h2
-                        class="font-semibold text-xl text-gray-900 dark:text-white leading-tight"
-                    >
-                        Users
-                    </h2>
+                    <div class="flex w-full space-x-2 items-center">
+                        <UButton class="p-2 rounded-full" @click="openAddModal">
+                            <UIcon name="mdi:add" />
+                        </UButton>
+                        <h2
+                            class="font-semibold text-xl text-gray-900 dark:text-white leading-tight"
+                        >
+                            Users
+                        </h2>
+                    </div>
                 </template>
 
                 <template #actions-data="{ row }">
@@ -56,7 +61,7 @@
                         name="i-heroicons-pencil-square"
                         class="mr-3 text-emerald-500 text-xl"
                     />
-                    <span class="text-lg font-medium">Edit User</span>
+                    <span class="text-lg font-medium">Add/Edit User</span>
                 </div>
 
                 <UForm
@@ -201,6 +206,16 @@ function select(row: User) {
 const isOpen = ref(false);
 const isDeleteModal = ref(false);
 const selectedUser = ref<User | null>(null);
+
+function openAddModal() {
+    Object.assign(userState, {
+        email: "",
+        is_active: false,
+        name: "",
+        password: "",
+    });
+    isOpen.value = true;
+}
 
 function openEditModal(user: User) {
     selectedUser.value = user;
