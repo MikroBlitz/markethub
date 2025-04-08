@@ -40,35 +40,8 @@
             />
         </div>
 
-        <!-- Header and Action buttons -->
         <div class="flex justify-between items-center w-full px-4 py-3">
-            <div class="flex items-center gap-1.5">
-                <span class="text-sm leading-5">Rows per page:</span>
-
-                <USelect
-                    v-model="pageCount"
-                    :options="[10, 25, 50, 100]"
-                    class="me-2 w-20"
-                    size="xs"
-                />
-            </div>
-
             <div class="flex gap-1.5 items-center">
-                <UDropdown
-                    v-if="selectedRows.length > 1"
-                    :items="actions"
-                    :ui="{ width: 'w-36' }"
-                >
-                    <UButton
-                        icon="i-heroicons-chevron-down"
-                        trailing
-                        color="gray"
-                        size="xs"
-                    >
-                        Mark as
-                    </UButton>
-                </UDropdown>
-
                 <USelectMenu
                     v-model="selectedColumns"
                     :options="excludeSelectColumn"
@@ -112,6 +85,17 @@
             }"
             @select="select"
         >
+            <!-- Dynamic cell renderer -->
+            <template
+                v-for="column in columnsTable"
+                #[`${column.key}-data`]="{ row }"
+            >
+                <template v-if="column.render">
+                    <component :is="getDynamicContent(column, row)" />
+                </template>
+            </template>
+
+            <!-- Pass through other slots -->
             <template v-for="(_, slot) in $slots" #[slot]="scope">
                 <slot :name="slot" v-bind="scope" />
             </template>
@@ -120,16 +104,27 @@
         <!-- Number of rows & Pagination -->
         <template #footer>
             <div class="flex flex-wrap justify-between items-center">
-                <div>
-                    <span class="text-sm leading-5">
-                        Showing
-                        <span class="font-medium">{{ pageFrom }}</span>
-                        to
-                        <span class="font-medium">{{ pageTo }}</span>
-                        of
-                        <span class="font-medium">{{ pageTotal }}</span>
-                        results
-                    </span>
+                <div class="flex items-center gap-1.5">
+                    <span class="text-sm leading-5">Per page:</span>
+
+                    <USelect
+                        v-model="pageCount"
+                        :options="[10, 20, 50, 100]"
+                        class="me-2 w-20"
+                        size="xs"
+                    />
+
+                    <div>
+                        <span class="text-xs leading-5">
+                            Showing
+                            <span>{{ pageFrom }}</span>
+                            to
+                            <span>{{ pageTo }}</span>
+                            of
+                            <span>{{ pageTotal }}</span>
+                            results
+                        </span>
+                    </div>
                 </div>
 
                 <UPagination
@@ -152,36 +147,11 @@
 </template>
 
 <script lang="ts" setup>
-// Define proper interfaces for TypeScript
-interface Column {
-    key: string;
-    label?: string;
-    class?: string;
-    sortable?: boolean;
-}
+import { h } from "vue";
 
-interface FilterOption {
-    key: number;
-    label: string;
-    value: boolean;
-}
-
-interface Action {
-    key: string;
-    icon: string;
-    label: string;
-}
-
-interface Sort {
-    column: string;
-    direction: "asc" | "desc";
-}
+import type { Column, FilterOption, Sort } from "~/components/table/types";
 
 const props = defineProps({
-    actions: {
-        default: () => [],
-        type: Array as PropType<Action[][]>,
-    },
     columns: {
         required: true,
         type: Array as PropType<Column[]>,
@@ -204,7 +174,6 @@ const props = defineProps({
     },
 });
 
-// Emits for parent component to handle
 const emit = defineEmits([
     "update:selectedRows",
     "update:sort",
@@ -217,37 +186,45 @@ const emit = defineEmits([
     "select",
 ]);
 
-// Selected Columns - Fix defineModel usage with proper types
+const getDynamicContent = (column: Column, row: never) => {
+    if (!column.render) return null;
+
+    const result = column.render(row);
+    if (typeof result === "object" && result !== null) {
+        return result;
+    }
+
+    return h("span", {}, String(result));
+};
+
 const selectedColumns = defineModel<Column[]>("selectedColumns");
 const columnsTable = computed(() =>
-    props.columns.filter((column) => selectedColumns.value.includes(column)),
+    props.columns.filter((column) => selectedColumns.value?.includes(column)),
 );
 const excludeSelectColumn = computed(() =>
     props.columns.filter((v) => v.key !== "select"),
 );
-
-// Selected Rows
+// eslint-disable-next-line vue/require-prop-types
 const selectedRows = defineModel("selectedRows");
-
-function select(row) {
-    emit("select", row);
-}
+const select = (row: never) => emit("select", row);
 
 // Pagination
 const sort = defineModel<Sort>("sort");
 const page = defineModel<number>("page");
 const pageCount = defineModel<number>("pageCount");
 const pageTotal = computed(() => props.totalItems);
-const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1);
-const pageTo = computed(() =>
-    Math.min(page.value * pageCount.value, pageTotal.value),
-);
+const pageFrom = computed(() => {
+    if (!page.value || !pageCount.value) return 1;
+    return (page.value - 1) * pageCount.value + 1;
+});
+const pageTo = computed(() => {
+    if (!page.value || !pageCount.value) return pageCount.value;
+    return Math.min(page.value * pageCount.value, pageTotal.value);
+});
 
 // Filters
 const search = defineModel<string>("search");
+// eslint-disable-next-line vue/require-prop-types
 const selectedStatus = defineModel("selectedStatus");
-
-const resetFilters = () => {
-    emit("resetFilters");
-};
+const resetFilters = () => emit("resetFilters");
 </script>
