@@ -6,6 +6,7 @@
         "build": "nuxt build",
         "dev": "nuxt dev",
         "start": "concurrently \"nuxt dev\" \"php artisan serve\"",
+        "octane": "concurrently \"nuxt dev\" \"php artisan octane:start --server=roadrunner\"",
         "generate": "nuxt generate",
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
