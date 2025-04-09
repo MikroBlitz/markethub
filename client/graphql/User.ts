@@ -1,3 +1,5 @@
+import { userFragment } from "~/graphql/fragment";
+
 // export const users = gql`
 //     query users($limit: Int) {
 //         users(limit: $limit) {
@@ -14,12 +16,7 @@ export const usersPaginate = gql`
     query usersPaginate($first: Int!, $page: Int) {
         usersPaginate(first: $first, page: $page) {
             data {
-                id
-                name
-                email
-                password
-                role
-                is_active
+                ...user
             }
             paginatorInfo {
                 currentPage
@@ -29,19 +26,16 @@ export const usersPaginate = gql`
             }
         }
     }
+    ${userFragment}
 `;
 
 export const upsertUser = gql`
     mutation upsertUser($input: UserInput!) {
         upsertUser(input: $input) {
-            id
-            name
-            email
-            password
-            role
-            is_active
+            ...user
         }
     }
+    ${userFragment}
 `;
 
 export const deleteUser = gql`

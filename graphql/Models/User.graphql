@@ -5,9 +5,9 @@ type User {
     password: String!
     role: Role
     is_active: Boolean!
-    createdAt: DateTime!
-    updatedAt: DateTime!
-    deletedAt: DateTime
+    created_at: DateTime!
+    updated_at: DateTime!
+    deleted_at: DateTime
 }
 
 input UserInput {

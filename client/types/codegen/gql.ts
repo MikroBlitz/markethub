@@ -14,10 +14,11 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 const documents = {
-    "\n    query usersPaginate($first: Int!, $page: Int) {\n        usersPaginate(first: $first, page: $page) {\n            data {\n                id\n                name\n                email\n                password\n                role\n                is_active\n            }\n            paginatorInfo {\n                currentPage\n                lastPage\n                perPage\n                total\n            }\n        }\n    }\n": types.UsersPaginateDocument,
-    "\n    mutation upsertUser($input: UserInput!) {\n        upsertUser(input: $input) {\n            id\n            name\n            email\n            password\n            role\n            is_active\n        }\n    }\n": types.UpsertUserDocument,
+    "\n    query usersPaginate($first: Int!, $page: Int) {\n        usersPaginate(first: $first, page: $page) {\n            data {\n                ...user\n            }\n            paginatorInfo {\n                currentPage\n                lastPage\n                perPage\n                total\n            }\n        }\n    }\n    \n": types.UsersPaginateDocument,
+    "\n    mutation upsertUser($input: UserInput!) {\n        upsertUser(input: $input) {\n            ...user\n        }\n    }\n    \n": types.UpsertUserDocument,
     "\n    mutation deleteUser($id: [ID!]) {\n        deleteUser(id: $id) {\n            id\n        }\n    }\n": types.DeleteUserDocument,
     "\n    mutation restoreUser($id: ID!) {\n        restoreUser(id: $id) {\n            id\n        }\n    }\n": types.RestoreUserDocument,
+    "\n    fragment user on User {\n        id\n        name\n        email\n        password\n        role\n        is_active\n        created_at\n        updated_at\n        deleted_at\n    }\n": types.UserFragmentDoc,
 };
 
 /**
@@ -37,11 +38,11 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    query usersPaginate($first: Int!, $page: Int) {\n        usersPaginate(first: $first, page: $page) {\n            data {\n                id\n                name\n                email\n                password\n                role\n                is_active\n            }\n            paginatorInfo {\n                currentPage\n                lastPage\n                perPage\n                total\n            }\n        }\n    }\n"): (typeof documents)["\n    query usersPaginate($first: Int!, $page: Int) {\n        usersPaginate(first: $first, page: $page) {\n            data {\n                id\n                name\n                email\n                password\n                role\n                is_active\n            }\n            paginatorInfo {\n                currentPage\n                lastPage\n                perPage\n                total\n            }\n        }\n    }\n"];
+export function graphql(source: "\n    query usersPaginate($first: Int!, $page: Int) {\n        usersPaginate(first: $first, page: $page) {\n            data {\n                ...user\n            }\n            paginatorInfo {\n                currentPage\n                lastPage\n                perPage\n                total\n            }\n        }\n    }\n    \n"): (typeof documents)["\n    query usersPaginate($first: Int!, $page: Int) {\n        usersPaginate(first: $first, page: $page) {\n            data {\n                ...user\n            }\n            paginatorInfo {\n                currentPage\n                lastPage\n                perPage\n                total\n            }\n        }\n    }\n    \n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    mutation upsertUser($input: UserInput!) {\n        upsertUser(input: $input) {\n            id\n            name\n            email\n            password\n            role\n            is_active\n        }\n    }\n"): (typeof documents)["\n    mutation upsertUser($input: UserInput!) {\n        upsertUser(input: $input) {\n            id\n            name\n            email\n            password\n            role\n            is_active\n        }\n    }\n"];
+export function graphql(source: "\n    mutation upsertUser($input: UserInput!) {\n        upsertUser(input: $input) {\n            ...user\n        }\n    }\n    \n"): (typeof documents)["\n    mutation upsertUser($input: UserInput!) {\n        upsertUser(input: $input) {\n            ...user\n        }\n    }\n    \n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -50,6 +51,10 @@ export function graphql(source: "\n    mutation deleteUser($id: [ID!]) {\n      
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n    mutation restoreUser($id: ID!) {\n        restoreUser(id: $id) {\n            id\n        }\n    }\n"): (typeof documents)["\n    mutation restoreUser($id: ID!) {\n        restoreUser(id: $id) {\n            id\n        }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    fragment user on User {\n        id\n        name\n        email\n        password\n        role\n        is_active\n        created_at\n        updated_at\n        deleted_at\n    }\n"): (typeof documents)["\n    fragment user on User {\n        id\n        name\n        email\n        password\n        role\n        is_active\n        created_at\n        updated_at\n        deleted_at\n    }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

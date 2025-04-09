@@ -27,6 +27,12 @@ class AuthController extends Controller
             ], 401);
         }
 
+        if (!$user->is_active) {
+            return response()->json([
+                'message' => 'Disabled account, please contact the administrator'
+            ], 403);
+        }
+
         $token = $user->createToken($user->name. 'Auth-Token')->plainTextToken;
 
         return response()->json([
