@@ -192,7 +192,7 @@ async function removeUser(id: string) {
             icon: "i-mdi-check-circle-outline",
             title: "User has been removed",
         });
-    } catch (err: { message: string }) {
+    } catch (err) {
         console.error("Remove error:", err);
         toast.add({
             color: "red",
@@ -200,8 +200,8 @@ async function removeUser(id: string) {
             title: `Error removing user: ${err.message}`,
         });
     } finally {
-        fetchData();
-        loading.value = false;
+        await fetchData();
+        useTimeoutFn(() => (loading.value = false), 700);
         isDeleteModal.value = false;
     }
 }
@@ -231,7 +231,7 @@ async function changeStatus(id: string) {
         });
     } finally {
         await fetchData();
-        loading.value = false;
+        useTimeoutFn(() => (loading.value = false), 700);
         isChangeStatusModal.value = false;
     }
 }
@@ -259,8 +259,8 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
             title: `Error saving user: ${err.message}`,
         });
     } finally {
-        fetchData();
-        loading.value = false;
+        await fetchData();
+        useTimeoutFn(() => (loading.value = false), 700);
         isOpen.value = false;
     }
 }
