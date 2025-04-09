@@ -19,7 +19,7 @@
             >
                 <template #header>
                     <div class="flex w-full space-x-2 items-center">
-                        <UButton class="p-2 rounded-full" @click="openAddModal">
+                        <UButton class="p-2" @click="openAddModal">
                             <UIcon name="mdi:add" />
                         </UButton>
                         <h2
@@ -35,109 +35,47 @@
                         <UButton
                             v-for="(action, index) in actions"
                             :key="index"
-                            :icon="action.icon"
                             size="2xs"
-                            :color="action.color"
+                            :color="action.color(row)"
                             variant="outline"
-                            :ui="{ rounded: 'rounded-full' }"
                             square
                             @click="action.onClick(row)"
-                        />
+                        >
+                            <Icon :name="action.icon(row)" size="16" />
+                        </UButton>
                     </div>
                 </template>
             </TableData>
         </div>
 
-        <!-- Modal and Form -->
-        <UModal v-model="isOpen">
-            <UCard
-                :ui="{
-                    ring: '',
-                    divide: 'divide-y divide-gray-100 dark:divide-gray-800',
-                }"
-            >
-                <div class="flex items-center mb-4">
-                    <UIcon
-                        name="i-heroicons-pencil-square"
-                        class="mr-3 text-emerald-500 text-xl"
-                    />
-                    <span class="text-lg font-medium">Add/Edit User</span>
-                </div>
+        <!-- Form -->
+        <FormModal
+            v-model:is-open="isOpen"
+            :on-submit="onSubmit"
+            :loading="loading"
+        />
 
-                <UForm
-                    :schema="schema"
-                    :state="userState"
-                    class="space-y-4"
-                    @submit="onSubmit"
-                >
-                    <UFormGroup label="Name" name="name">
-                        <UInput v-model="userState.name" />
-                    </UFormGroup>
+        <!-- Delete Modal -->
+        <ModalConfirm
+            v-model:is-open="isDeleteModal"
+            :loading="loading"
+            label="Delete"
+            description="Are you sure you want to delete this user?"
+            icon="i-heroicons-exclamation-triangle"
+            :action="() => removeUser(selectedUser.id)"
+            color="red"
+        />
 
-                    <UFormGroup label="Email" name="email">
-                        <UInput v-model="userState.email" />
-                    </UFormGroup>
-
-                    <UFormGroup label="Password" name="password">
-                        <UInput v-model="userState.password" type="password" />
-                    </UFormGroup>
-
-                    <UFormGroup label="Active" name="is_active">
-                        <UToggle v-model="userState.is_active" />
-                    </UFormGroup>
-
-                    <div class="flex justify-end gap-2">
-                        <UButton
-                            color="gray"
-                            variant="ghost"
-                            @click="isOpen = false"
-                            >Cancel</UButton
-                        >
-
-                        <UButton
-                            :loading="loading"
-                            type="submit"
-                            label="Submit"
-                        />
-                    </div>
-                </UForm>
-            </UCard>
-        </UModal>
-
-        <!--        Delete Modal -->
-        <UModal v-model="isDeleteModal">
-            <div class="p-4 space-y-4">
-                <div class="flex items-center">
-                    <UIcon
-                        name="i-heroicons-exclamation-triangle"
-                        class="mr-3 text-red-500 text-xl"
-                    />
-                    <span class="text-lg font-medium">Confirm Delete</span>
-                </div>
-
-                <p class="text-gray-600">
-                    Are you sure you want to delete this user?
-                </p>
-
-                <div class="flex justify-end space-x-3 pt-3">
-                    <UButton
-                        color="gray"
-                        variant="soft"
-                        @click="isDeleteModal = false"
-                    >
-                        Cancel
-                    </UButton>
-                    <UButton
-                        color="red"
-                        variant="solid"
-                        :loading="loading"
-                        @click="removeUser(selectedUser.id)"
-                    >
-                        Delete User
-                    </UButton>
-                </div>
-            </div>
-        </UModal>
+        <!-- Change Active Status Modal -->
+        <ModalConfirm
+            v-model:is-open="isChangeStatusModal"
+            :loading="loading"
+            label="Switch Status"
+            description="Confirm switch status?"
+            icon="i-heroicons-information-circle"
+            :action="() => changeStatus(selectedUser.id)"
+            color="orange"
+        />
     </div>
 </template>
 
@@ -148,9 +86,10 @@ import { useTimeoutFn } from "@vueuse/shared";
 
 import type { User, UsersPaginateQuery } from "~/types/codegen/graphql";
 
-import { columns, status } from "~/pages/users/columns";
+import { columns, status } from "~/pages/users/data/columns";
+import FormModal from "~/pages/users/components/FormModal.vue";
 import { usersPaginate, upsertUser, deleteUser } from "~/graphql/User";
-import { schema, type UserSchema, userState } from "~/pages/users/schema";
+import { type UserSchema, userState } from "~/pages/users/data/schema";
 
 const toast = useToast();
 const selectedColumns = ref(columns);
@@ -205,6 +144,7 @@ function select(row: User) {
 
 const isOpen = ref(false);
 const isDeleteModal = ref(false);
+const isChangeStatusModal = ref(false);
 const selectedUser = ref<User | null>(null);
 
 function openAddModal() {
@@ -233,6 +173,11 @@ function openDeleteModal(user: User) {
     isDeleteModal.value = true;
 }
 
+function openChangeStatusModal(user: User) {
+    selectedUser.value = user;
+    isChangeStatusModal.value = true;
+}
+
 const { mutate: saveUser } = useMutation(upsertUser);
 const { mutate: removeUserMutation } = useMutation(deleteUser);
 
@@ -245,7 +190,7 @@ async function removeUser(id: string) {
             icon: "i-mdi-check-circle-outline",
             title: "User has been removed",
         });
-    } catch (err) {
+    } catch (err: { message: string }) {
         console.error("Remove error:", err);
         toast.add({
             color: "red",
@@ -253,9 +198,39 @@ async function removeUser(id: string) {
             title: `Error removing user: ${err.message}`,
         });
     } finally {
-        await fetchData();
+        fetchData();
         loading.value = false;
         isDeleteModal.value = false;
+    }
+}
+
+async function changeStatus(id: string) {
+    if (!selectedUser.value) return;
+
+    const input = {
+        id,
+        is_active: !selectedUser.value.is_active,
+    };
+
+    try {
+        loading.value = true;
+        await saveUser({ input });
+        toast.add({
+            color: "green",
+            icon: "i-mdi-check-circle-outline",
+            title: "User status has been updated",
+        });
+    } catch (err) {
+        console.error("Status update error:", err);
+        toast.add({
+            color: "red",
+            icon: "i-mdi-alert-circle-outline",
+            title: `Error updating user status: ${err.message}`,
+        });
+    } finally {
+        await fetchData();
+        loading.value = false;
+        isChangeStatusModal.value = false;
     }
 }
 
@@ -282,7 +257,7 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
             title: `Error saving user: ${err.message}`,
         });
     } finally {
-        await fetchData();
+        fetchData();
         loading.value = false;
         isOpen.value = false;
     }
@@ -290,27 +265,25 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
 
 const actions = [
     {
-        color: "emerald",
-        icon: "mdi:pencil",
+        color: (row: User) => (row.is_active ? "green" : "red"),
+        icon: (row: User) =>
+            row.is_active ? "mdi:toggle-switch" : "mdi:toggle-switch-off",
+        onClick: (row: User) => openChangeStatusModal(row),
+    },
+    {
+        color: () => "yellow",
+        icon: () => "mdi:pencil",
         onClick: (row: User) => openEditModal(row),
     },
     {
-        color: "red",
-        icon: "mdi:delete",
+        color: () => "red",
+        icon: () => "mdi:delete",
         onClick: (row: User) => openDeleteModal(row),
     },
 ];
 
-watch(
-    [page, pageCount, sort],
-    () => {
-        fetchData();
-    },
-    { deep: true },
-);
-
+watch([page, pageCount, sort], () => fetchData(), { deep: true });
 onBeforeMount(() => fetchData());
 onMounted(() => fetchData());
-
 definePageMeta({ layout: "app-layout" });
 </script>

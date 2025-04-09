@@ -1,3 +1,5 @@
+import { UBadge } from "#components";
+
 import type { Column } from "~/components/table/types";
 
 export const columns: Column[] = [
@@ -10,11 +12,11 @@ export const columns: Column[] = [
         label: "#",
         sortable: true,
     },
-    {
-        key: "role",
-        label: "Role",
-        sortable: true,
-    },
+    // {
+    //     key: "role",
+    //     label: "Role",
+    //     sortable: true,
+    // },
     {
         key: "name",
         label: "Name",
@@ -29,16 +31,22 @@ export const columns: Column[] = [
         key: "is_active",
         label: "Status",
         render: (row) =>
-            h(
-                "div",
-                {
-                    class:
-                        row.is_active == true
-                            ? "text-emerald-500 font-bold"
-                            : "text-red-500 font-bold",
-                },
-                row.is_active === true ? "Active" : "Inactive",
-            ),
+            h(UBadge, {
+                color: row.is_active ? "green" : "red",
+                label: row.is_active ? "Active" : "Inactive",
+                size: "sm",
+                variant: "solid",
+            }),
+        sortable: true,
+    },
+    {
+        key: "created_at",
+        label: "Created At",
+        sortable: true,
+    },
+    {
+        key: "updated_at",
+        label: "Updated At",
         sortable: true,
     },
     {
