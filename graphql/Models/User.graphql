@@ -34,7 +34,9 @@ enum Role {
 
 type Query {
     users: [User]! @all
-    usersPaginate: [User]! @paginate
+    usersPaginate(
+        search: String @scope(name: "search")
+    ): [User]! @paginate
 }
 
 type Mutation {

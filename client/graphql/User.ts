@@ -13,8 +13,8 @@ import { userFragment } from "~/graphql/fragment";
 // `;
 
 export const usersPaginate = gql`
-    query usersPaginate($first: Int!, $page: Int) {
-        usersPaginate(first: $first, page: $page) {
+    query usersPaginate($first: Int!, $page: Int, $search: String) {
+        usersPaginate(first: $first, page: $page, search: $search) {
             data {
                 ...user
             }

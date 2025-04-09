@@ -116,6 +116,7 @@ const fetchData = async () => {
         const queryResult = await useAsyncQuery(usersPaginate, {
             first: Number(pageCount.value),
             page: page.value,
+            search: search.value,
         });
         if (queryResult.data.value) {
             result.value = queryResult.data.value as UsersPaginateQuery;
@@ -282,7 +283,7 @@ const actions = [
     },
 ];
 
-watch([page, pageCount, sort], () => fetchData(), { deep: true });
+watch([page, pageCount, sort, search], () => fetchData(), { deep: true });
 onBeforeMount(() => fetchData());
 onMounted(() => fetchData());
 definePageMeta({ layout: "app-layout" });
