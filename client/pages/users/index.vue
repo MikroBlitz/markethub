@@ -82,7 +82,7 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "#ui/types";
 
-import { useTimeoutFn } from "@vueuse/shared";
+import { useDebounce, useTimeoutFn } from "@vueuse/shared";
 
 import type { User, UsersPaginateQuery } from "~/types/codegen/graphql";
 
@@ -100,6 +100,7 @@ const page = ref(1);
 const pageCount = ref(10);
 const search = ref("");
 const selectedStatus = ref([]);
+const debouncedSearch = useDebounce(search, 500);
 
 const pageTotal = computed(() => {
     if (!result.value?.usersPaginate?.paginatorInfo) return 0;
@@ -283,8 +284,10 @@ const actions = [
     },
 ];
 
-watch([page, pageCount, sort, search], () => fetchData(), { deep: true });
+definePageMeta({ layout: "app-layout" });
 onBeforeMount(() => fetchData());
 onMounted(() => fetchData());
-definePageMeta({ layout: "app-layout" });
+watch([page, pageCount, sort, debouncedSearch], () => fetchData(), {
+    deep: true,
+});
 </script>
