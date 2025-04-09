@@ -152,15 +152,14 @@
                         </nav>
                     </div>
 
-                    <div
-                        class="border-t border-gray-200 dark:border-gray-800 py-2 px-4"
-                    >
-                        <UButton
-                            block
-                            color="gray"
-                            variant="ghost"
-                            class="justify-start"
-                        >
+                    <div class="border-t border-gray-200 dark:border-gray-800">
+                        <UDropdown :items="userMenuItems" class="w-full p-2">
+                            <UAvatar
+                                src="https://media.istockphoto.com/id/1288129985/vector/missing-image-of-a-person-placeholder.jpg?s=612x612&w=0&k=20&c=9kE777krx5mrFHsxx02v60ideRWvIgI1RWzR1X4MG2Y="
+                                size="sm"
+                                class="cursor-pointer"
+                            />
+
                             <template #leading>
                                 <UAvatar
                                     src="/api/placeholder/40/40"
@@ -168,15 +167,18 @@
                                     size="sm"
                                 />
                             </template>
-                            <div class="flex flex-col items-start">
-                                <span class="text-sm font-medium"
-                                    >Admin User</span
-                                >
-                                <span class="text-xs text-gray-500"
-                                    >admin@markethub.com</span
-                                >
+
+                            <div class="pl-2 flex flex-col items-start">
+                                <span class="text-sm font-medium">{{
+                                    authStore.user?.name
+                                        ? authStore.user?.name
+                                        : "No Name"
+                                }}</span>
+                                <span class="text-xs text-gray-500">{{
+                                    authStore.user?.email || "No Email"
+                                }}</span>
                             </div>
-                        </UButton>
+                        </UDropdown>
                     </div>
                 </div>
             </USlideover>
@@ -185,8 +187,13 @@
 </template>
 
 <script setup lang="ts">
+import { useTimeoutFn } from "@vueuse/core";
+
 const isOpen = ref(false);
 const route = useRoute();
+const toast = useToast();
+
+const authStore = useAuthStore();
 
 const mainMenuItems = [
     { icon: "i-heroicons-home", label: "Dashboard", to: "/dashboard" },
@@ -208,6 +215,28 @@ const adminItems = [
         label: "Permissions",
         to: "/permissions",
     },
+];
+
+const userMenuItems = [
+    [
+        { icon: "i-heroicons-user-circle", label: "Profile", to: "/dashboard" },
+        { icon: "i-heroicons-cog-6-tooth", label: "Settings", to: "/settings" },
+    ],
+    [
+        {
+            click: () => {
+                authStore.logout();
+                useTimeoutFn(() => {
+                    toast.add({
+                        icon: "i-mdi-check-circle-outline",
+                        title: "Logged out successfully",
+                    });
+                }, 500);
+            },
+            icon: "i-heroicons-arrow-right-on-rectangle",
+            label: "Logout",
+        },
+    ],
 ];
 
 const isActive = (path: string) => {

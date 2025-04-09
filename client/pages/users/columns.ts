@@ -11,6 +11,11 @@ export const columns: Column[] = [
         sortable: true,
     },
     {
+        key: "role",
+        label: "Role",
+        sortable: true,
+    },
+    {
         key: "name",
         label: "Name",
         sortable: true,
@@ -28,11 +33,11 @@ export const columns: Column[] = [
                 "div",
                 {
                     class:
-                        row.is_active === 1
+                        row.is_active == true
                             ? "text-emerald-500 font-bold"
                             : "text-red-500 font-bold",
                 },
-                row.is_active === 1 ? "Active" : "Inactive",
+                row.is_active === true ? "Active" : "Inactive",
             ),
         sortable: true,
     },
