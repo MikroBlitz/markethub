@@ -5,12 +5,12 @@
             base: '',
             ring: '',
             divide: 'divide-y divide-gray-200 dark:divide-gray-700',
-            header: { padding: 'px-4 py-5' },
+            header: { padding: 'p-4' },
             body: {
                 padding: '',
                 base: 'divide-y divide-gray-200 dark:divide-gray-700',
             },
-            footer: { padding: 'p-4' },
+            footer: { padding: 'p-2' },
         }"
     >
         <template #header>
@@ -27,9 +27,9 @@
             <!-- Filters -->
             <div class="flex items-center gap-1.5">
                 <UButton
-                    size="xs"
-                    class="rounded-full p-2 mr-2"
-                    variant="outline"
+                    size="2xs"
+                    class="rounded-full p-1 mr-2"
+                    color="red"
                     @click="navigateTo('/dashboard')"
                 >
                     <Icon name="mdi:arrow-left" size="20" />
@@ -48,31 +48,34 @@
                         Columns
                     </UButton>
                 </USelectMenu>
-
-                <UButton
-                    icon="i-heroicons-funnel"
-                    color="gray"
-                    size="xs"
-                    :disabled="search === '' && selectedStatus.length === 0"
-                    @click="resetFilters"
-                >
-                    Reset
-                </UButton>
             </div>
 
             <div class="flex gap-1.5 items-center">
+                <UButton
+                    v-show="selectedStatus.length > 0 || search !== ''"
+                    icon="mdi:filter-remove-outline"
+                    color="red"
+                    variant="outline"
+                    size="sm"
+                    :disabled="search === '' && selectedStatus.length === 0"
+                    @click="resetFilters"
+                >
+                    Clear
+                </UButton>
+
                 <USelectMenu
                     v-model="selectedStatus"
                     :options="filters"
                     multiple
                     placeholder="Filters"
+                    icon="mdi:filter-outline"
                     class="w-40"
                 />
 
                 <UInput
                     v-model="search"
                     icon="i-heroicons-magnifying-glass-20-solid"
-                    placeholder="Search..."
+                    placeholder="Search"
                 />
             </div>
         </div>
@@ -119,8 +122,6 @@
         <template #footer>
             <div class="flex flex-wrap justify-between items-center">
                 <div class="flex items-center gap-1.5">
-                    <span class="text-sm leading-5">Per page:</span>
-
                     <USelect
                         v-model="pageCount"
                         :options="[10, 20, 50, 100]"
@@ -136,7 +137,6 @@
                             <span>{{ pageTo }}</span>
                             of
                             <span>{{ pageTotal }}</span>
-                            results
                         </span>
                     </div>
                 </div>

@@ -4,7 +4,7 @@
             icon="i-heroicons-bars-3"
             variant="ghost"
             color="green"
-            class="w-full justify-start"
+            class="w-full justify-start hover:bg-transparent hover:scale-125 transition-all duration-300"
             @click="isOpen = true"
         >
             <USlideover
@@ -13,7 +13,6 @@
                 side="left"
                 :ui="{
                     width: 'w-64 max-w-xs',
-                    background: 'bg-white dark:bg-gray-900',
                     border: 'border-r border-gray-200 dark:border-gray-800',
                     shadow: 'shadow-xl',
                 }"
@@ -48,40 +47,6 @@
 
                     <div class="flex-1 overflow-y-auto p-4">
                         <nav class="space-y-6">
-                            <div>
-                                <UDivider
-                                    label="ADMIN"
-                                    label-class="text-xs font-medium text-gray-500 dark:text-gray-400"
-                                />
-                                <ul class="mt-3 space-y-1">
-                                    <li
-                                        v-for="(item, index) in adminItems"
-                                        :key="index"
-                                    >
-                                        <UButton
-                                            :icon="item.icon"
-                                            :to="item.to"
-                                            :color="
-                                                isActive(item.to)
-                                                    ? 'green'
-                                                    : 'gray'
-                                            "
-                                            :variant="
-                                                isActive(item.to)
-                                                    ? 'soft'
-                                                    : 'ghost'
-                                            "
-                                            class="w-full justify-start"
-                                            square
-                                            padded
-                                            @click="isOpen = false"
-                                        >
-                                            {{ item.label }}
-                                        </UButton>
-                                    </li>
-                                </ul>
-                            </div>
-
                             <div>
                                 <UDivider
                                     label="MAIN MENU"
@@ -124,6 +89,40 @@
                                 <ul class="mt-3 space-y-1">
                                     <li
                                         v-for="(item, index) in managementItems"
+                                        :key="index"
+                                    >
+                                        <UButton
+                                            :icon="item.icon"
+                                            :to="item.to"
+                                            :color="
+                                                isActive(item.to)
+                                                    ? 'green'
+                                                    : 'gray'
+                                            "
+                                            :variant="
+                                                isActive(item.to)
+                                                    ? 'soft'
+                                                    : 'ghost'
+                                            "
+                                            class="w-full justify-start"
+                                            square
+                                            padded
+                                            @click="isOpen = false"
+                                        >
+                                            {{ item.label }}
+                                        </UButton>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <UDivider
+                                    label="ADMIN"
+                                    label-class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                                />
+                                <ul class="mt-3 space-y-1">
+                                    <li
+                                        v-for="(item, index) in adminItems"
                                         :key="index"
                                     >
                                         <UButton
