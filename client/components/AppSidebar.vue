@@ -46,13 +46,13 @@
                     </div>
 
                     <div class="flex-1 overflow-y-auto p-4">
-                        <nav class="space-y-6">
+                        <nav class="space-y-3">
                             <div>
                                 <UDivider
                                     label="MAIN MENU"
                                     label-class="text-xs font-medium text-gray-500 dark:text-gray-400"
                                 />
-                                <ul class="mt-3 space-y-1">
+                                <ul class="mt-2 space-y-1">
                                     <li
                                         v-for="(item, index) in mainMenuItems"
                                         :key="index"
@@ -86,7 +86,7 @@
                                     label="MANAGEMENT"
                                     label-class="text-xs font-medium text-gray-500 dark:text-gray-400"
                                 />
-                                <ul class="mt-3 space-y-1">
+                                <ul class="mt-2 space-y-1">
                                     <li
                                         v-for="(item, index) in managementItems"
                                         :key="index"
@@ -120,7 +120,7 @@
                                     label="ADMIN"
                                     label-class="text-xs font-medium text-gray-500 dark:text-gray-400"
                                 />
-                                <ul class="mt-3 space-y-1">
+                                <ul class="mt-2 space-y-1">
                                     <li
                                         v-for="(item, index) in adminItems"
                                         :key="index"
@@ -207,10 +207,10 @@ const managementItems = [
 ];
 
 const adminItems = [
-    { icon: "i-heroicons-user-circle", label: "Users", to: "/users" },
-    { icon: "i-heroicons-user-circle", label: "Roles", to: "/roles" },
+    { icon: "mdi:user-group-outline", label: "Users", to: "/users" },
+    { icon: "mdi:user-key-outline", label: "Roles", to: "/roles" },
     {
-        icon: "i-heroicons-user-circle",
+        icon: "mdi:user-lock-outline",
         label: "Permissions",
         to: "/permissions",
     },

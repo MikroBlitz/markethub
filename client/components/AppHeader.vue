@@ -6,14 +6,6 @@
             </div>
 
             <div class="flex items-center space-x-4">
-                <UInput
-                    icon="i-heroicons-magnifying-glass"
-                    placeholder="Search..."
-                    color="gray"
-                    variant="outline"
-                    class="hidden md:block w-64"
-                />
-
                 <UButton
                     icon="i-heroicons-bell"
                     color="gray"

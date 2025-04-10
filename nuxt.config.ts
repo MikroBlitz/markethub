@@ -13,7 +13,7 @@ export default defineNuxtConfig({
         fallback: "light",
         globalName: "__NUXT_COLOR_MODE__",
         hid: "nuxt-color-mode-script",
-        preference: "system",
+        preference: "light",
         storage: "localStorage",
         storageKey: "nuxt-color-mode",
     },

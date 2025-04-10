@@ -17,8 +17,8 @@ export const usersPaginate = gql`
         $first: Int!
         $page: Int
         $search: String
-        $sort: UserSortInput
-        $filter: [UserFilterInput]
+        $sort: SortInput
+        $filter: [FilterInput]
     ) {
         usersPaginate(
             first: $first
