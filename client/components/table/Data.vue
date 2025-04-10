@@ -92,7 +92,6 @@
                 td: { base: 'max-w-[0] truncate' },
                 default: { checkbox: { color: 'gray' as const } },
             }"
-            @select="select"
         >
             <!-- Dynamic cell renderer -->
             <template

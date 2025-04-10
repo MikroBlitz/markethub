@@ -288,7 +288,7 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
 
 const actions = [
     {
-        color: (row: User) => (row.is_active ? "blue" : "orange"),
+        color: (row: User) => (row.is_active ? "green" : "orange"),
         icon: (row: User) =>
             row.is_active ? "mdi:toggle-switch" : "mdi:toggle-switch-off",
         onClick: (row: User) => openChangeStatusModal(row),
@@ -296,7 +296,7 @@ const actions = [
             `Switch status to "${row.is_active ? "Inactive" : "Active"}"`,
     },
     {
-        color: () => "green",
+        color: () => "blue",
         icon: () => "mdi:pencil",
         onClick: (row: User) => openEditModal(row),
         tooltip: (row: User) => `Edit User ${row.name}`,
