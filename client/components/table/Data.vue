@@ -26,22 +26,15 @@
         <div class="flex justify-between items-center w-full px-4 py-3">
             <!-- Filters -->
             <div class="flex items-center gap-1.5">
-                <UInput
-                    v-model="search"
-                    icon="i-heroicons-magnifying-glass-20-solid"
-                    placeholder="Search..."
-                />
+                <UButton
+                    size="xs"
+                    class="rounded-full p-2 mr-2"
+                    variant="outline"
+                    @click="navigateTo('/dashboard')"
+                >
+                    <Icon name="mdi:arrow-left" size="20" />
+                </UButton>
 
-                <USelectMenu
-                    v-model="selectedStatus"
-                    :options="filters"
-                    multiple
-                    placeholder="Filters"
-                    class="w-40"
-                />
-            </div>
-
-            <div class="flex gap-1.5 items-center">
                 <USelectMenu
                     v-model="selectedColumns"
                     :options="excludeSelectColumn"
@@ -65,6 +58,22 @@
                 >
                     Reset
                 </UButton>
+            </div>
+
+            <div class="flex gap-1.5 items-center">
+                <USelectMenu
+                    v-model="selectedStatus"
+                    :options="filters"
+                    multiple
+                    placeholder="Filters"
+                    class="w-40"
+                />
+
+                <UInput
+                    v-model="search"
+                    icon="i-heroicons-magnifying-glass-20-solid"
+                    placeholder="Search..."
+                />
             </div>
         </div>
 
