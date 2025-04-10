@@ -3,8 +3,9 @@ type User {
     name: String!
     email: String!
     password: String!
-    role: Role
     is_active: Boolean!
+    is_admin: Boolean! @method(name: "is_admin")
+    roles: [Role]! @morphToMany
     created_at: DateTime!
     updated_at: DateTime!
     deleted_at: DateTime
@@ -15,8 +16,14 @@ input UserInput {
     name: String
     email: String
     password: String
-    role: Role
     is_active: Boolean
+}
+
+input ConnectUserRelation {
+    id: ID
+    connect: ID
+    upsert: UserInput
+    delete: ID
 }
 
 input RegisterInput {
@@ -25,35 +32,28 @@ input RegisterInput {
     password: String
 }
 
-input UserSortInput {
+input SortInput {
     column: String
     direction: String
 }
 
-input UserFilterInput {
+input FilterInput {
     key: String
     value: String
     label: String
-}
-
-enum Role {
-    GUEST @enum(value: 0)
-    ADMIN @enum(value: 1)
-    SELLER @enum(value: 2)
-    BUYER @enum(value: 3)
 }
 
 type Query {
     users: [User]! @all
     usersPaginate(
         search: String @scope(name: "search")
-        sort: UserSortInput @scope(name: "sort")
-        filter: [UserFilterInput] @scope(name: "filter")
+        sort: SortInput @scope(name: "sort")
+        filter: [FilterInput] @scope(name: "filter")
     ): [User]! @paginate
 }
 
 type Mutation {
-    registerUser(input: RegisterInput! @spread): User! @create #register controller
+    registerUser(input: RegisterInput! @spread): User! @create
     upsertUser(input: UserInput! @spread): User! @upsert
     deleteUser(id: [ID!] @eq): [User] @delete
     restoreUser(id: ID!): User! @restore

@@ -17,11 +17,11 @@ class DatabaseSeeder extends Seeder
          User::factory(100)->create();
 
         // Create an admin role if it doesn't exist
-        if (!Role::where('name', 'admin')->exists()) {
-            Role::create(['name' => 'admin']);
+        if (!Role::where('name', 'Admin')->exists()) {
+            Role::create(['name' => 'Admin']);
         }
-        if (!Role::where('name', 'manager')->exists()) {
-            Role::create(['name' => 'manager']);
+        if (!Role::where('name', 'Manager')->exists()) {
+            Role::create(['name' => 'Manager']);
         }
 
         $user = User::factory()->create([
@@ -38,7 +38,7 @@ class DatabaseSeeder extends Seeder
             'is_active' => 1,
         ]);
 
-        $admin->assignRole('admin');
-        $user->assignRole('manager');
+        $admin->assignRole('Admin');
+        $user->assignRole('Manager');
     }
 }

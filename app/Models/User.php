@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -49,6 +50,21 @@ class User extends Authenticatable
         ];
     }
 
+    /* Get all roles for user */
+    public function roles(): MorphToMany
+    {
+        return $this->morphToMany(Role::class, 'model', 'model_has_roles');
+    }
+
+    /* Check if user is admin */
+    public function is_admin(): bool
+    {
+        $roleNames = array_column($this->roles->toArray(), 'name');
+
+        return in_array('Admin', $roleNames, true);
+    }
+
+    /* Search function for graphql */
     public function scopeSearch(Builder $query, ?string $search): Builder
     {
         if (empty($search)) return $query;
@@ -58,6 +74,7 @@ class User extends Authenticatable
             ->orWhere('email', 'like', "%{$search}%");
     }
 
+    /* Sort function for graphql */
     public function scopeSort(Builder $query, ?array $sort): Builder
     {
         if (empty($sort['column']) || empty($sort['direction'])) {
@@ -70,6 +87,7 @@ class User extends Authenticatable
         return $query->orderBy($column, $direction);
     }
 
+    /* Filter function for graphql */
     public function scopeFilter(Builder $query, ?array $filters): Builder
     {
         if (!$filters) {
