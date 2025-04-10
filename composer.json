@@ -11,11 +11,15 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^v11.44.0",
+        "laravel/octane": "^2.9",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "mll-lab/laravel-graphiql": "^3.2",
         "nuwave/lighthouse": "^6.50",
-        "spatie/laravel-permission": "^6.16"
+        "spatie/laravel-permission": "^6.16",
+        "spiral/roadrunner": "^2024.3",
+        "spiral/roadrunner-cli": "^2.6.0",
+        "spiral/roadrunner-http": "^3.3.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

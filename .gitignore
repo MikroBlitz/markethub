@@ -45,3 +45,9 @@ logs
 # Local env files
 .env.*
 !.env.example
+
+**/caddy
+frankenphp
+frankenphp-worker.php
+rr
+.rr.yaml
