@@ -28,7 +28,10 @@
                             </h2>
                         </div>
                         <UTooltip text="Add User">
-                            <UButton class="p-2 group" @click="openAddModal">
+                            <UButton
+                                class="p-2 rounded-full group"
+                                @click="openAddModal"
+                            >
                                 <UIcon
                                     name="mdi:add"
                                     class="group-hover:scale-150 transition-all duration-300"
@@ -51,7 +54,7 @@
                                 >
                                     <Icon
                                         :name="action.icon(row)"
-                                        size="20"
+                                        size="22"
                                         class="hover:scale-125 transition-all duration-300"
                                     />
                                 </UButton>

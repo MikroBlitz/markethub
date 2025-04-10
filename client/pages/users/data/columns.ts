@@ -48,7 +48,7 @@ export const columns: Column[] = [
                 size: "sm",
                 variant: "subtle",
             }),
-        sortable: true,
+        sortable: false,
     },
     {
         key: "created_at",

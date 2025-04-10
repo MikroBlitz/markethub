@@ -1,5 +1,5 @@
 <template>
-    <UCard class="h-full">
+    <UCard class="h-full bg-white dark:bg-gray-900">
         <div class="flex items-start justify-between">
             <div>
                 <p class="text-sm font-medium text-gray-500">{{ title }}</p>
