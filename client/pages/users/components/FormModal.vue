@@ -12,7 +12,7 @@
                     name="i-heroicons-pencil-square"
                     class="mr-3 text-emerald-500 text-xl"
                 />
-                <span class="text-lg font-medium">Add/Edit User</span>
+                <span class="text-lg font-medium">Form</span>
             </div>
 
             <UForm
@@ -33,9 +33,9 @@
                     <UInput v-model="userState.password" type="password" />
                 </UFormGroup>
 
-                <UFormGroup label="Active" name="is_active">
-                    <UToggle v-model="userState.is_active" />
-                </UFormGroup>
+                <!--                <UFormGroup label="Active" name="is_active">-->
+                <!--                    <UToggle v-model="userState.is_active" />-->
+                <!--                </UFormGroup>-->
 
                 <div class="flex justify-end gap-2">
                     <UButton

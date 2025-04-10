@@ -32,7 +32,7 @@ export const columns: Column[] = [
         label: "Status",
         render: (row) =>
             h(UBadge, {
-                color: row.is_active ? "green" : "red",
+                color: row.is_active ? "blue" : "orange",
                 label: row.is_active ? "Active" : "Inactive",
                 size: "sm",
                 variant: "solid",
@@ -59,13 +59,13 @@ export const columns: Column[] = [
 // Filters
 export const status = [
     {
-        key: 0,
+        key: "is_active",
         label: "Inactive",
-        value: false,
+        value: "false", // boolean values is handles by the backend
     },
     {
-        key: 1,
+        key: "is_active",
         label: "Active",
-        value: true,
+        value: "true", // boolean values is handles by the backend
     },
 ];

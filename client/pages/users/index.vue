@@ -7,7 +7,7 @@
                 v-model:page="page"
                 v-model:page-count="pageCount"
                 v-model:search="search"
-                v-model:selected-status="selectedStatus"
+                v-model:selected-status="selectedFilters"
                 v-model:selected-columns="selectedColumns"
                 :columns="columns"
                 :data="data"
@@ -18,31 +18,45 @@
                 @select="select"
             >
                 <template #header>
-                    <div class="flex w-full space-x-2 items-center">
-                        <UButton class="p-2" @click="openAddModal">
-                            <UIcon name="mdi:add" />
-                        </UButton>
-                        <h2
-                            class="font-semibold text-xl text-gray-900 dark:text-white leading-tight"
-                        >
-                            Users
-                        </h2>
+                    <div class="flex w-full items-center justify-between">
+                        <div class="flex items-center gap-1">
+                            <Icon name="i-heroicons-user-circle" size="30" />
+                            <h2
+                                class="font-semibold text-xl text-gray-900 dark:text-white leading-tight"
+                            >
+                                Users
+                            </h2>
+                        </div>
+                        <UTooltip text="Add User">
+                            <UButton class="p-2 group" @click="openAddModal">
+                                <UIcon
+                                    name="mdi:add"
+                                    class="group-hover:scale-150 transition-all duration-300"
+                                />
+                            </UButton>
+                        </UTooltip>
                     </div>
                 </template>
 
                 <template #actions-data="{ row }">
-                    <div class="flex gap-1 items-center">
-                        <UButton
-                            v-for="(action, index) in actions"
-                            :key="index"
-                            size="2xs"
-                            :color="action.color(row)"
-                            variant="outline"
-                            square
-                            @click="action.onClick(row)"
-                        >
-                            <Icon :name="action.icon(row)" size="16" />
-                        </UButton>
+                    <div class="flex items-center gap-1">
+                        <div v-for="(action, index) in actions" :key="index">
+                            <UTooltip :text="action.tooltip(row)">
+                                <UButton
+                                    size="2xs"
+                                    :color="action.color(row)"
+                                    variant="ghost"
+                                    square
+                                    @click="action.onClick(row)"
+                                >
+                                    <Icon
+                                        :name="action.icon(row)"
+                                        size="20"
+                                        class="hover:scale-125 transition-all duration-300"
+                                    />
+                                </UButton>
+                            </UTooltip>
+                        </div>
                     </div>
                 </template>
             </TableData>
@@ -74,7 +88,7 @@
             description="Confirm switch status?"
             icon="i-heroicons-information-circle"
             :action="() => changeStatus(selectedUser.id)"
-            color="orange"
+            color="blue"
         />
     </div>
 </template>
@@ -99,7 +113,7 @@ const sort = ref({ column: "id", direction: "asc" as "asc" | "desc" });
 const page = ref(1);
 const pageCount = ref(10);
 const search = ref("");
-const selectedStatus = ref([]);
+const selectedFilters = ref([]);
 const debouncedSearch = useDebounce(search, 500);
 
 const pageTotal = computed(() => {
@@ -114,11 +128,17 @@ const result = ref({ usersPaginate });
 const fetchData = async () => {
     try {
         loading.value = true;
-        const queryResult = await useAsyncQuery(usersPaginate, {
+        const variables: Record<string, any> = {
             first: Number(pageCount.value),
             page: page.value,
-            search: search.value,
-        });
+        };
+        if (search.value) variables.search = search.value;
+        if (sort.value) variables.sort = sort.value;
+        if (selectedFilters.value && selectedFilters.value.length > 0) {
+            variables.filter = selectedFilters.value;
+        }
+
+        const queryResult = await useAsyncQuery(usersPaginate, variables);
         if (queryResult.data.value) {
             result.value = queryResult.data.value as UsersPaginateQuery;
             data.value = result.value.usersPaginate.data;
@@ -132,7 +152,8 @@ const fetchData = async () => {
 
 const resetFilters = () => {
     search.value = "";
-    selectedStatus.value = [];
+    selectedFilters.value = [];
+    sort.value = { column: "id", direction: "asc" as "asc" | "desc" };
 };
 
 function select(row: User) {
@@ -267,27 +288,35 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
 
 const actions = [
     {
-        color: (row: User) => (row.is_active ? "green" : "red"),
+        color: (row: User) => (row.is_active ? "blue" : "orange"),
         icon: (row: User) =>
             row.is_active ? "mdi:toggle-switch" : "mdi:toggle-switch-off",
         onClick: (row: User) => openChangeStatusModal(row),
+        tooltip: (row: User) =>
+            `Switch status to "${row.is_active ? "Inactive" : "Active"}"`,
     },
     {
-        color: () => "yellow",
+        color: () => "green",
         icon: () => "mdi:pencil",
         onClick: (row: User) => openEditModal(row),
+        tooltip: (row: User) => `Edit User ${row.name}`,
     },
     {
         color: () => "red",
         icon: () => "mdi:delete",
         onClick: (row: User) => openDeleteModal(row),
+        tooltip: (row: User) => `Delete User ${row.name}`,
     },
 ];
 
 definePageMeta({ layout: "app-layout" });
 onBeforeMount(() => fetchData());
 onMounted(() => fetchData());
-watch([page, pageCount, sort, debouncedSearch], () => fetchData(), {
-    deep: true,
-});
+watch(
+    [page, pageCount, sort, debouncedSearch, selectedFilters],
+    () => fetchData(),
+    {
+        deep: true,
+    },
+);
 </script>

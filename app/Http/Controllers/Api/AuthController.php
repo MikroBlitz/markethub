@@ -29,7 +29,7 @@ class AuthController extends Controller
 
         if (!$user->is_active) {
             return response()->json([
-                'message' => 'Disabled account, please contact the administrator'
+                'message' => 'Account not activated, please contact the administrator'
             ], 403);
         }
 
