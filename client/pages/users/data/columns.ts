@@ -25,6 +25,17 @@ export const columns: Column[] = [
     {
         key: "email",
         label: "Email",
+        render: (row) =>
+            h("div", { class: "flex items-center space-x-2" }, [
+                h(
+                    "a",
+                    {
+                        class: "text-blue-600 cursor-pointer",
+                        onClick: () => copyToClipboard("email", row.email),
+                    },
+                    row.email,
+                ),
+            ]),
         sortable: true,
     },
     {
@@ -32,10 +43,10 @@ export const columns: Column[] = [
         label: "Status",
         render: (row) =>
             h(UBadge, {
-                color: row.is_active ? "blue" : "orange",
+                color: row.is_active ? "green" : "red",
                 label: row.is_active ? "Active" : "Inactive",
                 size: "sm",
-                variant: "solid",
+                variant: "subtle",
             }),
         sortable: true,
     },
