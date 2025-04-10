@@ -57,4 +57,51 @@ class User extends Authenticatable
             ->orWhere('name', 'like', "%{$search}%")
             ->orWhere('email', 'like', "%{$search}%");
     }
+
+    public function scopeSort(Builder $query, ?array $sort): Builder
+    {
+        if (empty($sort['column']) || empty($sort['direction'])) {
+            return $query;
+        }
+
+        $column = $sort['column'];
+        $direction = strtolower($sort['direction']) === 'desc' ? 'desc' : 'asc';
+
+        return $query->orderBy($column, $direction);
+    }
+
+    public function scopeFilter(Builder $query, ?array $filters): Builder
+    {
+        if (!$filters) {
+            return $query;
+        }
+
+        $booleanFields = ['is_active', 'is_verified'];
+
+        if (isset($filters['key']) && isset($filters['value'])) {
+            $filters = [$filters];
+        }
+
+        foreach ($filters as $filter) {
+            if (isset($filter['key']) && isset($filter['value'])) {
+                $field = $filter['key'];
+                $value = $filter['value'];
+
+                if (in_array($field, $booleanFields)) {
+                    if ($value === 'true') {
+                        $query->where($field, '=', 1);
+                    } else if ($value === 'false') {
+                        $query->where($field, '=', 0);
+                    }
+                } else if ($value === 'null') {
+                    $query->whereNull($field);
+                } else {
+                    $query->where($field, $value);
+                }
+            }
+        }
+
+        return $query;
+    }
+
 }

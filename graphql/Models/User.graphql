@@ -25,6 +25,17 @@ input RegisterInput {
     password: String
 }
 
+input UserSortInput {
+    column: String
+    direction: String
+}
+
+input UserFilterInput {
+    key: String
+    value: String
+    label: String
+}
+
 enum Role {
     GUEST @enum(value: 0)
     ADMIN @enum(value: 1)
@@ -36,6 +47,8 @@ type Query {
     users: [User]! @all
     usersPaginate(
         search: String @scope(name: "search")
+        sort: UserSortInput @scope(name: "sort")
+        filter: [UserFilterInput] @scope(name: "filter")
     ): [User]! @paginate
 }
 

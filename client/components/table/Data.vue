@@ -23,24 +23,24 @@
             </slot>
         </template>
 
-        <!-- Filters -->
-        <div class="flex items-center justify-between gap-3 px-4 py-3">
-            <UInput
-                v-model="search"
-                icon="i-heroicons-magnifying-glass-20-solid"
-                placeholder="Search..."
-            />
-
-            <USelectMenu
-                v-model="selectedStatus"
-                :options="filters"
-                multiple
-                placeholder="Status"
-                class="w-40"
-            />
-        </div>
-
         <div class="flex justify-between items-center w-full px-4 py-3">
+            <!-- Filters -->
+            <div class="flex items-center gap-1.5">
+                <UInput
+                    v-model="search"
+                    icon="i-heroicons-magnifying-glass-20-solid"
+                    placeholder="Search..."
+                />
+
+                <USelectMenu
+                    v-model="selectedStatus"
+                    :options="filters"
+                    multiple
+                    placeholder="Filters"
+                    class="w-40"
+                />
+            </div>
+
             <div class="flex gap-1.5 items-center">
                 <USelectMenu
                     v-model="selectedColumns"
