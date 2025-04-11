@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import { useCookies } from "vue3-cookies";
 
 import type { FormState } from "~/types/global";
 import type { User } from "~/types/codegen/graphql";
@@ -31,19 +30,25 @@ export const useAuthStore = defineStore(
         }
 
         async function logout() {
-            // FIXME: not working due to graphql implementation
-            // const { mutate } = useMutation(logoutMutation);
-            // const response = await mutate();
-            //
-            // if (response?.data?.logout) {
-            //     resetUser();
-            //     navigateTo("/");
-            // }
-            const cookies = useCookies();
-            cookies.cookies.remove("token"); // temporary solution
-
-            resetUser();
-            navigateTo("/");
+            try {
+                const authCookie = useCookie("auth", { path: "/" });
+                const token = authCookie.value?.token;
+                if (!token) throw new Error("Missing auth token");
+                const { mutate } = useMutation(logoutMutation, {
+                    context: {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    },
+                });
+                const response = await mutate();
+                if (response?.data?.logout?.message) {
+                    resetUser();
+                    navigateTo("/");
+                }
+            } catch (error) {
+                console.error("Error during logout:", error);
+            }
         }
 
         function setUser(userData: User, userToken: string) {

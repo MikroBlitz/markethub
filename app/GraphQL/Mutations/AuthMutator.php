@@ -4,7 +4,6 @@ namespace App\GraphQL\Mutations;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\Request;
 
 class AuthMutator
 {
@@ -20,20 +19,11 @@ class AuthMutator
             throw new \Exception('Account not activated, please contact the administrator');
         }
 
-        $token = $user->createToken($user->name . 'Auth-Token')->plainTextToken;
+        $token = $user->createToken($args['email'])->plainTextToken;
 
         return [
             'token' => $token,
             'user' => $user,
-        ];
-    }
-
-    public function logout(Request $request): array
-    {
-        $request->user()->currentAccessToken()?->delete();
-
-        return [
-            'message' => 'Logged out successfully'
         ];
     }
 }
