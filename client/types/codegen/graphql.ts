@@ -194,7 +194,7 @@ export type Mutation = {
   deleteProduct?: Maybe<Array<Maybe<Product>>>;
   deleteRole?: Maybe<Array<Maybe<Role>>>;
   deleteUser?: Maybe<Array<Maybe<User>>>;
-  login?: Maybe<AuthPayload>;
+  login: AuthPayload;
   logout?: Maybe<LogoutResponse>;
   registerUser: User;
   restoreBrand?: Maybe<Array<Maybe<Brand>>>;
@@ -403,7 +403,7 @@ export type Query = {
   inventories: Array<Maybe<Inventory>>;
   inventoriesCount: Scalars['Int']['output'];
   inventoriesPaginate: InventoryPaginator;
-  me?: Maybe<User>;
+  me: User;
   products: Array<Maybe<Product>>;
   productsCount: Scalars['Int']['output'];
   productsPaginate: ProductPaginator;
@@ -563,7 +563,7 @@ export type UserPaginator = {
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: string, name: string, email: string, is_admin: boolean, roles: Array<{ __typename?: 'Role', name: string } | null> } | null };
+export type MeQuery = { __typename?: 'Query', me: { __typename?: 'User', id: string, name: string, email: string, is_admin: boolean, roles: Array<{ __typename?: 'Role', name: string } | null> } };
 
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -571,7 +571,7 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, name: string, email: string, is_admin: boolean, roles: Array<{ __typename?: 'Role', name: string } | null> } } | null };
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, name: string, email: string, is_admin: boolean, roles: Array<{ __typename?: 'Role', name: string } | null> } } };
 
 export type UserFragment = { __typename?: 'User', id: string, name: string, email: string, password: string, is_admin: boolean, is_active: boolean, created_at: any, updated_at: any, deleted_at?: any | null, roles: Array<{ __typename?: 'Role', id: string, name: string } | null> } & { ' $fragmentName'?: 'UserFragment' };
 
