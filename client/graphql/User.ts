@@ -1,4 +1,4 @@
-import { userFragment } from "~/graphql/fragment";
+import { userFragment } from "~/graphql/Fragment";
 
 // export const users = gql`
 //     query users($limit: Int) {

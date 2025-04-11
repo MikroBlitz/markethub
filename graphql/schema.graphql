@@ -2,3 +2,24 @@
 
 "A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
 scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+type AuthPayload {
+    token: String!
+    user: User!
+}
+
+type LogoutResponse {
+    message: String!
+}
+
+type Query {
+    me: User @auth
+}
+
+type Mutation {
+    login(
+        email: String!
+        password: String!
+    ): AuthPayload @field(resolver: "App\\GraphQL\\Mutations\\AuthMutator@login")
+    logout: LogoutResponse @field(resolver: "App\\GraphQL\\Mutations\\AuthMutator@logout") @guard
+}

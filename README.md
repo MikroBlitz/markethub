@@ -123,6 +123,16 @@ Stop Docker Desktop and terminate any running processes:
   systemctl --user start docker-desktop
 ```
 
+### Testing API performance
+
+```bash
+bun octane
+```
+
+```bash
+bun api:test
+```
+
 ## Authentication
 
 This application uses **Laravel Sanctum** for API authentication. To authenticate a user, make a POST request to `/api/login` with the necessary credentials, and use the generated token for authenticated API requests.

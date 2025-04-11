@@ -1,11 +1,10 @@
-import { useFetch } from "#app";
 import { defineStore } from "pinia";
+import { useCookies } from "vue3-cookies";
 
-import type { FormState, LoginResponse } from "~/types/global";
-interface User {
-    name: string;
-    email: string;
-}
+import type { FormState } from "~/types/global";
+import type { User } from "~/types/codegen/graphql";
+
+import { loginMutation, logoutMutation } from "~/graphql/Auth";
 
 export const useAuthStore = defineStore(
     "auth",
@@ -14,45 +13,35 @@ export const useAuthStore = defineStore(
         const user = ref<User | null>(null);
 
         async function login(formState: FormState) {
-            const config = useRuntimeConfig();
-            const { data, error } = await useFetch<LoginResponse>(
-                `${config.public.API_URL}/api/login`,
-                {
-                    body: JSON.stringify({
-                        email: formState.email,
-                        password: formState.password,
-                    }),
-                    headers: { "Content-Type": "application/json" },
-                    method: "POST",
-                },
-            );
+            const { mutate } = useMutation(loginMutation);
 
-            if (error.value) throw new Error(error.value.data.message);
-            if (!data.value) return;
-            if (data.value.token) {
-                setUser(data.value.user, data.value.token);
+            try {
+                const response = await mutate({
+                    email: formState.email,
+                    password: formState.password,
+                });
+                const result = response?.data?.login;
+                if (!result) throw new Error("Invalid response from server");
+
+                setUser(result.user, result.token);
                 navigateTo("/dashboard");
+            } catch (e) {
+                throw new Error(e.message || "Login failed");
             }
         }
 
         async function logout() {
-            const config = useRuntimeConfig();
-            const { data, error } = await useFetch(
-                `${config.public.API_URL}/api/logout`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token.value}`,
-                        "Content-Type": "application/json",
-                    },
-                    method: "POST",
-                },
-            );
+            // FIXME: not working due to graphql implementation
+            // const { mutate } = useMutation(logoutMutation);
+            // const response = await mutate();
+            //
+            // if (response?.data?.logout) {
+            //     resetUser();
+            //     navigateTo("/");
+            // }
+            const cookies = useCookies();
+            cookies.cookies.remove("token"); // temporary solution
 
-            if (error.value) {
-                console.error("Logout Error:", error.value);
-                throw new Error(error.value.data?.message || "Logout failed");
-            }
-            if (!data.value) return;
             resetUser();
             navigateTo("/");
         }

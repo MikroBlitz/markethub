@@ -44,8 +44,12 @@
                 <template #actions-data="{ row }">
                     <div class="flex items-center gap-1">
                         <div v-for="(action, index) in actions" :key="index">
-                            <UTooltip :text="action.tooltip(row)">
+                            <UTooltip
+                                v-if="action.condition"
+                                :text="action.tooltip(row)"
+                            >
                                 <UButton
+                                    v-if="action.condition"
                                     size="2xs"
                                     :color="action.color(row)"
                                     variant="ghost"
@@ -105,12 +109,13 @@ import type { User, UsersPaginateQuery } from "~/types/codegen/graphql";
 
 import { columns, status } from "~/pages/users/data/columns";
 import FormModal from "~/pages/users/components/FormModal.vue";
-import { usersPaginate, upsertUser, deleteUser } from "~/graphql/User";
 import { type UserSchema, userState } from "~/pages/users/data/schema";
+import { usersPaginate, upsertUser, deleteUser } from "~/graphql/User";
 
 const toast = useToast();
 const selectedColumns = ref(columns);
 const selectedRows = ref<User[]>([]);
+const isAdmin = inject("isAdmin");
 
 const sort = ref({ column: "id", direction: "asc" as "asc" | "desc" });
 const page = ref(1);
@@ -292,6 +297,7 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
 const actions = [
     {
         color: (row: User) => (row.is_active ? "green" : "orange"),
+        condition: isAdmin.value,
         icon: (row: User) =>
             row.is_active ? "mdi:toggle-switch" : "mdi:toggle-switch-off",
         onClick: (row: User) => openChangeStatusModal(row),
@@ -300,12 +306,14 @@ const actions = [
     },
     {
         color: () => "blue",
+        condition: true, // TODO: @can edit
         icon: () => "mdi:pencil",
         onClick: (row: User) => openEditModal(row),
         tooltip: (row: User) => `Edit User ${row.name}`,
     },
     {
         color: () => "red",
+        condition: true, // TODO: @can delete
         icon: () => "mdi:delete",
         onClick: (row: User) => openDeleteModal(row),
         tooltip: (row: User) => `Delete User ${row.name}`,

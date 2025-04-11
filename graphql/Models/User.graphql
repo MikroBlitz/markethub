@@ -43,16 +43,18 @@ input FilterInput {
     label: String
 }
 
-type Query {
+extend type Query {
     users: [User]! @all
     usersPaginate(
+        first: Int!
+        page: Int
         search: String @scope(name: "search")
         sort: SortInput @scope(name: "sort")
         filter: [FilterInput] @scope(name: "filter")
     ): [User]! @paginate
 }
 
-type Mutation {
+extend type Mutation {
     registerUser(input: RegisterInput! @spread): User! @create
     upsertUser(input: UserInput! @spread): User! @upsert
     deleteUser(id: [ID!] @eq): [User] @delete

@@ -4,6 +4,7 @@ export const userFragment = gql`
         name
         email
         password
+        is_admin
         roles {
             id
             name

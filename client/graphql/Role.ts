@@ -1,4 +1,4 @@
-import { roleFragment } from "~/graphql/fragment";
+import { roleFragment } from "~/graphql/Fragment";
 
 export const rolesPaginate = gql`
     query rolesPaginate(
