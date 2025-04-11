@@ -150,10 +150,10 @@ const onSubmit = async () => {
 
     try {
         await authStore.login(formState);
-    } catch (error) {
+    } catch (e) {
         toast.add({
             color: "red",
-            description: error.message,
+            description: e.message,
             icon: "i-mdi-alert-circle-outline",
             title: "Authentication failed",
         });

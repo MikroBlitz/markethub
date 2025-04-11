@@ -18,15 +18,6 @@ export interface FormStateRegister {
     password: string;
 }
 
-export interface User {
-    id?: string;
-    role?: null;
-    name: string;
-    email: string;
-    updated_at?: string;
-    created_at?: string;
-}
-
 export interface AnyObject {
     [key: string]: any;
 }

@@ -6,7 +6,8 @@
         "build": "nuxt build",
         "dev": "nuxt dev",
         "start": "concurrently \"nuxt dev\" \"php artisan serve\"",
-        "octane": "concurrently \"nuxt dev\" \"php artisan octane:start --server=roadrunner\"",
+        "octane": "php artisan octane:start --server=swoole --workers=8 --task-workers=8 --max-requests=300",
+        "api:test": "wrk -c 100 -t 4 -d 5 http://127.0.0.1:8000/api/graphql",
         "generate": "nuxt generate",
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
@@ -25,6 +26,7 @@
         "pinia-plugin-persistedstate": "^4.2.0",
         "vue": "latest",
         "vue-router": "latest",
+        "vue3-cookies": "^1.0.6",
         "zod": "^3.24.2"
     },
     "devDependencies": {
@@ -33,7 +35,6 @@
         "@graphql-codegen/introspection": "4.0.3",
         "@parcel/watcher": "^2.5.0",
         "@nuxtjs/apollo": "^5.0.0-alpha.14",
-        "@tailwindcss/vite": "^4.0.9",
         "autoprefixer": "^10.4.20",
         "axios": "^1.7.4",
         "concurrently": "^9.1.2",

@@ -59,9 +59,7 @@ class User extends Authenticatable
     /* Check if user is admin */
     public function is_admin(): bool
     {
-        $roleNames = array_column($this->roles->toArray(), 'name');
-
-        return in_array('Admin', $roleNames, true);
+        return $this->hasRole('Admin');
     }
 
     /* Search function for graphql */
