@@ -12,7 +12,7 @@ export const authMe = gql`
     }
 `;
 
-export const loginMutation = gql`
+export const login = gql`
     mutation login($email: String!, $password: String!) {
         login(email: $email, password: $password) {
             token
@@ -29,8 +29,8 @@ export const loginMutation = gql`
     }
 `;
 
-export const logoutMutation = gql`
-    mutation {
+export const logout = gql`
+    mutation logout {
         logout {
             message
         }
