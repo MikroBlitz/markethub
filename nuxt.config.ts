@@ -41,4 +41,11 @@ export default defineNuxtConfig({
         },
     },
     srcDir: "client/",
+    vite: {
+        server: {
+            watch: {
+                ignored: ["**/vendor/**"],
+            },
+        },
+    },
 });
