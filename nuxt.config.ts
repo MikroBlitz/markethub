@@ -1,3 +1,4 @@
+import tailwindcss from "@tailwindcss/vite";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     apollo: {
@@ -20,25 +21,48 @@ export default defineNuxtConfig({
     compatibilityDate: "2024-11-01",
     css: ["~/assets/css/main.css"],
     devtools: { enabled: true },
+    experimental: {
+        compileTemplate: true,
+        defaults: {
+            useAsyncData: {
+                deep: true,
+            },
+        },
+        normalizeComponentNames: false,
+        relativeWatchPaths: true,
+        resetAsyncDataToUndefined: true,
+        scanPageMeta: "after-resolve",
+        sharedPrerenderData: false,
+        spaLoadingTemplateLocation: "within",
+        templateUtils: true,
+    },
+    features: {
+        inlineStyles: true,
+    },
+    future: {
+        compatibilityVersion: 4,
+    },
     imports: { dirs: ["~/stores", "~/utils", "~/composables/*/*.{ts,js}"] },
     modules: [
         "@nuxtjs/color-mode",
         "@nuxt/eslint",
         "@nuxt/ui",
-        "@nuxtjs/tailwindcss",
         "@nuxtjs/apollo",
         "@pinia/nuxt",
         "@pinia-plugin-persistedstate/nuxt",
     ],
-    postcss: {
-        plugins: {
-            autoprefixer: {},
-        },
-    },
     runtimeConfig: {
         public: {
             API_URL: import.meta.env.API_URL,
         },
     },
     srcDir: "client/",
+    unhead: {
+        renderSSRHeadOptions: {
+            omitLineBreaks: false,
+        },
+    },
+    vite: {
+        plugins: [tailwindcss()],
+    },
 });

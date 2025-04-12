@@ -2,9 +2,10 @@
     <Body class="antialiased">
         <NuxtLoadingIndicator />
         <NuxtLayout>
-            <NuxtPage />
+            <UApp>
+                <NuxtPage />
+            </UApp>
         </NuxtLayout>
-        <UNotifications />
     </Body>
 </template>
 <script setup lang="ts">
