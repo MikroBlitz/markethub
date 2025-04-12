@@ -73,7 +73,9 @@
                     <UButton
                         class="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-lg px-6 py-2"
                         @click="navigateTo('/login')"
-                    />
+                    >
+                        Get Started
+                    </UButton>
                     <UButton
                         variant="ghost"
                         class="text-gray-300 border border-gray-700 rounded-lg px-6 py-2 hover:border-emerald-400 hover:text-emerald-400"
