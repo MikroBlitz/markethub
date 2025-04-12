@@ -29,8 +29,6 @@
                     icon="i-heroicons-chart-bar"
                 />
             </div>
-
-            <DashboardProductsTable title="Top Products" />
         </main>
     </div>
 </template>

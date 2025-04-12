@@ -1,18 +1,5 @@
 <template>
-    <UCard
-        class="w-full"
-        :ui="{
-            base: '',
-            ring: '',
-            divide: 'divide-y divide-gray-200 dark:divide-gray-700',
-            header: { padding: 'p-4' },
-            body: {
-                padding: '',
-                base: 'divide-y divide-gray-200 dark:divide-gray-700',
-            },
-            footer: { padding: 'p-2' },
-        }"
-    >
+    <UCard class="w-full">
         <template #header>
             <slot name="header">
                 <h2
@@ -27,9 +14,9 @@
             <!-- Filters -->
             <div class="flex items-center gap-1.5">
                 <UButton
-                    size="2xs"
+                    size="xs"
                     class="rounded-full p-1 mr-2"
-                    color="red"
+                    color="error"
                     @click="navigateTo('/dashboard')"
                 >
                     <Icon name="mdi:arrow-left" size="20" />
@@ -42,7 +29,7 @@
                 >
                     <UButton
                         icon="i-heroicons-view-columns"
-                        color="gray"
+                        color="neutral"
                         size="xs"
                     >
                         Columns
@@ -85,7 +72,7 @@
             v-model="selectedRows"
             v-model:sort="sort"
             :rows="data"
-            :columns="columnsTable"
+            :columns="columnsWithIds"
             :loading="loading"
             sort-asc-icon="i-heroicons-arrow-up"
             sort-desc-icon="i-heroicons-arrow-down"
@@ -98,7 +85,7 @@
         >
             <!-- Dynamic cell renderer -->
             <template
-                v-for="column in columnsTable"
+                v-for="column in columnsWithIds"
                 #[`${column.key}-data`]="{ row }"
             >
                 <template v-if="column.render">
@@ -146,7 +133,6 @@
                     :page-count="pageCount"
                     :total="pageTotal"
                     :ui="{
-                        wrapper: 'flex items-center gap-1',
                         rounded: '!rounded-full min-w-[32px] justify-center',
                         default: {
                             activeButton: {
@@ -212,15 +198,23 @@ const getDynamicContent = (column: Column, row: never) => {
 };
 
 const selectedColumns = defineModel<Column[]>("selectedColumns");
-const columnsTable = computed(() =>
-    props.columns.filter((column) => selectedColumns.value?.includes(column)),
-);
+
+const columnsWithIds = computed(() => {
+    const filteredColumns = props.columns.filter((column) =>
+        selectedColumns.value?.includes(column),
+    );
+
+    return filteredColumns.map((column) => ({
+        ...column,
+        id: `column-${column.key}`,
+    }));
+});
+
 const excludeSelectColumn = computed(() =>
     props.columns.filter((v) => v.key !== "select"),
 );
-// eslint-disable-next-line vue/require-prop-types
+
 const selectedRows = defineModel("selectedRows");
-const select = (row: never) => emit("select", row);
 
 // Pagination
 const sort = defineModel<Sort>("sort");

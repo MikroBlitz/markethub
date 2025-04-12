@@ -57,6 +57,19 @@ export default defineNuxtConfig({
         },
     },
     srcDir: "client/",
+    ui: {
+        theme: {
+            colors: [
+                "primary",
+                "secondary",
+                "tertiary",
+                "info",
+                "success",
+                "warning",
+                "error",
+            ],
+        },
+    },
     unhead: {
         renderSSRHeadOptions: {
             omitLineBreaks: false,
