@@ -1,6 +1,13 @@
 import { UBadge } from "#components";
+import { User, Shield, Briefcase } from "lucide-vue-next";
 
 import type { Column } from "~/components/table/types";
+
+const roleIconMap: Record<string, any> = {
+    Admin: Shield,
+    Manager: Briefcase,
+    User: User,
+};
 
 export const columns: Column[] = [
     {
@@ -12,11 +19,45 @@ export const columns: Column[] = [
         label: "#",
         sortable: true,
     },
-    // {
-    //     key: "role",
-    //     label: "Role",
-    //     sortable: true,
-    // },
+    {
+        key: "roles",
+        label: "Role",
+        render: (row) => {
+            const colorMap: Record<string, string> = {
+                Admin: "primary",
+                Manager: "blue",
+                User: "white",
+            };
+
+            return h("div", { class: "flex items-center space-x-2" }, [
+                ...row.roles.map((role: { name: string }) => {
+                    const Icon = roleIconMap[role.name] || User;
+
+                    return h(
+                        UBadge,
+                        {
+                            color: colorMap[role.name] || "gray",
+                            label: role.name,
+                            size: "sm",
+                            variant: "solid",
+                        },
+                        {
+                            default: () =>
+                                h(
+                                    "div",
+                                    { class: "flex items-center space-x-1" },
+                                    [
+                                        h(Icon, { class: "w-3 h-3" }),
+                                        h("span", null, role.name),
+                                    ],
+                                ),
+                        },
+                    );
+                }),
+            ]);
+        },
+        sortable: true,
+    },
     {
         key: "name",
         label: "Name",

@@ -45,11 +45,11 @@
                     <div class="flex items-center gap-1">
                         <div v-for="(action, index) in actions" :key="index">
                             <UTooltip
-                                v-if="action.condition"
+                                v-if="action.condition(row)"
                                 :text="action.tooltip(row)"
                             >
                                 <UButton
-                                    v-if="action.condition"
+                                    v-if="action.condition(row)"
                                     size="2xs"
                                     :color="action.color(row)"
                                     variant="ghost"
@@ -297,7 +297,7 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
 const actions = [
     {
         color: (row: User) => (row.is_active ? "green" : "orange"),
-        condition: isAdmin.value,
+        condition: (row: User) => !row.is_admin && isAdmin.value,
         icon: (row: User) =>
             row.is_active ? "mdi:toggle-switch" : "mdi:toggle-switch-off",
         onClick: (row: User) => openChangeStatusModal(row),
@@ -306,21 +306,20 @@ const actions = [
     },
     {
         color: () => "blue",
-        condition: true, // TODO: @can edit
+        condition: () => true, // TODO: @can edit
         icon: () => "mdi:pencil",
         onClick: (row: User) => openEditModal(row),
         tooltip: (row: User) => `Edit User ${row.name}`,
     },
     {
         color: () => "red",
-        condition: true, // TODO: @can delete
+        condition: () => true, // TODO: @can delete
         icon: () => "mdi:delete",
         onClick: (row: User) => openDeleteModal(row),
         tooltip: (row: User) => `Delete User ${row.name}`,
     },
 ];
 
-definePageMeta({ layout: "app-layout" });
 onBeforeMount(() => fetchData());
 onMounted(() => fetchData());
 watch(
@@ -330,4 +329,16 @@ watch(
         deep: true,
     },
 );
+
+definePageMeta({ layout: "app-layout" });
+useHead({
+    meta: [
+        {
+            content:
+                "A secure platform connecting buyers and sellers in a community-driven ecosystem.",
+            name: "description",
+        },
+    ],
+    title: "MarketHub - Users",
+});
 </script>
