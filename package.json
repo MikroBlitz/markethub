@@ -21,6 +21,7 @@
         "@pinia-plugin-persistedstate/nuxt": "^1.2.1",
         "@pinia/nuxt": "^0.10.1",
         "eslint": "^9.0.0",
+        "lucide-vue-next": "^0.487.0",
         "nuxt": "^3.16.2",
         "pinia": "^3.0.1",
         "pinia-plugin-persistedstate": "^4.2.0",
