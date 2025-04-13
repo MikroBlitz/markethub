@@ -79,8 +79,9 @@
                     <UButton
                         variant="ghost"
                         class="text-gray-300 border border-gray-700 rounded-lg px-6 py-2 hover:border-emerald-400 hover:text-emerald-400"
+                        @click="navigateTo('/dashboard')"
                     >
-                        Learn More
+                        Try Demo
                     </UButton>
                 </div>
             </div>

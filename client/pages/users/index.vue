@@ -107,6 +107,7 @@ import { useDebounce, useTimeoutFn } from "@vueuse/shared";
 
 import type { User, UsersPaginateQuery } from "~/types/codegen/graphql";
 
+import mockData from "~/pages/users/data/mockData.json";
 import { columns, status } from "~/pages/users/data/columns";
 import FormModal from "~/pages/users/components/FormModal.vue";
 import { type UserSchema, userState } from "~/pages/users/data/schema";
@@ -130,6 +131,7 @@ const pageTotal = computed(() => {
     return result.value.usersPaginate.paginatorInfo.total;
 });
 
+const { client } = useApolloClient();
 const data = ref<User[]>([]);
 const loading = ref(false);
 const result = ref({ usersPaginate });
@@ -147,10 +149,75 @@ const fetchData = async () => {
             variables.filter = selectedFilters.value;
         }
 
-        const queryResult = await useAsyncQuery(usersPaginate, variables);
-        if (queryResult.data.value) {
-            result.value = queryResult.data.value as UsersPaginateQuery;
-            data.value = result.value.usersPaginate.data;
+        if (window.location.href === "http://localhost:3000/users") {
+            // FIXME: for development
+            const queryResult = await useAsyncQuery(usersPaginate, variables);
+
+            if (queryResult.data.value) {
+                result.value = queryResult.data.value as UsersPaginateQuery;
+                data.value = result.value.usersPaginate.data;
+            }
+        } else {
+            // TODO: remove else statement if API is ready
+            toast.add({
+                color: "green",
+                icon: "i-mdi-check-circle-outline",
+                title: "Mock data loaded",
+            });
+
+            let filteredData = [...mockData.data.usersPaginate.data];
+
+            // Handle search
+            if (search.value) {
+                const searchLower = search.value.toLowerCase();
+                filteredData = filteredData.filter(
+                    (user) =>
+                        user.name.toLowerCase().includes(searchLower) ||
+                        user.email.toLowerCase().includes(searchLower),
+                );
+            }
+
+            // Handle filters (status)
+            if (selectedFilters.value && selectedFilters.value.length > 0) {
+                filteredData = filteredData.filter((user) => {
+                    // Convert boolean is_active to string status for filtering
+                    const userStatus = user.is_active ? "active" : "inactive";
+                    return selectedFilters.value.includes(userStatus);
+                });
+            }
+
+            // Handle sorting
+            if (sort.value) {
+                filteredData.sort((a, b) => {
+                    const column = sort.value.column;
+                    const direction = sort.value.direction === "asc" ? 1 : -1;
+
+                    if (a[column] < b[column]) return -1 * direction;
+                    if (a[column] > b[column]) return 1 * direction;
+                    return 0;
+                });
+            }
+
+            // Calculate pagination
+            const total = filteredData.length;
+            const startIndex = (page.value - 1) * pageCount.value;
+            const endIndex = startIndex + pageCount.value;
+            const paginatedData = filteredData.slice(startIndex, endIndex);
+
+            // Update the result with mock data
+            result.value = {
+                usersPaginate: {
+                    data: paginatedData,
+                    paginatorInfo: {
+                        currentPage: page.value,
+                        lastPage: Math.ceil(total / pageCount.value),
+                        perPage: pageCount.value,
+                        total: total,
+                    },
+                },
+            };
+
+            data.value = paginatedData;
         }
     } catch (error) {
         console.error("Error fetching users:", error);
@@ -306,7 +373,8 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
 const actions = [
     {
         color: (row: User) => (row.is_active ? "green" : "orange"),
-        condition: (row: User) => !row.is_admin && isAdmin.value,
+        // condition: (row: User) => !row.is_admin && isAdmin.value,
+        condition: () => true,
         icon: (row: User) =>
             row.is_active ? "mdi:toggle-switch" : "mdi:toggle-switch-off",
         onClick: (row: User) => openChangeStatusModal(row),

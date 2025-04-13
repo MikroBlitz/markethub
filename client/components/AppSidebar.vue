@@ -115,7 +115,8 @@
                                 </ul>
                             </div>
 
-                            <div v-if="isAdmin">
+                            <div>
+                                <!-- TODO: v-if="isAdmin" -->
                                 <UDivider
                                     label="ADMIN"
                                     label-class="text-xs font-medium text-gray-500 dark:text-gray-400"
@@ -193,7 +194,7 @@ const route = useRoute();
 const toast = useToast();
 
 const authStore = useAuthStore();
-const isAdmin = inject("isAdmin");
+// const isAdmin = inject("isAdmin");
 
 const mainMenuItems = [
     { icon: "i-heroicons-home", label: "Dashboard", to: "/dashboard" },
