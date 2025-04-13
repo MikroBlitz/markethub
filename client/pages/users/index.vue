@@ -397,7 +397,6 @@ const actions = [
     },
 ];
 
-onBeforeMount(() => fetchData());
 onMounted(() => fetchData());
 watch(
     [page, pageCount, sort, debouncedSearch, selectedFilters],
