@@ -115,6 +115,7 @@ import { usersPaginate, upsertUser, deleteUser } from "~/graphql/User";
 const toast = useToast();
 const selectedColumns = ref(columns);
 const selectedRows = ref<User[]>([]);
+const auth = useAuthStore();
 const isAdmin = inject("isAdmin");
 
 const sort = ref({ column: "id", direction: "asc" as "asc" | "desc" });
@@ -215,12 +216,20 @@ const { mutate: removeUserMutation } = useMutation(deleteUser);
 async function removeUser(id: string) {
     try {
         loading.value = true;
-        await removeUserMutation({ id });
-        toast.add({
-            color: "green",
-            icon: "i-mdi-check-circle-outline",
-            title: "User has been removed",
-        });
+        if (auth.user?.id !== id) {
+            await removeUserMutation({ id });
+            toast.add({
+                color: "green",
+                icon: "i-mdi-check-circle-outline",
+                title: "User has been removed",
+            });
+        } else {
+            toast.add({
+                color: "red",
+                icon: "i-mdi-alert-circle-outline",
+                title: "You can't remove yourself",
+            });
+        }
     } catch (err) {
         console.error("Remove error:", err);
         toast.add({

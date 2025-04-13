@@ -1,5 +1,5 @@
 <template>
-    <header class="bg-card border-b border-gray-200 p-4">
+    <header class="bg-slate-900 border-b border-gray-200 p-4">
         <div class="flex items-center justify-between">
             <div class="flex items-center">
                 <AppSidebar />
@@ -8,7 +8,7 @@
             <div class="flex items-center space-x-4">
                 <UButton
                     icon="i-heroicons-bell"
-                    color="gray"
+                    color="primary"
                     variant="ghost"
                     :trailing="false"
                 />
@@ -20,7 +20,7 @@
                                 ? 'i-heroicons-moon-20-solid'
                                 : 'i-heroicons-sun-20-solid'
                         "
-                        color="gray"
+                        color="primary"
                         variant="ghost"
                         aria-label="Theme"
                         @click="isDark = !isDark"

@@ -1,0 +1,206 @@
+{
+    "data": {
+        "usersPaginate": {
+            "data": [
+                {
+                    "id": "1",
+                    "name": "Admin",
+                    "email": "admin@mail.com",
+                    "password": "$2y$12$SEXPMDtWE0yZULeHyXRaLOGVT3.KS0CBUlGuvsVL1JyUaQ9bKkdH.",
+                    "is_admin": true,
+                    "roles": [
+                        {
+                            "id": "1",
+                            "name": "Admin",
+                            "__typename": "Role"
+                        }
+                    ],
+                    "is_active": true,
+                    "created_at": "2025-04-13 19:38:06",
+                    "updated_at": "2025-04-13 19:38:06",
+                    "deleted_at": null,
+                    "__typename": "User"
+                },
+                {
+                    "id": "2",
+                    "name": "Manager",
+                    "email": "manager@mail.com",
+                    "password": "$2y$12$gyJpY8ZdrSM9XduILsvxBOUJHZ1RE4drppdywruUAPV/Pg0VMtvSS",
+                    "is_admin": false,
+                    "roles": [
+                        {
+                            "id": "2",
+                            "name": "Manager",
+                            "__typename": "Role"
+                        }
+                    ],
+                    "is_active": true,
+                    "created_at": "2025-04-13 19:38:06",
+                    "updated_at": "2025-04-13 19:38:06",
+                    "deleted_at": null,
+                    "__typename": "User"
+                },
+                {
+                    "id": "3",
+                    "name": "Mr. Broderick Hudson",
+                    "email": "prohaska.audie@example.net",
+                    "password": "$2y$12$Gi7TDybZmiCvhCi5MR5cHeQUV9pZ.547snnEZtuxquqSGGLfAC7tq",
+                    "is_admin": false,
+                    "roles": [
+                        {
+                            "id": "3",
+                            "name": "User",
+                            "__typename": "Role"
+                        }
+                    ],
+                    "is_active": true,
+                    "created_at": "2025-04-13 19:38:06",
+                    "updated_at": "2025-04-13 19:53:07",
+                    "deleted_at": null,
+                    "__typename": "User"
+                },
+                {
+                    "id": "4",
+                    "name": "Keyshawn Kohler",
+                    "email": "nader.matilde@example.net",
+                    "password": "$2y$12$Gi7TDybZmiCvhCi5MR5cHeQUV9pZ.547snnEZtuxquqSGGLfAC7tq",
+                    "is_admin": false,
+                    "roles": [
+                        {
+                            "id": "3",
+                            "name": "User",
+                            "__typename": "Role"
+                        }
+                    ],
+                    "is_active": false,
+                    "created_at": "2025-04-13 19:38:06",
+                    "updated_at": "2025-04-13 19:38:06",
+                    "deleted_at": null,
+                    "__typename": "User"
+                },
+                {
+                    "id": "5",
+                    "name": "Anya Schaden",
+                    "email": "adaline.murphy@example.com",
+                    "password": "$2y$12$Gi7TDybZmiCvhCi5MR5cHeQUV9pZ.547snnEZtuxquqSGGLfAC7tq",
+                    "is_admin": false,
+                    "roles": [
+                        {
+                            "id": "3",
+                            "name": "User",
+                            "__typename": "Role"
+                        }
+                    ],
+                    "is_active": false,
+                    "created_at": "2025-04-13 19:38:06",
+                    "updated_at": "2025-04-13 19:38:06",
+                    "deleted_at": null,
+                    "__typename": "User"
+                },
+                {
+                    "id": "6",
+                    "name": "Melissa Considine",
+                    "email": "russell.feest@example.org",
+                    "password": "$2y$12$Gi7TDybZmiCvhCi5MR5cHeQUV9pZ.547snnEZtuxquqSGGLfAC7tq",
+                    "is_admin": false,
+                    "roles": [
+                        {
+                            "id": "3",
+                            "name": "User",
+                            "__typename": "Role"
+                        }
+                    ],
+                    "is_active": false,
+                    "created_at": "2025-04-13 19:38:06",
+                    "updated_at": "2025-04-13 19:38:06",
+                    "deleted_at": null,
+                    "__typename": "User"
+                },
+                {
+                    "id": "7",
+                    "name": "Orrin McKenzie Jr.",
+                    "email": "tyrell.borer@example.com",
+                    "password": "$2y$12$Gi7TDybZmiCvhCi5MR5cHeQUV9pZ.547snnEZtuxquqSGGLfAC7tq",
+                    "is_admin": false,
+                    "roles": [
+                        {
+                            "id": "3",
+                            "name": "User",
+                            "__typename": "Role"
+                        }
+                    ],
+                    "is_active": false,
+                    "created_at": "2025-04-13 19:38:06",
+                    "updated_at": "2025-04-13 19:38:06",
+                    "deleted_at": null,
+                    "__typename": "User"
+                },
+                {
+                    "id": "8",
+                    "name": "Prof. King Bode",
+                    "email": "kaufderhar@example.com",
+                    "password": "$2y$12$Gi7TDybZmiCvhCi5MR5cHeQUV9pZ.547snnEZtuxquqSGGLfAC7tq",
+                    "is_admin": false,
+                    "roles": [
+                        {
+                            "id": "3",
+                            "name": "User",
+                            "__typename": "Role"
+                        }
+                    ],
+                    "is_active": false,
+                    "created_at": "2025-04-13 19:38:06",
+                    "updated_at": "2025-04-13 19:38:06",
+                    "deleted_at": null,
+                    "__typename": "User"
+                },
+                {
+                    "id": "9",
+                    "name": "Cristal McKenzie II",
+                    "email": "maggio.mauricio@example.com",
+                    "password": "$2y$12$Gi7TDybZmiCvhCi5MR5cHeQUV9pZ.547snnEZtuxquqSGGLfAC7tq",
+                    "is_admin": false,
+                    "roles": [
+                        {
+                            "id": "3",
+                            "name": "User",
+                            "__typename": "Role"
+                        }
+                    ],
+                    "is_active": false,
+                    "created_at": "2025-04-13 19:38:06",
+                    "updated_at": "2025-04-13 19:38:06",
+                    "deleted_at": null,
+                    "__typename": "User"
+                },
+                {
+                    "id": "10",
+                    "name": "Evelyn Nienow DVM",
+                    "email": "boconner@example.org",
+                    "password": "$2y$12$Gi7TDybZmiCvhCi5MR5cHeQUV9pZ.547snnEZtuxquqSGGLfAC7tq",
+                    "is_admin": false,
+                    "roles": [
+                        {
+                            "id": "3",
+                            "name": "User",
+                            "__typename": "Role"
+                        }
+                    ],
+                    "is_active": false,
+                    "created_at": "2025-04-13 19:38:06",
+                    "updated_at": "2025-04-13 19:38:06",
+                    "deleted_at": null,
+                    "__typename": "User"
+                }
+            ],
+            "paginatorInfo": {
+                "currentPage": 1,
+                "lastPage": 11,
+                "perPage": 10,
+                "total": 102,
+                "__typename": "PaginatorInfo"
+            },
+            "__typename": "UserPaginator"
+        }
+    }
+}

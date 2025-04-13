@@ -21,7 +21,7 @@ export default defineNuxtConfig({
     css: ["~/assets/css/main.css"],
     devtools: { enabled: true },
     dir: {
-        public: 'public/client',
+        public: "public/client",
     },
     future: {
         compatibilityVersion: 4,
@@ -47,11 +47,11 @@ export default defineNuxtConfig({
         },
     },
     srcDir: "client/",
-    vite: {
-        server: {
-            watch: {
-                ignored: ["**/vendor/**"],
-            },
-        },
-    },
+    // vite: {
+    //     server: {
+    //         watch: {
+    //             ignored: ["**/vendor/**"],
+    //         },
+    //     },
+    // },
 });
