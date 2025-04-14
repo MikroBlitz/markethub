@@ -1,6 +1,8 @@
 <template>
     <div class="flex flex-col items-center py-2 justify-center">
-        <div class="w-full max-w-[1400px] border-t rounded-lg">
+        <div
+            class="w-full max-w-[1400px] border border-gray-100 dark:border-gray-700 rounded-lg"
+        >
             <TableData
                 v-model:selected-rows="selectedRows"
                 v-model:sort="sort"
@@ -19,10 +21,14 @@
             >
                 <template #header>
                     <div class="flex w-full items-center justify-between">
-                        <div class="flex items-center gap-1">
-                            <Icon name="i-heroicons-user-circle" size="30" />
+                        <div class="flex items-center gap-2">
+                            <Icon
+                                name="i-heroicons-user-circle"
+                                class="text-gray-900 dark:text-emerald-500"
+                                size="40"
+                            />
                             <h2
-                                class="font-semibold text-xl text-gray-900 dark:text-white leading-tight"
+                                class="font-semibold text-xl text-gray-900 dark:text-gray-100 leading-tight"
                             >
                                 Users
                             </h2>
@@ -181,7 +187,7 @@ const fetchData = async () => {
             if (selectedFilters.value && selectedFilters.value.length > 0) {
                 filteredData = filteredData.filter((user) => {
                     // Convert boolean is_active to string status for filtering
-                    const userStatus = user.is_active ? "active" : "inactive";
+                    const userStatus = user.is_active ? "true" : "false";
                     return selectedFilters.value.includes(userStatus);
                 });
             }
@@ -321,12 +327,20 @@ async function changeStatus(id: string) {
 
     try {
         loading.value = true;
-        await saveUser({ input });
-        toast.add({
-            color: "green",
-            icon: "i-mdi-check-circle-outline",
-            title: "User status has been updated",
-        });
+        if (auth.user?.id !== id) {
+            await saveUser({ input });
+            toast.add({
+                color: "green",
+                icon: "i-mdi-check-circle-outline",
+                title: "User status has been updated",
+            });
+        } else {
+            toast.add({
+                color: "red",
+                icon: "i-mdi-alert-circle-outline",
+                title: "You can't change status of yourself",
+            });
+        }
     } catch (err) {
         console.error("Status update error:", err);
         toast.add({
@@ -372,7 +386,7 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
 
 const actions = [
     {
-        color: (row: User) => (row.is_active ? "green" : "orange"),
+        color: (row: User) => (row.is_active ? "green" : "gray"),
         // condition: (row: User) => !row.is_admin && isAdmin.value,
         condition: () => true,
         icon: (row: User) =>
@@ -398,6 +412,7 @@ const actions = [
 ];
 
 onMounted(() => fetchData());
+onBeforeMount(() => fetchData());
 watch(
     [page, pageCount, sort, debouncedSearch, selectedFilters],
     () => fetchData(),

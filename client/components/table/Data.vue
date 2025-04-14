@@ -16,7 +16,7 @@
         <template #header>
             <slot name="header">
                 <h2
-                    class="font-semibold text-xl text-gray-900 dark:text-white leading-tight"
+                    class="font-semibold text-xl text-gray-900 dark:text-gray-100 leading-tight"
                 >
                     <slot name="title">Data Table</slot>
                 </h2>
@@ -32,6 +32,7 @@
                     size="2xs"
                     class="rounded-full p-1 mr-2"
                     color="red"
+                    variant="outline"
                     @click="navigateTo('/dashboard')"
                 >
                     <Icon name="mdi:arrow-left" size="20" />
@@ -138,7 +139,7 @@
                     >
                         <!-- Primary identifier or first column value -->
                         <div
-                            class="font-medium text-gray-900 dark:text-white flex items-center"
+                            class="font-medium text-gray-900 dark:text-gray-100 flex items-center"
                         >
                             <div class="w-1 h-8 bg-blue-500 rounded-r mr-2.5" />
                             {{ getPrimaryIdentifier(row) }}
@@ -167,7 +168,7 @@
                                 {{ column.label }}
                             </span>
                             <div
-                                class="text-sm font-medium text-gray-900 dark:text-white ml-2 truncate max-w-[60%] text-right"
+                                class="text-sm font-medium text-gray-900 dark:text-gray-100 ml-2 truncate max-w-[60%] text-right"
                             >
                                 <template v-if="column.render">
                                     <component
@@ -226,7 +227,7 @@
                         />
                     </div>
                     <h3
-                        class="mt-2 text-sm font-medium text-gray-900 dark:text-white"
+                        class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100"
                     >
                         No results found
                     </h3>
@@ -252,7 +253,9 @@
                     />
 
                     <div>
-                        <span class="text-xs leading-5">
+                        <span
+                            class="text-xs leading-5 text-gray-500 dark:text-gray-400"
+                        >
                             Showing
                             <span>{{ pageFrom }}</span>
                             to

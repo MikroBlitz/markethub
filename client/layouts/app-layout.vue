@@ -1,5 +1,5 @@
 <template>
-    <div class="h-dvh">
+    <div class="h-screen overflow-auto bg-gray-50 dark:bg-gray-900">
         <AppHeader title="Dashboard" @toggle-sidebar="toggleSidebar" />
         <slot />
     </div>

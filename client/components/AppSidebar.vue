@@ -28,7 +28,7 @@
                                     class="h-6 w-6 text-green-600"
                                 />
                                 <h2
-                                    class="ml-2 text-xl font-bold text-gray-800 dark:text-white"
+                                    class="ml-2 text-xl font-bold text-gray-800 dark:text-gray-100"
                                 >
                                     MarketHub
                                 </h2>
