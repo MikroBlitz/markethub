@@ -1,5 +1,7 @@
 <template>
-    <header class="bg-slate-900 border-b border-gray-200 p-4">
+    <header
+        class="bg-slate-800 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4"
+    >
         <div class="flex items-center justify-between">
             <div class="flex items-center">
                 <AppSidebar />

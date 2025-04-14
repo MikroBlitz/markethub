@@ -12,7 +12,10 @@
                     name="i-heroicons-pencil-square"
                     class="mr-3 text-emerald-500 text-xl"
                 />
-                <span class="text-lg font-medium">Form</span>
+                <span
+                    class="text-lg text-gray-900 dark:text-gray-100 font-medium"
+                    >Form</span
+                >
             </div>
 
             <UForm

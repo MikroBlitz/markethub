@@ -1,11 +1,9 @@
 <template>
-    <Body class="antialiased">
-        <NuxtLoadingIndicator />
-        <NuxtLayout>
-            <NuxtPage />
-        </NuxtLayout>
-        <UNotifications />
-    </Body>
+    <NuxtLoadingIndicator />
+    <NuxtLayout>
+        <NuxtPage />
+    </NuxtLayout>
+    <UNotifications />
 </template>
 <script setup lang="ts">
 import { useMediaQuery } from "@vueuse/core";

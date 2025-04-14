@@ -1,6 +1,8 @@
 <template>
     <div class="flex flex-col items-center py-2 justify-center">
-        <div class="w-full max-w-[1400px] border-t rounded-lg">
+        <div
+            class="w-full max-w-[1400px] border border-gray-100 dark:border-gray-700 rounded-lg"
+        >
             <TableData
                 v-model:selected-rows="selectedRows"
                 v-model:sort="sort"
@@ -19,10 +21,14 @@
             >
                 <template #header>
                     <div class="flex w-full items-center justify-between">
-                        <div class="flex items-center gap-1">
-                            <Icon name="mdi:user-key-outline" size="30" />
+                        <div class="flex items-center gap-2">
+                            <Icon
+                                name="mdi:user-key-outline"
+                                class="text-gray-900 dark:text-emerald-500"
+                                size="40"
+                            />
                             <h2
-                                class="font-semibold text-xl text-gray-900 dark:text-white leading-tight"
+                                class="font-semibold text-xl text-gray-900 dark:text-gray-100 leading-tight"
                             >
                                 Roles
                             </h2>
