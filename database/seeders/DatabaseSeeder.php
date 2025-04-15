@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
@@ -22,6 +23,12 @@ class DatabaseSeeder extends Seeder
         }
         if (!Role::where('name', 'User')->exists()) {
             Role::create(['name' => 'User']);
+        }
+        if (!Permission::where('name', 'edit user')->exists()) {
+            Permission::create(['name' => 'edit user']);
+        }
+        if (!Permission::where('name', 'delete user')->exists()) {
+            Permission::create(['name' => 'delete user']);
         }
 
         $admin = User::factory()->create([
@@ -41,6 +48,8 @@ class DatabaseSeeder extends Seeder
         $users = User::factory(100)->create();
 
         $admin->assignRole('Admin');
+        $admin->givePermissionTo('edit user');
+        $admin->givePermissionTo('delete user');
         $manager->assignRole('Manager');
         $users->each(function ($user) {
             $user->assignRole('User');
