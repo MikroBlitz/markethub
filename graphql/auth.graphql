@@ -15,6 +15,6 @@ type Mutation {
     login(
         email: String!
         password: String!
-    ): AuthPayload! @field(resolver: "App\\GraphQL\\Mutations\\AuthMutator@login")
+    ): AuthPayload! @field(resolver: "App\\GraphQL\\Mutations\\LoginMutator@login")
     logout: LogoutResponse @field(resolver: "App\\GraphQL\\Mutations\\LogoutMutator@resolve")
 }

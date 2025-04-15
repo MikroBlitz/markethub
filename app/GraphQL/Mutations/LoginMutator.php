@@ -5,7 +5,7 @@ namespace App\GraphQL\Mutations;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
-class AuthMutator
+class LoginMutator
 {
     public function login($_, array $args): array
     {
@@ -19,7 +19,7 @@ class AuthMutator
             throw new \Exception('Account not activated, please contact the administrator');
         }
 
-        $token = $user->createToken($args['email'])->plainTextToken;
+        $token = $user->createToken($args['email']. 'Auth-Token')->plainTextToken;
 
         return [
             'token' => $token,

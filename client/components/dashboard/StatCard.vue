@@ -2,8 +2,12 @@
     <UCard class="h-full bg-white dark:bg-gray-900">
         <div class="flex items-start justify-between">
             <div>
-                <p class="text-sm font-medium text-gray-500">{{ title }}</p>
-                <h3 class="text-2xl font-bold text-gray-800 mt-2">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-50">
+                    {{ title }}
+                </p>
+                <h3
+                    class="text-2xl font-bold text-gray-800 dark:text-gray-200 mt-2"
+                >
                     {{ value }}
                 </h3>
                 <div class="flex items-center mt-2">
