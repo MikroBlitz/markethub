@@ -1,12 +1,16 @@
 <template>
-    <div class="flex items-center justify-center min-h-screen bg-gray-50">
+    <div
+        class="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-900"
+    >
         <UCard class="w-full max-w-md">
             <template #header>
                 <div class="text-center mb-4">
-                    <h1 class="text-2xl font-bold">
+                    <h1
+                        class="text-2xl font-bold text-slate-800 dark:text-slate-200"
+                    >
                         Welcome to <span class="text-primary">MarketHub</span>
                     </h1>
-                    <p class="text-gray-500 mt-2">
+                    <p class="text-slate-800 dark:text-slate-200 mt-2">
                         Register in to your account
                     </p>
                 </div>

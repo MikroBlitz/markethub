@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import type { FormState } from "~/types/global";
 import type { User } from "~/types/codegen/graphql";
 
-import { authContext } from "~/utils/helpers";
+import { authContext, parseGraphQLError } from "~/utils/helpers";
 import { login as LoginAuth, logout as LogoutAuth } from "~/graphql/Auth";
 
 export const useAuthStore = defineStore(
@@ -14,7 +14,6 @@ export const useAuthStore = defineStore(
 
         async function login(formState: FormState) {
             const { mutate } = useMutation(LoginAuth);
-
             try {
                 const response = await mutate({
                     email: formState.email,
@@ -26,7 +25,8 @@ export const useAuthStore = defineStore(
                 setUser(result.user, result.token);
                 navigateTo("/dashboard");
             } catch (e) {
-                throw new Error(e.message || "Login failed");
+                console.log(e);
+                throw new Error(parseGraphQLError(e));
             }
         }
 
@@ -38,8 +38,8 @@ export const useAuthStore = defineStore(
                     resetUser();
                     navigateTo("/");
                 }
-            } catch (error) {
-                console.error("Error during logout:", error);
+            } catch (e) {
+                throw new Error(parseGraphQLError(e));
             }
         }
 

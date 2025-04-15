@@ -24,3 +24,20 @@ export const colorMap: Record<string, string> = {
     Manager: "blue",
     User: "white",
 };
+
+export function parseGraphQLError(e: any): string {
+    const graphQLErrors = e?.graphQLErrors || e?.response?.errors;
+    if (Array.isArray(graphQLErrors)) {
+        const messages = graphQLErrors.map((error) => {
+            const debugMessage = error?.extensions?.debugMessage;
+            const message = error?.message;
+            return debugMessage || message || "Unknown error";
+        });
+        messages.forEach((msg) => console.error("GraphQL Error:", msg));
+
+        return messages.join("\n");
+    }
+    console.error("Unexpected error:", e);
+
+    return "An unexpected error occurred";
+}
