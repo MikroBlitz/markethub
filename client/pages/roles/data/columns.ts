@@ -26,7 +26,7 @@ export const columns: Column[] = [
                 {
                     color: colorMap[row.name] || "gray",
                     label: row.name,
-                    size: "sm",
+                    size: "lg",
                     variant: "solid",
                 },
                 {
