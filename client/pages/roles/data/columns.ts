@@ -4,6 +4,7 @@ import { User } from "lucide-vue-next";
 import type { Column } from "~/components/table/types";
 
 import { colorMap, roleIconMap } from "~/utils/helpers";
+import type { RoleFragment } from "~/types/codegen/graphql";
 
 export const columns: Column[] = [
     {
@@ -26,7 +27,7 @@ export const columns: Column[] = [
                 {
                     color: colorMap[row.name] || "gray",
                     label: row.name,
-                    size: "lg",
+                    size: "sm",
                     variant: "solid",
                 },
                 {
@@ -43,21 +44,27 @@ export const columns: Column[] = [
     {
         key: "permissions",
         label: "Permissions",
-        render: (row) => {
+        render: (row: RoleFragment) => {
             return h(
-                UBadge,
-                {
-                    color: "gray",
-                    label: row.id, // TODO: get permission name
-                    size: "sm",
-                    variant: "solid",
-                },
-                {
-                    default: () =>
-                        h("div", { class: "flex items-center space-x-1" }, [
-                            h("span", null, row.id), // TODO: get permission name
-                        ]),
-                },
+                "div",
+                { class: "flex flex-wrap gap-2" },
+                row.permissions?.map((permission) =>
+                    h(
+                        UBadge,
+                        {
+                            color: "gray",
+                            label: permission?.name,
+                            size: "sm",
+                            variant: "solid",
+                        },
+                        {
+                            default: () =>
+                                h("div", { class: "flex items-center space-x-1" }, [
+                                    h("span", null, permission?.name),
+                                ]),
+                        }
+                    )
+                )
             );
         },
         sortable: true,
