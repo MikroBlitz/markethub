@@ -1,36 +1,35 @@
-type Role {
+type Permission {
     id: ID!
     name: String!
     guard_name: String!
-    users: [User] @hasMany
-    permissions: [Permission] @belongsToMany
+    roles: [Role] @belongsToMany
     created_at: DateTime!
     updated_at: DateTime!
     deleted_at: DateTime
 }
 
-input RoleInput {
+input PermissionInput {
     id: ID
     name: String!
     guard_name: String
 }
 
-input ConnectRoleRelation {
+input ConnectPermissionRelation {
     id: ID
     connect: ID
-    upsert: RoleInput
+    upsert: PermissionInput
     delete: ID
 }
 
 extend type Query {
-    roles: [Role]! @all
-    rolesPaginate(
+    permissions: [Permission]! @all
+    permissionsPaginate(
         search: String @scope(name: "search")
         sort: SortInput @scope(name: "sort")
-    ): [Role]! @paginate
+    ): [Permission]! @paginate
 }
 
 extend type Mutation {
-    upsertRole(input: RoleInput! @spread): Role! @upsert
-    deleteRole(id: [ID!] @eq): [Role] @delete
+    upsertPermission(input: PermissionInput! @spread): Permission! @upsert
+    deletePermission(id: [ID!] @eq): [Permission] @delete
 }
