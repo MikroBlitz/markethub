@@ -33,3 +33,17 @@ export const roleFragment = gql`
         updated_at
     }
 `;
+
+export const permissionFragment = gql`
+    fragment permission on Permission {
+            id
+            name
+            guard_name
+            roles {
+            id
+            name
+            }
+            created_at
+            updated_at
+        }
+`;
