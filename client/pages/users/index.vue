@@ -165,12 +165,6 @@ const fetchData = async () => {
             }
         } else {
             // TODO: remove else statement if API is ready
-            toast.add({
-                color: "green",
-                icon: "i-mdi-check-circle-outline",
-                title: "Mock data loaded",
-            });
-
             let filteredData = [...mockData.data.usersPaginate.data];
 
             // Handle search
