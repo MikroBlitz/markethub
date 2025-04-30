@@ -21,6 +21,14 @@ export const roleFragment = gql`
         id
         name
         guard_name
+        users {
+          id
+          name
+        }
+      	permissions {
+          id
+          name
+        }
         created_at
         updated_at
     }
