@@ -14,7 +14,7 @@
                 :columns="columns"
                 :data="data"
                 :loading="loading"
-                :filters="status"
+                :filters="filter"
                 :total-items="pageTotal"
                 @reset-filters="resetFilters"
                 @select="select"
@@ -85,7 +85,7 @@
             label="Delete"
             description="Are you sure you want to delete this permission?"
             icon="i-heroicons-exclamation-triangle"
-            :action="() => removePermissio(selectedPermission.id)"
+            :action="() => removePermission(selectedPermission.id)"
             color="red"
         />
     </div>
@@ -96,11 +96,20 @@ import type { FormSubmitEvent } from "#ui/types";
 
 import { useDebounce, useTimeoutFn } from "@vueuse/shared";
 
-import type { Permission, PermissionsPaginateQuery } from "~/types/codegen/graphql";
-import { columns } from "./data/columns";
-import FormModal from "~/pages/permissions/components/FormModal.vue";
+import type {
+    Permission,
+    PermissionsPaginateQuery,
+} from "~/types/codegen/graphql";
+
 import { type Schema, formState } from "~/pages/roles/data/schema";
-import { permissionsPaginate, upsertPermission, deletePermission } from "~/graphql/Permission";
+import FormModal from "~/pages/permissions/components/FormModal.vue";
+import {
+    permissionsPaginate,
+    upsertPermission,
+    deletePermission,
+} from "~/graphql/Permission";
+
+import { columns, filter } from "./data/columns";
 
 const toast = useToast();
 const selectedColumns = ref(columns);
@@ -132,9 +141,7 @@ const fetchData = async () => {
         if (search.value) variables.search = search.value;
         if (sort.value) variables.sort = sort.value;
 
-        const queryResult = await useAsyncQuery(permissionsPaginate, variables, {
-  fetchPolicy: 'network-only',
-});
+        const queryResult = await useAsyncQuery(permissionsPaginate, variables);
         if (queryResult.data.value) {
             result.value = queryResult.data.value as PermissionsPaginateQuery;
             data.value = result.value.permissionsPaginate.data;
@@ -190,7 +197,7 @@ function openDeleteModal(permission: Permission) {
 const { mutate: savePermission } = useMutation(upsertPermission);
 const { mutate: removePermissionMutation } = useMutation(deletePermission);
 
-async function removePermissio(id: string) {
+async function removePermission(id: string) {
     try {
         loading.value = true;
         await removePermissionMutation({ id });

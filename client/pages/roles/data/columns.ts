@@ -1,10 +1,10 @@
 import { UBadge } from "#components";
-import { User } from "lucide-vue-next";
+import { ShieldCheck, User } from "lucide-vue-next";
 
 import type { Column } from "~/components/table/types";
+import type { RoleFragment } from "~/types/codegen/graphql";
 
 import { colorMap, roleIconMap } from "~/utils/helpers";
-import type { RoleFragment } from "~/types/codegen/graphql";
 
 export const columns: Column[] = [
     {
@@ -45,9 +45,30 @@ export const columns: Column[] = [
         key: "permissions",
         label: "Permissions",
         render: (row: RoleFragment) => {
+            const Icon = ShieldCheck;
+
+            if (row.name === "Admin") {
+                return h(
+                    UBadge,
+                    {
+                        color: "black",
+                        label: "No limits",
+                        size: "sm",
+                        variant: "solid",
+                    },
+                    {
+                        default: () =>
+                            h("div", { class: "flex items-center space-x-1" }, [
+                                h(Icon, { class: "w-3 h-3" }),
+                                h("span", null, "No Restrictions"),
+                            ]),
+                    },
+                );
+            }
+
             return h(
                 "div",
-                { class: "flex flex-wrap gap-2" },
+                { class: "flex flex-wrap gap-1" },
                 row.permissions?.map((permission) =>
                     h(
                         UBadge,
@@ -59,12 +80,17 @@ export const columns: Column[] = [
                         },
                         {
                             default: () =>
-                                h("div", { class: "flex items-center space-x-1" }, [
-                                    h("span", null, permission?.name),
-                                ]),
-                        }
-                    )
-                )
+                                h(
+                                    "div",
+                                    { class: "flex items-center space-x-1" },
+                                    [
+                                        h(Icon, { class: "w-3 h-3" }),
+                                        h("span", null, permission?.name),
+                                    ],
+                                ),
+                        },
+                    ),
+                ),
             );
         },
         sortable: true,

@@ -1,10 +1,9 @@
 import { UBadge } from "#components";
-import { User } from "lucide-vue-next";
+import { ShieldCheck } from "lucide-vue-next";
 
 import type { Column } from "~/components/table/types";
 
-import { colorMap, roleIconMap } from "~/utils/helpers";
-import type { PermissionFragment } from "~/types/codegen/graphql";
+import { colorMap } from "~/utils/helpers";
 
 export const columns: Column[] = [
     {
@@ -20,7 +19,7 @@ export const columns: Column[] = [
         key: "permissions",
         label: "Permissions",
         render: (row) => {
-            const Icon = roleIconMap[row.name] || User;
+            const Icon = ShieldCheck;
 
             return h(
                 UBadge,
@@ -37,34 +36,6 @@ export const columns: Column[] = [
                             h("span", null, row.name),
                         ]),
                 },
-            );
-        },
-        sortable: true,
-    },
-    {
-        key: "roles",
-        label: "Roles",
-        render: (row: PermissionFragment) => {
-            return h(
-                "div",
-                { class: "flex flex-wrap gap-2" },
-                row.roles?.map((role) =>
-                    h(
-                        UBadge,
-                        {
-                            color: "gray",
-                            label: role?.name,
-                            size: "sm",
-                            variant: "solid",
-                        },
-                        {
-                            default: () =>
-                                h("div", { class: "flex items-center space-x-1" }, [
-                                    h("span", null, role?.name),
-                                ]),
-                        }
-                    )
-                )
             );
         },
         sortable: true,
@@ -91,5 +62,4 @@ export const columns: Column[] = [
     },
 ];
 
-// Filters
-export const status = [];
+export const filter = [];
