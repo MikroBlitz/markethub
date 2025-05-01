@@ -8,6 +8,9 @@ export const authMe = gql`
             roles {
                 name
             }
+            permissions {
+                name
+            }
         }
     }
 `;
@@ -22,6 +25,9 @@ export const login = gql`
                 email
                 is_admin
                 roles {
+                    name
+                }
+                permissions {
                     name
                 }
             }

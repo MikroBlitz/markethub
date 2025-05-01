@@ -15,7 +15,7 @@
                 :data="data"
                 :loading="loading"
                 :filters="status"
-                :total-items="pageTotal"
+                :total-items="pageTotal"    
                 @reset-filters="resetFilters"
                 @select="select"
             >
@@ -382,7 +382,7 @@ const actions = [
     {
         color: (row: User) => (row.is_active ? "green" : "gray"),
         // condition: (row: User) => !row.is_admin && isAdmin.value,
-        condition: () => true,
+        condition: () => useRole('admin').value,
         icon: (row: User) =>
             row.is_active ? "mdi:toggle-switch" : "mdi:toggle-switch-off",
         onClick: (row: User) => openChangeStatusModal(row),
@@ -391,14 +391,14 @@ const actions = [
     },
     {
         color: () => "blue",
-        condition: () => true, // TODO: @can edit
+        condition: () => useCan('edit user').value, // TODO: @can edit
         icon: () => "mdi:pencil",
         onClick: (row: User) => openEditModal(row),
         tooltip: (row: User) => `Edit User ${row.name}`,
     },
     {
         color: () => "red",
-        condition: () => true, // TODO: @can delete
+        condition: () => useCan('delete user').value, // TODO: @can delete
         icon: () => "mdi:delete",
         onClick: (row: User) => openDeleteModal(row),
         tooltip: (row: User) => `Delete User ${row.name}`,

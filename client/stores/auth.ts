@@ -55,12 +55,23 @@ export const useAuthStore = defineStore(
 
         const isAuthenticated = computed(() => !!token.value);
 
+        const is = (roleName: string) => {
+            return user.value?.roles?.some(role => role.name.toLowerCase() === roleName.toLowerCase()) ?? false
+          }
+          
+          const can = (permissionName: string) => {
+            return user.value?.permissions?.some(permission => permission.name.toLowerCase() === permissionName.toLowerCase()) ?? false
+          }
+          
+          
         return {
             isAuthenticated,
             login,
             logout,
             token,
             user,
+            is,
+            can
         };
     },
     {
