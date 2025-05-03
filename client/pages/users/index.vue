@@ -51,7 +51,7 @@
                     <div class="flex items-center gap-1">
                         <div v-for="(action, index) in actions" :key="index">
                             <UTooltip
-                                v-if="action.condition(row)"
+                                v-if="action.condition()"
                                 :text="action.tooltip(row)"
                             >
                                 <UButton
@@ -123,7 +123,6 @@ const toast = useToast();
 const selectedColumns = ref(columns);
 const selectedRows = ref<User[]>([]);
 const auth = useAuthStore();
-const isAdmin = inject("isAdmin");
 
 const sort = ref({ column: "id", direction: "asc" as "asc" | "desc" });
 const page = ref(1);
@@ -137,7 +136,6 @@ const pageTotal = computed(() => {
     return result.value.usersPaginate.paginatorInfo.total;
 });
 
-const { client } = useApolloClient();
 const data = ref<User[]>([]);
 const loading = ref(false);
 const result = ref({ usersPaginate });
@@ -297,12 +295,12 @@ async function removeUser(id: string) {
                 title: "You can't remove yourself",
             });
         }
-    } catch (err) {
-        console.error("Remove error:", err);
+    } catch (e) {
+        console.error("Remove error:", e);
         toast.add({
             color: "red",
             icon: "i-mdi-alert-circle-outline",
-            title: `Error removing user: ${err.message}`,
+            title: `Error removing user: ${e.message}`,
         });
     } finally {
         await fetchData();
@@ -335,12 +333,12 @@ async function changeStatus(id: string) {
                 title: "You can't change status of yourself",
             });
         }
-    } catch (err) {
-        console.error("Status update error:", err);
+    } catch (e) {
+        console.error("Status update error:", e);
         toast.add({
             color: "red",
             icon: "i-mdi-alert-circle-outline",
-            title: `Error updating user status: ${err.message}`,
+            title: `Error updating user status: ${e.message}`,
         });
     } finally {
         await fetchData();
@@ -364,12 +362,12 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
             icon: "i-mdi-check-circle-outline",
             title: "User has been saved",
         });
-    } catch (err) {
-        console.error("Save error:", err);
+    } catch (e) {
+        console.error("Save error:", e);
         toast.add({
             color: "red",
             icon: "i-mdi-alert-circle-outline",
-            title: `Error saving user: ${err.message}`,
+            title: `Error saving user: ${e.message}`,
         });
     } finally {
         await fetchData();
@@ -381,8 +379,7 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
 const actions = [
     {
         color: (row: User) => (row.is_active ? "green" : "gray"),
-        // condition: (row: User) => !row.is_admin && isAdmin.value,
-        condition: () => true,
+        condition: () => auth.is("Admin"),
         icon: (row: User) =>
             row.is_active ? "mdi:toggle-switch" : "mdi:toggle-switch-off",
         onClick: (row: User) => openChangeStatusModal(row),
@@ -391,14 +388,14 @@ const actions = [
     },
     {
         color: () => "blue",
-        condition: () => true, // TODO: @can edit
+        condition: () => auth.can("edit user"),
         icon: () => "mdi:pencil",
         onClick: (row: User) => openEditModal(row),
         tooltip: (row: User) => `Edit User ${row.name}`,
     },
     {
         color: () => "red",
-        condition: () => true, // TODO: @can delete
+        condition: () => auth.can("delete user"),
         icon: () => "mdi:delete",
         onClick: (row: User) => openDeleteModal(row),
         tooltip: (row: User) => `Delete User ${row.name}`,

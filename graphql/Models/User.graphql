@@ -6,6 +6,7 @@ type User {
     is_active: Boolean!
     is_admin: Boolean! @method(name: "is_admin")
     roles: [Role]! @morphToMany
+    permissions: [Permission] @field(resolver: "App\\GraphQL\\Resolvers\\UserResolver@permissions")
     created_at: DateTime!
     updated_at: DateTime!
     deleted_at: DateTime

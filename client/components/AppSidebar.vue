@@ -114,9 +114,9 @@
                                     </li>
                                 </ul>
                             </div>
-
-                            <div>
+                            
                                 <!-- TODO: v-if="isAdmin" -->
+                            <div> <!-- <div v-if="useRole('admin').value"> -->
                                 <UDivider
                                     label="ADMIN"
                                     label-class="text-xs font-medium text-gray-500 dark:text-gray-400"

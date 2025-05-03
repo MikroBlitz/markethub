@@ -55,7 +55,30 @@ export const useAuthStore = defineStore(
 
         const isAuthenticated = computed(() => !!token.value);
 
+        const is = (roleName: string) => {
+            return (
+                user.value?.roles?.some(
+                    (role) =>
+                        role?.name.toLowerCase() === roleName.toLowerCase(),
+                ) ?? false
+            );
+        };
+
+        const can = (permissionName: string) => {
+            if (is("Admin")) return true;
+
+            return (
+                user.value?.permissions?.some(
+                    (permission) =>
+                        permission.name.toLowerCase() ===
+                        permissionName.toLowerCase(),
+                ) ?? false
+            );
+        };
+
         return {
+            can,
+            is,
             isAuthenticated,
             login,
             logout,
