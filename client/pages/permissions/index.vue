@@ -33,38 +33,42 @@
                                 Permission
                             </h2>
                         </div>
-                        <UTooltip text="Add Permission">
-                            <UButton
-                                class="p-2 rounded-full group"
-                                @click="openAddModal"
-                            >
-                                <UIcon
-                                    name="mdi:add"
-                                    class="group-hover:scale-150 transition-all duration-300"
-                                />
-                            </UButton>
-                        </UTooltip>
+                        <template v-if="auth.can('add permission')">
+                            <UTooltip text="Add Permission">
+                                <UButton
+                                    class="p-2 rounded-full group"
+                                    @click="openAddModal"
+                                >
+                                    <UIcon
+                                        name="mdi:add"
+                                        class="group-hover:scale-150 transition-all duration-300"
+                                    />
+                                </UButton>
+                            </UTooltip>
+                        </template>
                     </div>
                 </template>
 
                 <template #actions-data="{ row }">
                     <div class="flex items-center gap-1">
                         <div v-for="(action, index) in actions" :key="index">
-                            <UTooltip :text="action.tooltip(row)">
-                                <UButton
-                                    size="2xs"
-                                    :color="action.color(row)"
-                                    variant="ghost"
-                                    square
-                                    @click="action.onClick(row)"
-                                >
-                                    <Icon
-                                        :name="action.icon(row)"
-                                        size="22"
-                                        class="hover:scale-125 transition-all duration-300"
-                                    />
-                                </UButton>
-                            </UTooltip>
+                            <template v-if="action.condition()">
+                                <UTooltip :text="action.tooltip(row)">
+                                    <UButton
+                                        size="2xs"
+                                        :color="action.color(row)"
+                                        variant="ghost"
+                                        square
+                                        @click="action.onClick(row)"
+                                    >
+                                        <Icon
+                                            :name="action.icon(row)"
+                                            size="22"
+                                            class="hover:scale-125 transition-all duration-300"
+                                        />
+                                    </UButton>
+                                </UTooltip>
+                            </template>
                         </div>
                     </div>
                 </template>
@@ -111,6 +115,7 @@ import {
 
 import { columns, filter } from "./data/columns";
 
+const auth = useAuthStore();
 const toast = useToast();
 const selectedColumns = ref(columns);
 const selectedRows = ref<Permission[]>([]);
@@ -252,12 +257,14 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 const actions = [
     {
         color: () => "blue",
+        condition: () => auth.can("edit permission"),
         icon: () => "mdi:pencil",
         onClick: (row: Permission) => openEditModal(row),
         tooltip: (row: Permission) => `Edit Permission ${row.name}`,
     },
     {
         color: () => "red",
+        condition: () => auth.can("delete permission"),
         icon: () => "mdi:delete",
         onClick: (row: Permission) => openDeleteModal(row),
         tooltip: (row: Permission) => `Delete Permission ${row.name}`,

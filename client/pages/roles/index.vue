@@ -33,38 +33,42 @@
                                 Roles
                             </h2>
                         </div>
-                        <UTooltip text="Add Role">
-                            <UButton
-                                class="p-2 rounded-full group"
-                                @click="openAddModal"
-                            >
-                                <UIcon
-                                    name="mdi:add"
-                                    class="group-hover:scale-150 transition-all duration-300"
-                                />
-                            </UButton>
-                        </UTooltip>
+                        <template v-if="auth.can('add role')">
+                            <UTooltip text="Add Permission">
+                                <UButton
+                                    class="p-2 rounded-full group"
+                                    @click="openAddModal"
+                                >
+                                    <UIcon
+                                        name="mdi:add"
+                                        class="group-hover:scale-150 transition-all duration-300"
+                                    />
+                                </UButton>
+                            </UTooltip>
+                        </template>
                     </div>
                 </template>
 
                 <template #actions-data="{ row }">
                     <div class="flex items-center gap-1">
                         <div v-for="(action, index) in actions" :key="index">
-                            <UTooltip :text="action.tooltip(row)">
-                                <UButton
-                                    size="2xs"
-                                    :color="action.color(row)"
-                                    variant="ghost"
-                                    square
-                                    @click="action.onClick(row)"
-                                >
-                                    <Icon
-                                        :name="action.icon(row)"
-                                        size="22"
-                                        class="hover:scale-125 transition-all duration-300"
-                                    />
-                                </UButton>
-                            </UTooltip>
+                            <template v-if="action.condition()">
+                                <UTooltip :text="action.tooltip(row)">
+                                    <UButton
+                                        size="2xs"
+                                        :color="action.color(row)"
+                                        variant="ghost"
+                                        square
+                                        @click="action.onClick(row)"
+                                    >
+                                        <Icon
+                                            :name="action.icon(row)"
+                                            size="22"
+                                            class="hover:scale-125 transition-all duration-300"
+                                        />
+                                    </UButton>
+                                </UTooltip>
+                            </template>
                         </div>
                     </div>
                 </template>
@@ -103,6 +107,7 @@ import FormModal from "~/pages/roles/components/FormModal.vue";
 import { type Schema, formState } from "~/pages/roles/data/schema";
 import { rolesPaginate, upsertRole, deleteRole } from "~/graphql/Role";
 
+const auth = useAuthStore();
 const toast = useToast();
 const selectedColumns = ref(columns);
 const selectedRows = ref<Role[]>([]);
@@ -244,12 +249,14 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 const actions = [
     {
         color: () => "blue",
+        condition: () => auth.can("edit role"),
         icon: () => "mdi:pencil",
         onClick: (row: Role) => openEditModal(row),
         tooltip: (row: Role) => `Edit Role ${row.name}`,
     },
     {
         color: () => "red",
+        condition: () => auth.can("delete role"),
         icon: () => "mdi:delete",
         onClick: (row: Role) => openDeleteModal(row),
         tooltip: (row: Role) => `Delete Role ${row.name}`,
