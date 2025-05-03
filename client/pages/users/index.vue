@@ -33,42 +33,42 @@
                                 Users
                             </h2>
                         </div>
-                        <UTooltip text="Add User">
-                            <UButton
-                                class="p-2 rounded-full group"
-                                @click="openAddModal"
-                            >
-                                <UIcon
-                                    name="mdi:add"
-                                    class="group-hover:scale-150 transition-all duration-300"
-                                />
-                            </UButton>
-                        </UTooltip>
+                        <template v-if="auth.can('add user')">
+                            <UTooltip text="Add Permission">
+                                <UButton
+                                    class="p-2 rounded-full group"
+                                    @click="openAddModal"
+                                >
+                                    <UIcon
+                                        name="mdi:add"
+                                        class="group-hover:scale-150 transition-all duration-300"
+                                    />
+                                </UButton>
+                            </UTooltip>
+                        </template>
                     </div>
                 </template>
 
                 <template #actions-data="{ row }">
                     <div class="flex items-center gap-1">
                         <div v-for="(action, index) in actions" :key="index">
-                            <UTooltip
-                                v-if="action.condition()"
-                                :text="action.tooltip(row)"
-                            >
-                                <UButton
-                                    v-if="action.condition(row)"
-                                    size="2xs"
-                                    :color="action.color(row)"
-                                    variant="ghost"
-                                    square
-                                    @click="action.onClick(row)"
-                                >
-                                    <Icon
-                                        :name="action.icon(row)"
-                                        size="22"
-                                        class="hover:scale-125 transition-all duration-300"
-                                    />
-                                </UButton>
-                            </UTooltip>
+                            <template v-if="action.condition()">
+                                <UTooltip :text="action.tooltip(row)">
+                                    <UButton
+                                        size="2xs"
+                                        :color="action.color(row)"
+                                        variant="ghost"
+                                        square
+                                        @click="action.onClick(row)"
+                                    >
+                                        <Icon
+                                            :name="action.icon(row)"
+                                            size="22"
+                                            class="hover:scale-125 transition-all duration-300"
+                                        />
+                                    </UButton>
+                                </UTooltip>
+                            </template>
                         </div>
                     </div>
                 </template>
