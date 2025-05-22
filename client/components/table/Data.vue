@@ -72,12 +72,14 @@
                     />
 
                     <UButton
-                        v-show="selectedStatus.length > 0 || search !== ''"
+                        v-show="selectedStatus?.length > 0 || search !== ''"
                         icon="mdi:filter-remove-outline"
                         color="red"
                         variant="outline"
                         size="sm"
-                        :disabled="search === '' && selectedStatus.length === 0"
+                        :disabled="
+                            search === '' && selectedStatus?.length === 0
+                        "
                         @click="resetFilters"
                     >
                         Clear
@@ -142,15 +144,15 @@
                             class="font-medium text-gray-900 dark:text-gray-100 flex items-center"
                         >
                             <div class="w-1 h-8 bg-blue-500 rounded-r mr-2.5" />
-                            {{ getPrimaryIdentifier(row) }}
+                            {{ getPrimaryIdentifier(row as Row) }}
                         </div>
 
                         <!-- Selection checkbox if selectable -->
                         <div v-if="hasSelectableRows" class="ml-2">
                             <UCheckbox
-                                :model-value="isRowSelected(row)"
-                                color="gray"
-                                @change="toggleRowSelection(row)"
+                                :model-value="isRowSelected(row as Row)"
+                                color="green"
+                                @change="toggleRowSelection(row as Row)"
                             />
                         </div>
                     </div>
@@ -288,7 +290,7 @@
 <script lang="ts" setup>
 import { h } from "vue";
 
-import type { Column, FilterOption, Sort } from "~/components/table/types";
+import type { Column, FilterOption, Row, Sort } from "~/components/table/types";
 
 const props = defineProps({
     actions: {
@@ -355,7 +357,7 @@ const getDynamicContent = (column: Column, row: never) => {
 };
 
 // Get a primary identifier for the card header
-const getPrimaryIdentifier = (row: any) => {
+const getPrimaryIdentifier = (row: Row) => {
     // Use specified primary key if provided
     if (
         props.primaryIdentifierKey &&
@@ -406,14 +408,14 @@ const hasSelectableRows = computed(() =>
 );
 
 // Selection handling
-const selectedRows = defineModel("selectedRows");
-const select = (row: never) => emit("select", row);
+const selectedRows = defineModel<Row[]>("selectedRows");
+// const select = (row: Row) => emit("select", row);
 
-const isRowSelected = (row: any) => {
+const isRowSelected = (row: Row) => {
     return selectedRows.value?.includes(row);
 };
 
-const toggleRowSelection = (row: any) => {
+const toggleRowSelection = (row: Row) => {
     if (!selectedRows.value) return;
 
     const index = selectedRows.value.indexOf(row);
@@ -426,8 +428,8 @@ const toggleRowSelection = (row: any) => {
 
 // Pagination
 const sort = defineModel<Sort>("sort");
-const page = defineModel<number>("page");
-const pageCount = defineModel<number>("pageCount");
+const page = defineModel<number>("page", { default: 1 });
+const pageCount = defineModel<number>("pageCount", { default: 0 });
 const pageTotal = computed(() => props.totalItems);
 const pageFrom = computed(() => {
     if (!page.value || !pageCount.value) return 1;
@@ -439,8 +441,10 @@ const pageTo = computed(() => {
 });
 
 // Filters
-const search = defineModel<string>("search");
-const selectedStatus = defineModel("selectedStatus");
+const search = defineModel<string>("search", { default: "" });
+const selectedStatus = defineModel<string | null>("selectedStatus", {
+    default: null,
+});
 const resetFilters = () => emit("resetFilters");
 </script>
 

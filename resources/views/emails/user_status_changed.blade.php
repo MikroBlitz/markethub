@@ -5,129 +5,365 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Status Update</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             line-height: 1.6;
-            color: #2c3e50;
-            background-color: #f8fafc;
+            color: #374151;
+            background-color: #f9fafb;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .email-wrapper {
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .email-container {
             max-width: 600px;
-            margin: 40px auto;
+            width: 100%;
             background: #ffffff;
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
             overflow: hidden;
         }
 
+        /* Header */
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 40px 32px;
+            padding: 2rem 1.5rem 1rem;
             text-align: center;
+            border-bottom: 1px solid #f3f4f6;
         }
 
         .header h1 {
-            margin: 0;
-            color: #ffffff;
-            font-size: 24px;
-            font-weight: 600;
-            letter-spacing: -0.5px;
+            margin: 0 0 0.5rem 0;
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #111827;
+            letter-spacing: -0.025em;
         }
 
+        .header p {
+            margin: 0;
+            font-size: 1rem;
+            color: #6b7280;
+            font-weight: 400;
+        }
+
+        /* Content */
         .content {
-            padding: 40px 32px;
+            padding: 2.5rem;
         }
 
         .greeting {
-            margin: 0 0 24px 0;
-            font-size: 18px;
-            color: #2c3e50;
+            margin: 0 0 2rem 0;
+            font-size: 1.125rem;
+            color: #111827;
+            font-weight: 500;
+        }
+
+        /* Status Card */
+        .status-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .status-card.active {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .status-card.inactive {
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        .status-card.active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-card.inactive {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .status-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0 0 0.75rem 0;
+            color: #111827;
+            text-align: center;
+        }
+
+        .status-description {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin: 0;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        /* Message Section */
+        .message-section {
+            margin: 2rem 0;
         }
 
         .message {
-            margin: 0 0 32px 0;
-            font-size: 16px;
-            color: #4a5568;
+            font-size: 0.875rem;
+            color: #4b5563;
             line-height: 1.7;
+            margin: 0;
         }
 
-        .status-badge {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        /* CTA Section */
+        .cta-section {
+            text-align: center;
+            margin: 2.5rem 0;
         }
 
-        .status-active {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            background: #a8d5ba;
+            color: #000000;
+            text-decoration: none;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
 
-        .status-inactive {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+        .cta-button:hover {
+            background: #81bca4;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
+        .cta-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(166, 219, 178, 0.7); /* light green focus ring */
+        }
+
+        .cta-button:active {
+            background: #69987e;
+            transform: translateY(1px);
+        }
+
+        /* Alert Box */
+        .alert {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .alert-text {
+            font-size: 0.875rem;
+            color: #92400e;
+            margin: 0;
+            display: inline;
+        }
+
+        /* Footer */
         .footer {
-            padding: 24px 32px;
-            background-color: #f8fafc;
-            border-top: 1px solid #e2e8f0;
+            padding: 2rem 2.5rem;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .footer-content {
             text-align: center;
         }
 
         .footer p {
-            margin: 0;
-            font-size: 14px;
-            color: #718096;
+            margin: 0 0 0.75rem 0;
+            font-size: 0.75rem;
+            color: #6b7280;
+            line-height: 1.5;
         }
 
-        @media (max-width: 600px) {
+        .footer p:last-child {
+            margin-bottom: 0;
+        }
+
+        .contact-info {
+            margin: 1.5rem 0 0 0;
+        }
+
+        .contact-link {
+            color: #4b5563;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .contact-link:hover {
+            color: #111827;
+        }
+
+        .divider {
+            display: inline-block;
+            margin: 0 0.5rem;
+            color: #d1d5db;
+        }
+
+        /* Social Links */
+        .social-links {
+            margin: 1.5rem 0 0 0;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 0.75rem;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #6b7280;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .social-link:hover {
+            background: #f3f4f6;
+            color: #374151;
+            border-color: #d1d5db;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 640px) {
+            .email-wrapper {
+                padding: 1rem 0.5rem;
+            }
+
             .email-container {
-                margin: 20px;
                 border-radius: 8px;
             }
 
-            .header, .content {
-                padding: 24px 20px;
+            .header {
+                padding: 2rem 1.5rem 1.5rem;
             }
 
             .header h1 {
-                font-size: 20px;
+                font-size: 1.5rem;
             }
 
-            .greeting {
-                font-size: 16px;
+            .content {
+                padding: 1.5rem;
+            }
+
+            .status-card {
+                padding: 1.5rem;
+            }
+
+            .footer {
+                padding: 1.5rem;
+            }
+
+            .social-links {
+                flex-wrap: wrap;
+                gap: 0.375rem;
             }
         }
     </style>
 </head>
 <body>
-<div class="email-container">
-    <div class="header">
-        <h1>Account Status Update</h1>
-    </div>
+<div class="email-wrapper">
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Account Status Update</h1>
+            <p>Important notification about your account</p>
+        </div>
 
-    <div class="content">
-        <p class="greeting">Hello {{ $user->name }},</p>
+        <!-- Content -->
+        <div class="content">
+            <p class="greeting">Hello {{ $user->name }},</p>
 
-        <p class="message">
-            Your account status has been updated to:
-            <span class="status-badge {{ $user->is_active ? 'status-active' : 'status-inactive' }}">
-                    {{ $user->is_active ? 'Active' : 'Inactive' }}
-                </span>
-        </p>
-    </div>
+            <!-- Status Card -->
+            <div class="status-card {{ $user->is_active ? 'active' : 'inactive' }}">
+                <h2 class="status-title">
+                    Account {{ $user->is_active ? 'Activated' : 'Disabled' }}
+                </h2>
+                <p class="status-description">
+                    @if ($user->is_active)
+                        Your account is now active and ready to use. You can access all features and services.
+                    @else
+                        Your account has been temporarily disabled. Please contact support for assistance.
+                    @endif
+                </p>
+            </div>
 
-    <div class="footer">
-        <p>If you have any questions, please don't hesitate to contact our support team.</p>
+            <!-- Message Section -->
+            <div class="message-section">
+                <p class="message">
+                    @if ($user->is_active)
+                        You can now sign in to your account and enjoy full access to our platform. All your previous data and settings have been preserved and are ready for you to use.
+                    @else
+                        Access to your account has been restricted and you will not be able to sign in until your account is reactivated. If you believe this is an error, please reach out to our support team immediately.
+                    @endif
+                </p>
+            </div>
+
+            @if (!$user->is_active)
+                <div class="alert">
+                    <p class="alert-text">
+                        Your account access has been suspended. Contact support to resolve this issue.
+                    </p>
+                </div>
+            @endif
+
+            <!-- CTA Section -->
+            @if ($user->is_active)
+                <div class="cta-section">
+                    <a href="http://dev-market-hub.vercel.app/login" target="_blank" class="cta-button">
+                        Sign In to Your Account
+                    </a>
+                </div>
+            @endif
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-content">
+                <p>Need help? Our support team is here to assist you.</p>
+
+                <div class="contact-info">
+                    <a href="mailto:markethub@mail.com" class="contact-link">markethub@mail.com</a>
+                    <span class="divider">•</span>
+                    <a href="tel:+15551234567" class="contact-link">(555) 123-4567</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 </body>
