@@ -49,7 +49,7 @@
                     </div>
                 </template>
 
-                <template #actions-data="{ row }">
+                <template #actions-data="{ row }: { row: User }">
                     <div class="flex items-center gap-1">
                         <div v-for="(action, index) in actions" :key="index">
                             <template v-if="action.condition()">
@@ -225,7 +225,7 @@ const fetchData = async () => {
     } catch (error) {
         console.error("Error fetching users:", error);
     } finally {
-        useTimeoutFn(() => (loading.value = false), 500);
+        useTimeoutFn(() => (loading.value = false), 300);
     }
 };
 
@@ -308,7 +308,7 @@ async function removeUser(id: string) {
         });
     } finally {
         await fetchData();
-        useTimeoutFn(() => (loading.value = false), 700);
+        useTimeoutFn(() => (loading.value = false), 300);
         isDeleteModal.value = false;
     }
 }
@@ -346,7 +346,7 @@ async function changeStatus(id: string) {
         });
     } finally {
         await fetchData();
-        useTimeoutFn(() => (loading.value = false), 700);
+        useTimeoutFn(() => (loading.value = false), 300);
         isChangeStatusModal.value = false;
     }
 }
@@ -377,7 +377,7 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
         });
     } finally {
         await fetchData();
-        useTimeoutFn(() => (loading.value = false), 700);
+        useTimeoutFn(() => (loading.value = false), 300);
         isOpen.value = false;
     }
 }

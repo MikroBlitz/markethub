@@ -7,12 +7,13 @@
                     :name="props.icon"
                     class="mr-3 text-red-500 text-xl"
                 />
-                <span class="text-lg font-medium"
-                    >Confirm {{ props.label }}</span
-                >
+                <span
+                    class="text-lg text-gray-600 dark:text-gray-100 font-medium"
+                    >Confirm {{ props.label }}
+                </span>
             </div>
 
-            <p class="text-gray-600">
+            <p class="text-gray-500 dark:text-gray-200">
                 {{ props.description }}
             </p>
 

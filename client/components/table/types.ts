@@ -7,12 +7,14 @@ export interface Column {
 }
 
 export interface FilterOption {
-    key: number;
     label: string;
-    value: boolean;
+    key: string | number;
+    value: boolean | string;
 }
 
 export interface Sort {
     column: string;
     direction: "asc" | "desc";
 }
+
+export type Row = Record<string, any>;
