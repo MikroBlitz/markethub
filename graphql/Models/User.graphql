@@ -60,6 +60,7 @@ extend type Mutation {
     upsertUser(input: UserInput! @spread): User! @upsert
     deleteUser(id: [ID!] @eq): [User] @delete
     restoreUser(id: ID!): User! @restore
+    updateUserStatus(id: ID!, is_active: Boolean!): User @field(resolver: "App\\GraphQL\\Mutations\\UserMutator@updateStatus")
 }
 
 
