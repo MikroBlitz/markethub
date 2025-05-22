@@ -117,7 +117,12 @@ import mockData from "~/pages/users/data/mockData.json";
 import { columns, status } from "~/pages/users/data/columns";
 import FormModal from "~/pages/users/components/FormModal.vue";
 import { type UserSchema, userState } from "~/pages/users/data/schema";
-import { usersPaginate, upsertUser, deleteUser } from "~/graphql/User";
+import {
+    usersPaginate,
+    upsertUser,
+    deleteUser,
+    updateUserStatus,
+} from "~/graphql/User";
 
 const toast = useToast();
 const selectedColumns = ref(columns);
@@ -275,10 +280,9 @@ function openChangeStatusModal(user: User) {
     isChangeStatusModal.value = true;
 }
 
-const { mutate: saveUser } = useMutation(upsertUser);
-const { mutate: removeUserMutation } = useMutation(deleteUser);
-
 async function removeUser(id: string) {
+    const { mutate: removeUserMutation } = useMutation(deleteUser);
+
     try {
         loading.value = true;
         if (auth.user?.id !== id) {
@@ -310,8 +314,8 @@ async function removeUser(id: string) {
 }
 
 async function changeStatus(id: string) {
+    const { mutate: changeUserStatus } = useMutation(updateUserStatus);
     if (!selectedUser.value) return;
-
     const input = {
         id,
         is_active: !selectedUser.value.is_active,
@@ -320,7 +324,7 @@ async function changeStatus(id: string) {
     try {
         loading.value = true;
         if (auth.user?.id !== id) {
-            await saveUser({ input });
+            await changeUserStatus(input);
             toast.add({
                 color: "green",
                 icon: "i-mdi-check-circle-outline",
@@ -348,6 +352,8 @@ async function changeStatus(id: string) {
 }
 
 async function onSubmit(event: FormSubmitEvent<UserSchema>) {
+    const { mutate: saveUser } = useMutation(upsertUser);
+
     const input = {
         ...event.data,
         id: selectedUser.value?.id || undefined,

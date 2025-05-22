@@ -65,3 +65,12 @@ export const restoreUser = gql`
         }
     }
 `;
+
+export const updateUserStatus = gql`
+    mutation updateUserStatus($id: ID!, $is_active: Boolean!) {
+        updateUserStatus(id: $id, is_active: $is_active) {
+            id
+            is_active
+        }
+    }
+`;
