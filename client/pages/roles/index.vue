@@ -149,7 +149,7 @@ const rotationRefetch = ref(0);
 const permissionOptions = ref<{ label: string; value: string }[]>([]);
 const fetchPermissions = async () => {
     try {
-        const variables = { first: 20 };
+        const variables = { first: 100 };
         const { data } = await useAsyncQuery(permissionsPaginate, variables);
 
         if (data.value) {
@@ -318,7 +318,7 @@ const actions = [
     },
 ];
 
-definePageMeta({ layout: "app-layout" });
+definePageMeta({ layout: "app-layout", permission: "view role" });
 onBeforeMount(() => fetchData());
 onMounted(() => fetchData());
 watch([page, pageCount, sort, debouncedSearch], () => fetchData(), {

@@ -171,7 +171,7 @@ const rotationRefetch = ref(0);
 const roleOptions = ref<{ label: string; value: string }[]>([]);
 const fetchRoles = async () => {
     try {
-        const variables = { first: 20 };
+        const variables = { first: 100 };
         const { data } = await useAsyncQuery(rolesPaginate, variables);
 
         if (data.value) {
@@ -347,11 +347,12 @@ async function removeUser(id: string) {
         }
         await fetchData();
     } catch (e) {
+        const err = parseGraphQLError(e);
         console.error("Remove error:", e);
         toast.add({
             color: "red",
             icon: "i-mdi-alert-circle-outline",
-            title: `Error removing user: ${e.message}`,
+            title: `Error removing user: ${err}`,
         });
     } finally {
         loading.value = false;
@@ -385,11 +386,12 @@ async function changeStatus(id: string) {
         }
         await fetchData();
     } catch (e) {
+        const err = parseGraphQLError(e);
         console.error("Status update error:", e);
         toast.add({
             color: "red",
             icon: "i-mdi-alert-circle-outline",
-            title: `Error updating user status: ${e.message}`,
+            title: `Error: ${err}`,
         });
     } finally {
         loading.value = false;
@@ -424,11 +426,12 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
         });
         await fetchData();
     } catch (e) {
+        const err = parseGraphQLError(e);
         console.error("Save error:", e);
         toast.add({
             color: "red",
             icon: "i-mdi-alert-circle-outline",
-            title: `Error saving user: ${e.message}`,
+            title: `Error saving user: ${err}`,
         });
     } finally {
         loading.value = false;
@@ -439,7 +442,7 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
 const actions = [
     {
         color: (row: User) => (row.is_active ? "green" : "gray"),
-        condition: () => auth.is("Admin"),
+        condition: () => auth.can("update user status"),
         icon: (row: User) =>
             row.is_active ? "mdi:toggle-switch" : "mdi:toggle-switch-off",
         onClick: (row: User) => openChangeStatusModal(row),
@@ -472,7 +475,7 @@ watch(
     },
 );
 
-definePageMeta({ layout: "app-layout" });
+definePageMeta({ layout: "app-layout", permission: "view user" });
 useHead({
     meta: [
         {

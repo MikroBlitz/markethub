@@ -114,9 +114,10 @@
                                     </li>
                                 </ul>
                             </div>
-                            
-                                <!-- TODO: v-if="isAdmin" -->
-                            <div> <!-- <div v-if="useRole('admin').value"> -->
+
+                            <!-- TODO: v-if="isAdmin" -->
+                            <div>
+                                <!-- <div v-if="useRole('admin').value"> -->
                                 <UDivider
                                     label="ADMIN"
                                     label-class="text-xs font-medium text-gray-500 dark:text-gray-400"
@@ -169,11 +170,14 @@
                             </template>
 
                             <div class="pl-2 flex flex-col items-start">
-                                <span class="text-sm font-medium">{{
-                                    authStore.user?.name
-                                        ? authStore.user?.name
-                                        : "No Name"
-                                }}</span>
+                                <span
+                                    class="text-sm text-gray-800 dark:text-gray-200 font-medium"
+                                    >{{
+                                        authStore.user?.name
+                                            ? authStore.user?.name
+                                            : "No Name"
+                                    }}</span
+                                >
                                 <span class="text-xs text-gray-500">{{
                                     authStore.user?.email || "No Email"
                                 }}</span>

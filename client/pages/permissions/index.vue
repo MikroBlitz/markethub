@@ -287,7 +287,7 @@ const actions = [
     },
 ];
 
-definePageMeta({ layout: "app-layout" });
+definePageMeta({ layout: "app-layout", permission: "view permission" });
 onBeforeMount(() => fetchData());
 onMounted(() => fetchData());
 watch([page, pageCount, sort, debouncedSearch], () => fetchData(), {

@@ -36,6 +36,7 @@ export default defineNuxtConfig({
     runtimeConfig: {
         public: {
             API_URL: import.meta.env.API_URL,
+            isLocalhost: import.meta.env.MODE === "development",
         },
     },
     srcDir: "client/",

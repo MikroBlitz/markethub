@@ -18,9 +18,12 @@ final readonly class UserMutator
             throw new \Exception("You can't change your own status.");
         }
 
+        if ($user->hasRole('Admin')) {
+            throw new \Exception("You cannot disable an Admin user.");
+        }
+
         $user->is_active = $args['is_active'];
         $user->save();
-
         Mail::to($user->email)->send(new UserStatusChanged($user));
 
         return $user;

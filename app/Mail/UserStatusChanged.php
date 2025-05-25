@@ -30,7 +30,7 @@ class UserStatusChanged extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Your Account Status Has Changed',
+            subject: 'Account Status Update',
         );
     }
 
