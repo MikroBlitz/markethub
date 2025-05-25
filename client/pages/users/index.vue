@@ -33,19 +33,33 @@
                                 Users
                             </h2>
                         </div>
-                        <template v-if="auth.can('add user')">
-                            <UTooltip text="Add Permission">
+                        <div class="flex gap-2">
+                            <template v-if="auth.can('add user')">
+                                <UTooltip text="Add User">
+                                    <UButton
+                                        class="p-2 rounded-full group"
+                                        @click="openAddModal"
+                                    >
+                                        <UIcon
+                                            name="mdi:add"
+                                            class="group-hover:scale-150 transition-all duration-300"
+                                        />
+                                    </UButton>
+                                </UTooltip>
+                            </template>
+                            <UTooltip text="Refetch Data">
                                 <UButton
                                     class="p-2 rounded-full group"
-                                    @click="openAddModal"
+                                    @click="fetchData"
                                 >
                                     <UIcon
-                                        name="mdi:add"
-                                        class="group-hover:scale-150 transition-all duration-300"
+                                        name="mdi:reload"
+                                        class="transition-transform duration-500 group-hover:scale-150"
+                                        :style="`transform: rotate(${rotationRefetch}deg);`"
                                     />
                                 </UButton>
                             </UTooltip>
-                        </template>
+                        </div>
                     </div>
                 </template>
 
@@ -80,6 +94,7 @@
             v-model:is-open="isOpen"
             :on-submit="onSubmit"
             :loading="loading"
+            :options="roleOptions"
         />
 
         <!-- Delete Modal -->
@@ -113,6 +128,7 @@ import { useDebounce, useTimeoutFn } from "@vueuse/shared";
 
 import type { User, UsersPaginateQuery } from "~/types/codegen/graphql";
 
+import { rolesPaginate } from "~/graphql/Role";
 import mockData from "~/pages/users/data/mockData.json";
 import { columns, status } from "~/pages/users/data/columns";
 import FormModal from "~/pages/users/components/FormModal.vue";
@@ -136,6 +152,11 @@ const search = ref("");
 const selectedFilters = ref([]);
 const debouncedSearch = useDebounce(search, 500);
 
+const isOpen = ref(false);
+const isDeleteModal = ref(false);
+const isChangeStatusModal = ref(false);
+const selectedUser = ref<User | null>(null);
+
 const pageTotal = computed(() => {
     if (!result.value?.usersPaginate?.paginatorInfo) return 0;
     return result.value.usersPaginate.paginatorInfo.total;
@@ -144,8 +165,32 @@ const pageTotal = computed(() => {
 const data = ref<User[]>([]);
 const loading = ref(false);
 const result = ref({ usersPaginate });
+const rotationRefetch = ref(0);
+
+const roleOptions = ref<{ label: string; value: string }[]>([]);
+
+const fetchRoles = async () => {
+    try {
+        const variables = { first: 10 };
+        const { data } = await useAsyncQuery(rolesPaginate, variables);
+
+        if (data.value) {
+            const roles = data.value.rolesPaginate.data;
+            roleOptions.value = roles.map(
+                (role: { name: string; id: string }) => ({
+                    label: role.name,
+                    value: role.id,
+                }),
+            );
+        }
+        console.log("Role options:", roleOptions.value);
+    } catch (error) {
+        console.error("Failed to fetch roles:", error);
+    }
+};
 
 const fetchData = async () => {
+    rotationRefetch.value += 360;
     try {
         loading.value = true;
         const variables: Record<string, any> = {
@@ -160,10 +205,13 @@ const fetchData = async () => {
 
         if (window.location.href === "http://localhost:3000/users") {
             // FIXME: for development
-            const queryResult = await useAsyncQuery(usersPaginate, variables);
+            const { data: userData } = await useAsyncQuery(
+                usersPaginate,
+                variables,
+            );
 
-            if (queryResult.data.value) {
-                result.value = queryResult.data.value as UsersPaginateQuery;
+            if (userData.value) {
+                result.value = userData.value as UsersPaginateQuery;
                 data.value = result.value.usersPaginate.data;
             }
         } else {
@@ -244,29 +292,29 @@ function select(row: User) {
     }
 }
 
-const isOpen = ref(false);
-const isDeleteModal = ref(false);
-const isChangeStatusModal = ref(false);
-const selectedUser = ref<User | null>(null);
-
 function openAddModal() {
     Object.assign(userState, {
         email: "",
         is_active: false,
         name: "",
         password: "",
+        roles: [],
     });
+    fetchRoles();
     isOpen.value = true;
 }
 
 function openEditModal(user: User) {
     selectedUser.value = user;
+    const roleIds = user.roles ? user.roles.map((role) => role.id) : [];
     Object.assign(userState, {
-        email: user.email,
-        is_active: user.is_active,
-        name: user.name,
+        email: user.email || "",
+        is_active: user.is_active || false,
+        name: user.name || "",
         password: "",
+        roles: roleIds,
     });
+    fetchRoles();
     isOpen.value = true;
 }
 
@@ -282,7 +330,6 @@ function openChangeStatusModal(user: User) {
 
 async function removeUser(id: string) {
     const { mutate: removeUserMutation } = useMutation(deleteUser);
-
     try {
         loading.value = true;
         if (auth.user?.id !== id) {
@@ -299,6 +346,7 @@ async function removeUser(id: string) {
                 title: "You can't remove yourself",
             });
         }
+        await fetchData();
     } catch (e) {
         console.error("Remove error:", e);
         toast.add({
@@ -307,8 +355,7 @@ async function removeUser(id: string) {
             title: `Error removing user: ${e.message}`,
         });
     } finally {
-        await fetchData();
-        useTimeoutFn(() => (loading.value = false), 300);
+        loading.value = false;
         isDeleteModal.value = false;
     }
 }
@@ -337,6 +384,7 @@ async function changeStatus(id: string) {
                 title: "You can't change status of yourself",
             });
         }
+        await fetchData();
     } catch (e) {
         console.error("Status update error:", e);
         toast.add({
@@ -345,8 +393,7 @@ async function changeStatus(id: string) {
             title: `Error updating user status: ${e.message}`,
         });
     } finally {
-        await fetchData();
-        useTimeoutFn(() => (loading.value = false), 300);
+        loading.value = false;
         isChangeStatusModal.value = false;
     }
 }
@@ -354,10 +401,18 @@ async function changeStatus(id: string) {
 async function onSubmit(event: FormSubmitEvent<UserSchema>) {
     const { mutate: saveUser } = useMutation(upsertUser);
 
+    let roles: string[] = [];
+    if (event.data.roles) {
+        if (Array.isArray(event.data.roles)) roles = event.data.roles;
+        else roles = [event.data.roles];
+    }
     const input = {
         ...event.data,
         id: selectedUser.value?.id || undefined,
         password: event.data.password || selectedUser.value?.password,
+        roles: {
+            sync: roles,
+        },
     };
 
     try {
@@ -368,6 +423,7 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
             icon: "i-mdi-check-circle-outline",
             title: "User has been saved",
         });
+        await fetchData();
     } catch (e) {
         console.error("Save error:", e);
         toast.add({
@@ -376,8 +432,7 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
             title: `Error saving user: ${e.message}`,
         });
     } finally {
-        await fetchData();
-        useTimeoutFn(() => (loading.value = false), 300);
+        loading.value = false;
         isOpen.value = false;
     }
 }

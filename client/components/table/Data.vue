@@ -442,8 +442,8 @@ const pageTo = computed(() => {
 
 // Filters
 const search = defineModel<string>("search", { default: "" });
-const selectedStatus = defineModel<string | null>("selectedStatus", {
-    default: null,
+const selectedStatus = defineModel<string | string[]>("selectedStatus", {
+    default: [],
 });
 const resetFilters = () => emit("resetFilters");
 </script>

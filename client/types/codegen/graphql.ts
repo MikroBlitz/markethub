@@ -148,6 +148,15 @@ export type ConnectRoleRelation = {
   upsert?: InputMaybe<RoleInput>;
 };
 
+export type ConnectRolesRelation = {
+  connect?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  delete?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  id?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  sync?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  update?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  upsert?: InputMaybe<Array<InputMaybe<RoleInput>>>;
+};
+
 export type ConnectUserRelation = {
   connect?: InputMaybe<Scalars['ID']['input']>;
   delete?: InputMaybe<Scalars['ID']['input']>;
@@ -613,6 +622,7 @@ export type UserInput = {
   is_active?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   password?: InputMaybe<Scalars['String']['input']>;
+  roles?: InputMaybe<ConnectRolesRelation>;
 };
 
 /** A paginated list of User items. */
