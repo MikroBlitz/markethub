@@ -25,10 +25,12 @@
                 @submit="onSubmit"
             >
                 <UFormGroup label="Role" name="roles">
-                    <USelect
+                    <USelectMenu
                         v-model="userState.roles"
                         :options="options"
                         placeholder="Select roles"
+                        value-attribute="value"
+                        option-attribute="label"
                     />
                 </UFormGroup>
 
@@ -72,7 +74,7 @@ const props = defineProps<{
     isOpen: boolean;
     onSubmit: (event: FormSubmitEvent<UserSchema>) => void;
     loading: boolean;
-    options: object;
+    options: [];
 }>();
 
 const emit = defineEmits<{

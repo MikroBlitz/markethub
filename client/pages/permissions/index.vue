@@ -33,19 +33,34 @@
                                 Permission
                             </h2>
                         </div>
-                        <template v-if="auth.can('add permission')">
-                            <UTooltip text="Add Permission">
+                        <div class="flex gap-2">
+                            <template v-if="auth.can('add permission')">
+                                <UTooltip text="Add Permission">
+                                    <UButton
+                                        class="p-2 rounded-full group"
+                                        @click="openAddModal"
+                                    >
+                                        <UIcon
+                                            name="mdi:add"
+                                            class="group-hover:scale-150 transition-all duration-300"
+                                        />
+                                    </UButton>
+                                </UTooltip>
+                            </template>
+                            <UTooltip text="Refetch Data">
                                 <UButton
                                     class="p-2 rounded-full group"
-                                    @click="openAddModal"
+                                    variant="outline"
+                                    @click="fetchData"
                                 >
                                     <UIcon
-                                        name="mdi:add"
-                                        class="group-hover:scale-150 transition-all duration-300"
+                                        name="mdi:reload"
+                                        class="transition-transform duration-500 group-hover:scale-150"
+                                        :style="`transform: rotate(${rotationRefetch}deg);`"
                                     />
                                 </UButton>
                             </UTooltip>
-                        </template>
+                        </div>
                     </div>
                 </template>
 
@@ -135,8 +150,10 @@ const pageTotal = computed(() => {
 const data = ref<Permission[]>([]);
 const loading = ref(false);
 const result = ref({ permissionsPaginate });
+const rotationRefetch = ref(0);
 
 const fetchData = async () => {
+    rotationRefetch.value += 360;
     try {
         loading.value = true;
         const variables: Record<string, any> = {
@@ -154,7 +171,7 @@ const fetchData = async () => {
     } catch (error) {
         console.error("Error fetching users:", error);
     } finally {
-        useTimeoutFn(() => (loading.value = false), 500);
+        useTimeoutFn(() => (loading.value = false), 300);
     }
 };
 
@@ -199,10 +216,8 @@ function openDeleteModal(permission: Permission) {
     isDeleteModal.value = true;
 }
 
-const { mutate: savePermission } = useMutation(upsertPermission);
-const { mutate: removePermissionMutation } = useMutation(deletePermission);
-
 async function removePermission(id: string) {
+    const { mutate: removePermissionMutation } = useMutation(deletePermission);
     try {
         loading.value = true;
         await removePermissionMutation({ id });
@@ -211,21 +226,22 @@ async function removePermission(id: string) {
             icon: "i-mdi-check-circle-outline",
             title: "Permission has been removed",
         });
-    } catch (err) {
-        console.error("Remove error:", err);
+        await fetchData();
+    } catch (e) {
+        console.error("Remove error:", e);
         toast.add({
             color: "red",
             icon: "i-mdi-alert-circle-outline",
-            title: `Error removing Permission: ${err.message}`,
+            title: `Error removing Permission: ${e.message}`,
         });
     } finally {
-        await fetchData();
-        useTimeoutFn(() => (loading.value = false), 700);
+        loading.value = false;
         isDeleteModal.value = false;
     }
 }
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
+    const { mutate: savePermission } = useMutation(upsertPermission);
     const input = {
         ...event.data,
         guard_name: "web",
@@ -240,16 +256,16 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             icon: "i-mdi-check-circle-outline",
             title: "Permission has been saved",
         });
-    } catch (err) {
-        console.error("Save error:", err);
+        await fetchData();
+    } catch (e) {
+        console.error("Save error:", e);
         toast.add({
             color: "red",
             icon: "i-mdi-alert-circle-outline",
-            title: `Error saving permission: ${err.message}`,
+            title: `Error saving permission: ${e.message}`,
         });
     } finally {
-        await fetchData();
-        useTimeoutFn(() => (loading.value = false), 700);
+        loading.value = false;
         isOpen.value = false;
     }
 }
