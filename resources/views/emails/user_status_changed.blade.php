@@ -9,6 +9,7 @@
 
         * {
             box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
 
         body {
@@ -42,7 +43,7 @@
 
         /* Header */
         .header {
-            padding: 2rem 1.5rem 1rem;
+            padding: 1rem 1rem 1rem;
             text-align: center;
             border-bottom: 1px solid #f3f4f6;
         }
@@ -69,7 +70,7 @@
 
         .greeting {
             margin: 0 0 2rem 0;
-            font-size: 1.125rem;
+            font-size: 1rem;
             color: #111827;
             font-weight: 500;
         }
@@ -120,18 +121,6 @@
             line-height: 1.5;
         }
 
-        /* Message Section */
-        .message-section {
-            margin: 2rem 0;
-        }
-
-        .message {
-            font-size: 0.875rem;
-            color: #4b5563;
-            line-height: 1.7;
-            margin: 0;
-        }
-
         /* CTA Section */
         .cta-section {
             text-align: center;
@@ -170,22 +159,6 @@
         .cta-button:active {
             background: #69987e;
             transform: translateY(1px);
-        }
-
-        /* Alert Box */
-        .alert {
-            background: #fef3c7;
-            border: 1px solid #fcd34d;
-            border-radius: 6px;
-            padding: 1rem;
-            margin: 1.5rem 0;
-        }
-
-        .alert-text {
-            font-size: 0.875rem;
-            color: #92400e;
-            margin: 0;
-            display: inline;
         }
 
         /* Footer */
@@ -301,7 +274,7 @@
     <div class="email-container">
         <!-- Header -->
         <div class="header">
-            <h1>Account Status Update</h1>
+            <h2>Account Status Update</h2>
             <p>Important notification about your account</p>
         </div>
 
@@ -322,25 +295,6 @@
                     @endif
                 </p>
             </div>
-
-            <!-- Message Section -->
-            <div class="message-section">
-                <p class="message">
-                    @if ($user->is_active)
-                        You can now sign in to your account and enjoy full access to our platform. All your previous data and settings have been preserved and are ready for you to use.
-                    @else
-                        Access to your account has been restricted and you will not be able to sign in until your account is reactivated. If you believe this is an error, please reach out to our support team immediately.
-                    @endif
-                </p>
-            </div>
-
-            @if (!$user->is_active)
-                <div class="alert">
-                    <p class="alert-text">
-                        Your account access has been suspended. Contact support to resolve this issue.
-                    </p>
-                </div>
-            @endif
 
             <!-- CTA Section -->
             @if ($user->is_active)

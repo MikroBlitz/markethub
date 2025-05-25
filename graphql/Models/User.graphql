@@ -18,6 +18,7 @@ input UserInput {
     email: String
     password: String
     is_active: Boolean
+    roles: ConnectRolesRelation
 }
 
 input ConnectUserRelation {

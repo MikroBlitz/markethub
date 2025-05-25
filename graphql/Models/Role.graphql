@@ -22,6 +22,15 @@ input ConnectRoleRelation {
     delete: ID
 }
 
+input ConnectRolesRelation {
+    id: [ID]
+    connect: [ID]
+    sync: [ID]
+    upsert: [RoleInput]
+    update: [ID]
+    delete: [ID]
+}
+
 extend type Query {
     roles: [Role]! @all
     rolesPaginate(

@@ -24,6 +24,14 @@
                 class="space-y-4"
                 @submit="onSubmit"
             >
+                <UFormGroup label="Role" name="roles">
+                    <USelect
+                        v-model="userState.roles"
+                        :options="options"
+                        placeholder="Select roles"
+                    />
+                </UFormGroup>
+
                 <UFormGroup label="Name" name="name">
                     <UInput v-model="userState.name" />
                 </UFormGroup>
@@ -64,6 +72,7 @@ const props = defineProps<{
     isOpen: boolean;
     onSubmit: (event: FormSubmitEvent<UserSchema>) => void;
     loading: boolean;
+    options: object;
 }>();
 
 const emit = defineEmits<{
