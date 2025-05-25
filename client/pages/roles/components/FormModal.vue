@@ -25,6 +25,17 @@
                     <UInput v-model="formState.name" />
                 </UFormGroup>
 
+                <UFormGroup label="Permissions" name="permissions">
+                    <USelectMenu
+                        v-model="formState.permissions"
+                        :options="options"
+                        placeholder="Select permissions"
+                        value-attribute="value"
+                        option-attribute="label"
+                        multiple
+                    />
+                </UFormGroup>
+
                 <!--                <UFormGroup label="Guard Name" name="guard_name">-->
                 <!--                    <UInput v-model="formState.guard_name" />-->
                 <!--                </UFormGroup>-->
@@ -53,6 +64,7 @@ const props = defineProps<{
     isOpen: boolean;
     onSubmit: (event: FormSubmitEvent<Schema>) => void;
     loading: boolean;
+    options: [];
 }>();
 
 const emit = defineEmits<{

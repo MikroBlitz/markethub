@@ -13,6 +13,7 @@ input RoleInput {
     id: ID
     name: String!
     guard_name: String
+    permissions: ConnectPermissionsRelation
 }
 
 input ConnectRoleRelation {

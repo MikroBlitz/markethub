@@ -21,6 +21,15 @@ input ConnectPermissionRelation {
     delete: ID
 }
 
+input ConnectPermissionsRelation {
+    id: [ID]
+    connect: [ID]
+    sync: [ID]
+    upsert: [PermissionInput]
+    update: [ID]
+    delete: [ID]
+}
+
 extend type Query {
     permissions: [Permission]! @all
     permissionsPaginate(

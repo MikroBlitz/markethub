@@ -50,6 +50,7 @@
                             <UTooltip text="Refetch Data">
                                 <UButton
                                     class="p-2 rounded-full group"
+                                    variant="outline"
                                     @click="fetchData"
                                 >
                                     <UIcon
@@ -168,10 +169,9 @@ const result = ref({ usersPaginate });
 const rotationRefetch = ref(0);
 
 const roleOptions = ref<{ label: string; value: string }[]>([]);
-
 const fetchRoles = async () => {
     try {
-        const variables = { first: 10 };
+        const variables = { first: 20 };
         const { data } = await useAsyncQuery(rolesPaginate, variables);
 
         if (data.value) {
@@ -183,9 +183,8 @@ const fetchRoles = async () => {
                 }),
             );
         }
-        console.log("Role options:", roleOptions.value);
-    } catch (error) {
-        console.error("Failed to fetch roles:", error);
+    } catch (e) {
+        console.error("Failed to fetch roles:", e);
     }
 };
 

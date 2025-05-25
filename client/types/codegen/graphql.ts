@@ -128,6 +128,15 @@ export type ConnectPermissionRelation = {
   upsert?: InputMaybe<PermissionInput>;
 };
 
+export type ConnectPermissionsRelation = {
+  connect?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  delete?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  id?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  sync?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  update?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  upsert?: InputMaybe<Array<InputMaybe<PermissionInput>>>;
+};
+
 export type ConnectProductRelation = {
   connect?: InputMaybe<Scalars['ID']['input']>;
   delete?: InputMaybe<Scalars['Boolean']['input']>;
@@ -567,6 +576,7 @@ export type RoleInput = {
   guard_name?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   name: Scalars['String']['input'];
+  permissions?: InputMaybe<ConnectPermissionsRelation>;
 };
 
 /** A paginated list of Role items. */
