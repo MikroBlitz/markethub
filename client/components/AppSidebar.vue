@@ -49,7 +49,7 @@
                         <nav class="space-y-3">
                             <div>
                                 <UDivider
-                                    label="MAIN MENU"
+                                    label="Menu"
                                     label-class="text-xs font-medium text-gray-500 dark:text-gray-400"
                                 />
                                 <ul class="mt-2 space-y-1">
@@ -81,45 +81,9 @@
                                 </ul>
                             </div>
 
-                            <div>
+                            <div v-if="auth.is('Admin')">
                                 <UDivider
-                                    label="MANAGEMENT"
-                                    label-class="text-xs font-medium text-gray-500 dark:text-gray-400"
-                                />
-                                <ul class="mt-2 space-y-1">
-                                    <li
-                                        v-for="(item, index) in managementItems"
-                                        :key="index"
-                                    >
-                                        <UButton
-                                            :icon="item.icon"
-                                            :to="item.to"
-                                            :color="
-                                                isActive(item.to)
-                                                    ? 'green'
-                                                    : 'gray'
-                                            "
-                                            :variant="
-                                                isActive(item.to)
-                                                    ? 'soft'
-                                                    : 'ghost'
-                                            "
-                                            class="w-full justify-start"
-                                            square
-                                            padded
-                                            @click="isOpen = false"
-                                        >
-                                            {{ item.label }}
-                                        </UButton>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <!-- TODO: v-if="isAdmin" -->
-                            <div>
-                                <!-- <div v-if="useRole('admin').value"> -->
-                                <UDivider
-                                    label="ADMIN"
+                                    label="Admin"
                                     label-class="text-xs font-medium text-gray-500 dark:text-gray-400"
                                 />
                                 <ul class="mt-2 space-y-1">
@@ -173,13 +137,13 @@
                                 <span
                                     class="text-sm text-gray-800 dark:text-gray-200 font-medium"
                                     >{{
-                                        authStore.user?.name
-                                            ? authStore.user?.name
+                                        auth.user?.name
+                                            ? auth.user?.name
                                             : "No Name"
                                     }}</span
                                 >
                                 <span class="text-xs text-gray-500">{{
-                                    authStore.user?.email || "No Email"
+                                    auth.user?.email || "No Email"
                                 }}</span>
                             </div>
                         </UDropdown>
@@ -197,19 +161,15 @@ const isOpen = ref(false);
 const route = useRoute();
 const toast = useToast();
 
-const authStore = useAuthStore();
+const auth = useAuthStore();
 // const isAdmin = inject("isAdmin");
 
 const mainMenuItems = [
     { icon: "i-heroicons-home", label: "Dashboard", to: "/dashboard" },
     { icon: "i-heroicons-shopping-bag", label: "Products", to: "/products" },
     { icon: "i-heroicons-shopping-cart", label: "Orders", to: "/orders" },
-];
-
-const managementItems = [
     { icon: "i-heroicons-users", label: "Customers", to: "/customers" },
     { icon: "i-heroicons-chart-bar", label: "Analytics", to: "/analytics" },
-    { icon: "i-heroicons-cog-6-tooth", label: "Settings", to: "/settings" },
 ];
 
 const adminItems = [
@@ -220,6 +180,7 @@ const adminItems = [
         label: "Permissions",
         to: "/permissions",
     },
+    { icon: "i-heroicons-cog-6-tooth", label: "Settings", to: "/settings" },
 ];
 
 const userMenuItems = [
@@ -230,7 +191,7 @@ const userMenuItems = [
     [
         {
             click: () => {
-                authStore.logout();
+                auth.logout();
                 useTimeoutFn(() => {
                     toast.add({
                         icon: "i-mdi-check-circle-outline",

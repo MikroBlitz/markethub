@@ -36,7 +36,15 @@
 </template>
 
 <script setup>
-definePageMeta({
-    layout: "app-layout",
+definePageMeta({ layout: "app-layout" });
+useHead({
+    meta: [
+        {
+            content:
+                "A secure platform connecting buyers and sellers in a community-driven ecosystem.",
+            name: "description",
+        },
+    ],
+    title: "MarketHub - Dashboard",
 });
 </script>
