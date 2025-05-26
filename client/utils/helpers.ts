@@ -21,8 +21,8 @@ export const roleIconMap: Record<string, any> = {
 
 export const colorMap: Record<string, string> = {
     Admin: "emerald",
-    Manager: "blue",
-    User: "white",
+    Manager: "orange",
+    User: "blue",
 };
 
 export function parseGraphQLError(e: any): string {

@@ -25,7 +25,7 @@ export const columns: Column[] = [
             return h(
                 UBadge,
                 {
-                    color: colorMap[row.name] || "gray",
+                    color: colorMap[row.name] || "blue",
                     label: row.name,
                     size: "sm",
                     variant: "solid",
@@ -51,16 +51,16 @@ export const columns: Column[] = [
                 return h(
                     UBadge,
                     {
-                        color: "black",
+                        color: "green",
                         label: "No limits",
                         size: "sm",
-                        variant: "solid",
+                        variant: "subtle",
                     },
                     {
                         default: () =>
                             h("div", { class: "flex items-center space-x-1" }, [
                                 h(Icon, { class: "w-3 h-3" }),
-                                h("span", null, "No Restrictions"),
+                                h("span", null, "All Permissions"),
                             ]),
                     },
                 );
