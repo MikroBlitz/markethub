@@ -1,6 +1,6 @@
 <template>
     <!-- Modal and Form -->
-    <UModal v-model="isModalOpen">
+    <UModal v-model="isModalOpen" :transition="false">
         <UCard
             :ui="{
                 ring: '',
@@ -21,10 +21,10 @@
             <UForm
                 :schema="schema"
                 :state="userState"
-                class="space-y-4"
+                class="space-y-4 gap-x-2 grid-cols-12 grid"
                 @submit="onSubmit"
             >
-                <UFormGroup label="Role" name="roles">
+                <UFormGroup label="Role *" name="roles" class="col-span-full">
                     <USelectMenu
                         v-model="userState.roles"
                         :options="options"
@@ -34,15 +34,47 @@
                     />
                 </UFormGroup>
 
-                <UFormGroup label="Name" name="name">
-                    <UInput v-model="userState.name" />
+                <UFormGroup
+                    label="First name *"
+                    name="first_name"
+                    class="col-span-full md:col-span-6"
+                >
+                    <UInput v-model="userState.first_name" />
                 </UFormGroup>
 
-                <UFormGroup label="Email" name="email">
+                <UFormGroup
+                    label="Middle name"
+                    name="middle_name"
+                    class="col-span-full md:col-span-6"
+                >
+                    <UInput v-model="userState.middle_name" />
+                </UFormGroup>
+
+                <UFormGroup
+                    label="Last name *"
+                    name="last_name"
+                    class="col-span-full md:col-span-6"
+                >
+                    <UInput v-model="userState.last_name" />
+                </UFormGroup>
+
+                <UFormGroup
+                    label="Phone"
+                    name="phone"
+                    class="col-span-full md:col-span-6"
+                >
+                    <UInput v-model="userState.phone" />
+                </UFormGroup>
+
+                <UFormGroup label="Email *" name="email" class="col-span-full">
                     <UInput v-model="userState.email" />
                 </UFormGroup>
 
-                <UFormGroup label="Password" name="password">
+                <UFormGroup
+                    label="Password *"
+                    name="password"
+                    class="col-span-full"
+                >
                     <UInput v-model="userState.password" type="password" />
                 </UFormGroup>
 
@@ -50,7 +82,7 @@
                 <!--                    <UToggle v-model="userState.is_active" />-->
                 <!--                </UFormGroup>-->
 
-                <div class="flex justify-end gap-2">
+                <div class="flex col-span-full justify-end gap-2 pt-4">
                     <UButton
                         color="gray"
                         variant="ghost"

@@ -294,9 +294,13 @@ function select(row: User) {
 function openAddModal() {
     Object.assign(userState, {
         email: "",
+        first_name: "",
+        id: "",
         is_active: false,
-        name: "",
+        last_name: "",
+        middle_name: "",
         password: "",
+        phone: "",
         roles: [],
     });
     fetchRoles();
@@ -308,9 +312,13 @@ function openEditModal(user: User) {
     const roleIds = user.roles ? user.roles.map((role) => role.id) : [];
     Object.assign(userState, {
         email: user.email || "",
+        first_name: user.first_name || "",
+        id: user.id || "",
         is_active: user.is_active || false,
-        name: user.name || "",
+        last_name: user.last_name || "",
+        middle_name: user.middle_name || "",
         password: "",
+        phone: user.phone || "",
         roles: roleIds,
     });
     fetchRoles();

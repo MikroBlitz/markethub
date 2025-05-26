@@ -61,13 +61,29 @@ export const columns: Column[] = [
                 h(
                     "a",
                     {
-                        class: "text-blue-600 cursor-pointer",
+                        class: "text-blue-600 italic cursor-pointer",
                         onClick: () => copyToClipboard("email", row.email),
                     },
                     row.email,
                 ),
             ]),
         sortable: true,
+    },
+    {
+        key: "phone",
+        label: "Phone",
+        render: (row) =>
+            h("div", { class: "flex items-center space-x-2" }, [
+                h(
+                    "a",
+                    {
+                        class: "text-blue-600 text-xs cursor-pointer",
+                        onClick: () => copyToClipboard("phone", row.phone),
+                    },
+                    row.phone,
+                ),
+            ]),
+        sortable: false,
     },
     {
         key: "is_active",
@@ -84,11 +100,13 @@ export const columns: Column[] = [
     {
         key: "created_at",
         label: "Created At",
+        render: (row) => h("div", getFriendlyDate(row.created_at)),
         sortable: true,
     },
     {
         key: "updated_at",
         label: "Updated At",
+        render: (row) => h("div", getFriendlyDate(row.updated_at)),
         sortable: true,
     },
     {

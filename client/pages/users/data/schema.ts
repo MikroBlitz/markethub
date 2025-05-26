@@ -1,10 +1,17 @@
 import { z } from "zod";
+const phoneRegex = /^(?:\+63|0)?9\d{9}$/;
 
 const schema = z.object({
     email: z.string().email("Invalid email"),
+    first_name: z.string().min(1, "First name is required"),
     is_active: z.boolean().optional(),
-    name: z.string().min(1, "Name is required"),
+    last_name: z.string().min(1, "Last name is required"),
+    middle_name: z.string().optional(),
     password: z.string().optional(),
+    phone: z
+        .string()
+        .regex(phoneRegex, "Invalid Philippine phone number")
+        .optional(),
     roles: z
         .union([
             z.string().min(1, "Role is required"),
@@ -17,9 +24,12 @@ type UserSchema = z.output<typeof schema>;
 
 const userState = reactive<Partial<UserSchema>>({
     email: "",
+    first_name: "",
     is_active: false,
-    name: "",
+    last_name: "",
+    middle_name: "",
     password: "",
+    phone: "",
     roles: [],
 });
 

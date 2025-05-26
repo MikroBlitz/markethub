@@ -23,6 +23,10 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'first_name',
+        'middle_name',
+        'last_name',
+        'phone',
         'email',
         'password',
     ];
@@ -50,6 +54,33 @@ class User extends Authenticatable
         ];
     }
 
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::saving(function ($user) {
+            $user->name = $user->generateFullName();
+        });
+    }
+
+    /**
+     * Compose the complete name of the user.
+     *
+     * @param \App\Modules\User\Models\User $user
+     *
+     * @return string
+     */
+    public function generateFullName(): string
+    {
+        $parts = [
+            $this->first_name,
+            $this->middle_name,
+            $this->last_name,
+        ];
+
+        return implode(' ', array_filter(array_map('trim', $parts)));
+    }
+
     /* Get all roles for user */
     public function roles(): MorphToMany
     {
@@ -68,7 +99,9 @@ class User extends Authenticatable
         if (empty($search)) return $query;
 
         return $query->where('id', $search)
-            ->orWhere('name', 'like', "%{$search}%")
+            ->orWhere('first_name', 'like', "%{$search}%")
+            ->orWhere('middle_name', 'like', "%{$search}%")
+            ->orWhere('last_name', 'like', "%{$search}%")
             ->orWhere('email', 'like', "%{$search}%");
     }
 
