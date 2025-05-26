@@ -35,31 +35,6 @@ class DatabaseSeeder extends Seeder
             'view user',
             'edit user',
             'delete user',
-            'view role',
-            'edit role',
-            'delete role',
-            'view permission',
-            'edit permission',
-            'delete permission',
-            'edit product',
-        ];
-
-        // Create permissions if not exists
-        $permissionMap = [];
-        foreach ($permissions as $permissionName) {
-            $permissionMap[$permissionName] = Permission::firstOrCreate(['name' => $permissionName]);
-        }
-
-        // Create roles
-        $adminRole = Role::firstOrCreate(['name' => 'Admin']);
-        $managerRole = Role::firstOrCreate(['name' => 'Manager']);
-        $userRole = Role::firstOrCreate(['name' => 'User']);
-
-        // Assign specific permissions to Manager
-        $managerPermissions = [
-            'view user',
-            'edit user',
-            'delete user',
             'update user status',
 
             'view role',
@@ -75,7 +50,18 @@ class DatabaseSeeder extends Seeder
             'delete product',
         ];
 
-        $managerRole->syncPermissions(array_map(fn($name) => $permissionMap[$name], $managerPermissions));
+        // Create permissions if not exists
+        $permissionMap = [];
+        foreach ($permissions as $permissionName) {
+            $permissionMap[$permissionName] = Permission::firstOrCreate(['name' => $permissionName]);
+        }
+
+        // Create roles
+        $adminRole = Role::firstOrCreate(['name' => 'Admin']);
+        $managerRole = Role::firstOrCreate(['name' => 'Manager']);
+        $userRole = Role::firstOrCreate(['name' => 'User']);
+
+        $managerRole->syncPermissions(array_map(fn($name) => $permissionMap[$name], $permissions));
 
         // Assign roles to users
         $admin->assignRole($adminRole);

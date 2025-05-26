@@ -21,8 +21,8 @@
                 <p
                     class="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto"
                 >
-                    You don't have permission to access this page. Please check
-                    your credentials or contact an administrator.
+                    You don't have permission to access this page. Please
+                    contact an administrator.
                 </p>
             </div>
 
