@@ -2,7 +2,11 @@ export const userFragment = gql`
     fragment user on User {
         id
         name
+        first_name
+        middle_name
+        last_name
         email
+        phone
         password
         is_admin
         roles {
@@ -22,12 +26,12 @@ export const roleFragment = gql`
         name
         guard_name
         users {
-          id
-          name
+            id
+            name
         }
-      	permissions {
-          id
-          name
+        permissions {
+            id
+            name
         }
         created_at
         updated_at
@@ -36,14 +40,14 @@ export const roleFragment = gql`
 
 export const permissionFragment = gql`
     fragment permission on Permission {
+        id
+        name
+        guard_name
+        roles {
             id
             name
-            guard_name
-            roles {
-            id
-            name
-            }
-            created_at
-            updated_at
         }
+        created_at
+        updated_at
+    }
 `;

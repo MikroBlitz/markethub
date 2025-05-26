@@ -81,7 +81,7 @@
                                 </ul>
                             </div>
 
-                            <div v-if="auth.is('Admin')">
+                            <div>
                                 <UDivider
                                     label="Admin"
                                     label-class="text-xs font-medium text-gray-500 dark:text-gray-400"
@@ -92,6 +92,7 @@
                                         :key="index"
                                     >
                                         <UButton
+                                            v-if="item.permission"
                                             :icon="item.icon"
                                             :to="item.to"
                                             :color="
@@ -173,14 +174,30 @@ const mainMenuItems = [
 ];
 
 const adminItems = [
-    { icon: "mdi:user-group-outline", label: "Users", to: "/users" },
-    { icon: "mdi:user-key-outline", label: "Roles", to: "/roles" },
+    {
+        icon: "mdi:user-group-outline",
+        label: "Users",
+        permission: auth.can("view user"),
+        to: "/users",
+    },
+    {
+        icon: "mdi:user-key-outline",
+        label: "Roles",
+        permission: auth.can("view role"),
+        to: "/roles",
+    },
     {
         icon: "mdi:user-lock-outline",
         label: "Permissions",
+        permission: auth.can("view permission"),
         to: "/permissions",
     },
-    { icon: "i-heroicons-cog-6-tooth", label: "Settings", to: "/settings" },
+    {
+        icon: "i-heroicons-cog-6-tooth",
+        label: "Settings",
+        permission: auth.can("view setting"),
+        to: "/settings",
+    },
 ];
 
 const userMenuItems = [

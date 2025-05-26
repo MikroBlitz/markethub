@@ -41,3 +41,18 @@ export function parseGraphQLError(e: any): string {
 
     return "An unexpected error occurred";
 }
+
+export const getFriendlyDate = (datetimeStr: string): string => {
+    const date = new Date(datetimeStr.replace(" ", "T"));
+
+    const options: Intl.DateTimeFormatOptions = {
+        day: "numeric",
+        hour: "numeric",
+        hour12: true,
+        minute: "2-digit",
+        month: "long",
+        year: "numeric",
+    };
+
+    return date.toLocaleString(undefined, options);
+};

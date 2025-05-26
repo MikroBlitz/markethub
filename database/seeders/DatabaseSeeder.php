@@ -17,15 +17,19 @@ class DatabaseSeeder extends Seeder
     {
         // Create Admin and Manager users
         $admin = User::factory()->create([
-            'name' => 'Admin',
+            'first_name' => 'Super',
+            'last_name' => 'Admin',
             'email' => 'admin@mail.com',
+            'phone' => '09876543210',
             'password' => Hash::make('admin1234'),
             'is_active' => 1,
         ]);
 
         $manager = User::factory()->create([
-            'name' => 'Manager',
+            'first_name' => 'Manager',
+            'last_name' => 'Mans',
             'email' => 'manager@mail.com',
+            'phone' => '09876543210',
             'password' => Hash::make('manager1234'),
             'is_active' => 1,
         ]);
