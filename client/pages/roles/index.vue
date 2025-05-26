@@ -318,10 +318,21 @@ const actions = [
     },
 ];
 
-definePageMeta({ layout: "app-layout", permission: "view role" });
 onBeforeMount(() => fetchData());
 onMounted(() => fetchData());
 watch([page, pageCount, sort, debouncedSearch], () => fetchData(), {
     deep: true,
+});
+
+definePageMeta({ layout: "app-layout", permission: "view role" });
+useHead({
+    meta: [
+        {
+            content:
+                "A secure platform connecting buyers and sellers in a community-driven ecosystem.",
+            name: "description",
+        },
+    ],
+    title: "MarketHub - Roles",
 });
 </script>
