@@ -137,6 +137,9 @@ const onSubmit = async () => {
             email: formState.email,
             name: formState.name,
             password: formState.password,
+            roles: {
+                sync: 3, // default user role on sign up
+            },
         };
 
         const response = await registerUser({ input: variables });

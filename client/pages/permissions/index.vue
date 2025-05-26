@@ -30,7 +30,7 @@
                             <h2
                                 class="font-semibold text-xl text-gray-900 dark:text-gray-100 leading-tight"
                             >
-                                Permission
+                                Permissions
                             </h2>
                         </div>
                         <div class="flex gap-2">
