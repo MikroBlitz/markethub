@@ -37,21 +37,30 @@ class DatabaseSeeder extends Seeder
         // Define permissions
         $permissions = [
             'view user',
+            'add user',
             'edit user',
             'delete user',
             'update user status',
 
             'view role',
+            'add role',
             'edit role',
             'delete role',
 
             'view permission',
+            'add permission',
             'edit permission',
             'delete permission',
 
             'view product',
+            'add product',
             'edit product',
             'delete product',
+
+            'view order',
+            'add order',
+            'edit order',
+            'delete order',
         ];
 
         // Create permissions if not exists
