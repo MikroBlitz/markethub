@@ -58,6 +58,7 @@
                                         :key="index"
                                     >
                                         <UButton
+                                            v-if="item.permission"
                                             :icon="item.icon"
                                             :to="item.to"
                                             :color="
@@ -166,11 +167,30 @@ const auth = useAuthStore();
 // const isAdmin = inject("isAdmin");
 
 const mainMenuItems = [
-    { icon: "i-heroicons-home", label: "Dashboard", to: "/dashboard" },
-    { icon: "i-heroicons-shopping-bag", label: "Products", to: "/products" },
-    { icon: "i-heroicons-shopping-cart", label: "Orders", to: "/orders" },
-    { icon: "i-heroicons-users", label: "Customers", to: "/customers" },
-    { icon: "i-heroicons-chart-bar", label: "Analytics", to: "/analytics" },
+    {
+        icon: "i-heroicons-home",
+        label: "Dashboard",
+        permission: true,
+        to: "/dashboard",
+    },
+    {
+        icon: "i-heroicons-shopping-bag",
+        label: "Products",
+        permission: auth.can("view product"),
+        to: "/products",
+    },
+    {
+        icon: "i-heroicons-shopping-cart",
+        label: "Orders",
+        permission: auth.can("view order"),
+        to: "/orders",
+    },
+    {
+        icon: "i-heroicons-users",
+        label: "Customers",
+        permission: auth.can("view customer"),
+        to: "/customers",
+    },
 ];
 
 const adminItems = [

@@ -51,7 +51,7 @@
                                 <UButton
                                     class="p-2 rounded-full group"
                                     variant="outline"
-                                    @click="fetchData"
+                                    @click="refetch"
                                 >
                                     <UIcon
                                         name="mdi:reload"
@@ -187,6 +187,8 @@ const fetchRoles = async () => {
         console.error("Failed to fetch roles:", e);
     }
 };
+
+const { refetch } = useQuery(usersPaginate, { first: 10 });
 
 const fetchData = async () => {
     rotationRefetch.value += 360;

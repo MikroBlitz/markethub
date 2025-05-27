@@ -12,7 +12,7 @@ export default defineNuxtRouteMiddleware((to, _from) => {
 
         const toPath = to.path.toLowerCase();
 
-        if (!validRoutes.includes(toPath)) return navigateTo("/dashboard");
+        if (!validRoutes.includes(toPath)) return navigateTo("/notfound");
 
         if (
             !auth.isAuthenticated &&

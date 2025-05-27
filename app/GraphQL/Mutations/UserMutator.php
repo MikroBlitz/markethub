@@ -9,28 +9,6 @@ use Illuminate\Support\Facades\Mail;
 
 final readonly class UserMutator
 {
-    public function upsertUser($_, array $args)
-    {
-        $data = $args['input'];
-
-        // Generate full name
-        $fullName = collect([
-            $data['first_name'] ?? '',
-            $data['middle_name'] ?? '',
-            $data['last_name'] ?? '',
-        ])->filter()->map('trim')->implode(' ');
-
-        $data['name'] = $fullName;
-
-        // Upsert logic
-        $user = User::updateOrCreate(
-            ['id' => $data['id'] ?? null],
-            $data
-        );
-
-        return $user;
-    }
-
     /** @param  array{}  $args */
     public function updateStatus(null $_, array $args)
     {
