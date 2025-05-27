@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Permission\Models\Role as SpatieRole;
 
 class Role extends SpatieRole
-{   
+{
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -24,7 +24,7 @@ class Role extends SpatieRole
     {
         if (empty($search)) return $query;
 
-        return $query->where('name', $search);
+        return $query->where('name', 'like', "%{$search}%");
     }
 
     public function scopeSort(Builder $query, ?array $sort): Builder

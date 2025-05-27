@@ -16,6 +16,7 @@
                 :loading="loading"
                 :filters="filter"
                 :total-items="pageTotal"
+                :actions="actions"
                 @reset-filters="resetFilters"
                 @select="select"
             >
@@ -60,30 +61,6 @@
                                     />
                                 </UButton>
                             </UTooltip>
-                        </div>
-                    </div>
-                </template>
-
-                <template #actions-data="{ row }">
-                    <div class="flex items-center gap-1">
-                        <div v-for="(action, index) in actions" :key="index">
-                            <template v-if="action.condition()">
-                                <UTooltip :text="action.tooltip(row)">
-                                    <UButton
-                                        size="2xs"
-                                        :color="action.color(row)"
-                                        variant="ghost"
-                                        square
-                                        @click="action.onClick(row)"
-                                    >
-                                        <Icon
-                                            :name="action.icon(row)"
-                                            size="22"
-                                            class="hover:scale-125 transition-all duration-300"
-                                        />
-                                    </UButton>
-                                </UTooltip>
-                            </template>
                         </div>
                     </div>
                 </template>

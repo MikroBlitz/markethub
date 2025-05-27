@@ -33,6 +33,8 @@
                         value-attribute="value"
                         option-attribute="label"
                         multiple
+                        :searchable="search"
+                        searchable-placeholder="Search permission..."
                     />
                 </UFormGroup>
 
@@ -58,13 +60,16 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "#ui/types";
 
+import type { Option } from "~/components/table/types";
+
 import { schema, type Schema, formState } from "~/pages/roles/data/schema";
 
 const props = defineProps<{
     isOpen: boolean;
     onSubmit: (event: FormSubmitEvent<Schema>) => void;
     loading: boolean;
-    options: [];
+    options: Option[];
+    search: (query: string) => Promise<Option[]>;
 }>();
 
 const emit = defineEmits<{

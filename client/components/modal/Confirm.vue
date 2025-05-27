@@ -1,6 +1,6 @@
 <template>
     <UModal v-model="isConfirmOpen">
-        <div class="p-4 space-y-4">
+        <div class="p-6 space-y-4">
             <div class="flex items-center">
                 <UIcon
                     v-if="props.icon"
@@ -20,7 +20,7 @@
             <div class="flex justify-end space-x-3 pt-3">
                 <UButton
                     color="gray"
-                    variant="soft"
+                    variant="outline"
                     @click="isConfirmOpen = false"
                 >
                     Cancel
