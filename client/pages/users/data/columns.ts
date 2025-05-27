@@ -97,12 +97,12 @@ export const columns: Column[] = [
             }),
         sortable: false,
     },
-    {
-        key: "created_at",
-        label: "Created At",
-        render: (row) => h("div", getFriendlyDate(row.created_at)),
-        sortable: true,
-    },
+    // {
+    //     key: "created_at",
+    //     label: "Created At",
+    //     render: (row) => h("div", getFriendlyDate(row.created_at)),
+    //     sortable: true,
+    // },
     {
         key: "updated_at",
         label: "Updated At",
