@@ -115,6 +115,59 @@
                     </template>
                 </template>
 
+                <template
+                    v-if="actions && actions.length > 0"
+                    #actions-data="{ row }"
+                >
+                    <div class="flex items-center gap-1">
+                        <UTooltip text="View Actions">
+                            <UPopover>
+                                <UButton
+                                    color="gray"
+                                    trailing-icon="mdi:dots-horizontal"
+                                    variant="ghost"
+                                    class="hover:scale-125 transition-all duration-300 rounded-full"
+                                />
+
+                                <template #panel>
+                                    <div class="flex gap-2 items-center p-2">
+                                        <template
+                                            v-for="(action, index) in actions"
+                                            :key="index"
+                                        >
+                                            <template v-if="action.condition()">
+                                                <UTooltip
+                                                    :text="action.tooltip(row)"
+                                                >
+                                                    <UButton
+                                                        size="2xs"
+                                                        :color="
+                                                            action.color(row)
+                                                        "
+                                                        variant="ghost"
+                                                        square
+                                                        @click="
+                                                            action.onClick(row)
+                                                        "
+                                                    >
+                                                        <Icon
+                                                            :name="
+                                                                action.icon(row)
+                                                            "
+                                                            size="22"
+                                                            class="hover:scale-125 transition-all duration-300"
+                                                        />
+                                                    </UButton>
+                                                </UTooltip>
+                                            </template>
+                                        </template>
+                                    </div>
+                                </template>
+                            </UPopover>
+                        </UTooltip>
+                    </div>
+                </template>
+
                 <!-- Pass through other slots -->
                 <template v-for="(_, slot) in $slots" #[slot]="scope">
                     <slot :name="slot" v-bind="scope" />
@@ -186,21 +239,17 @@
 
                     <!-- Card Footer with actions -->
                     <div
-                        class="bg-gray-50 dark:bg-gray-700 p-2 flex justify-center"
+                        v-if="actions && actions.length > 0"
+                        class="bg-gray-100 dark:bg-gray-800 p-2 flex justify-center"
                     >
-                        <!-- Dynamic Actions -->
-                        <slot name="actions-data" :row="row">
-                            <div class="flex items-center gap-1">
-                                <div
-                                    v-for="(action, index) in actions"
-                                    :key="index"
-                                >
-                                    <UTooltip
-                                        v-if="action.condition(row)"
-                                        :text="action.tooltip(row)"
-                                    >
+                        <div class="flex gap-2 items-center">
+                            <template
+                                v-for="(action, index) in actions"
+                                :key="index"
+                            >
+                                <template v-if="action.condition()">
+                                    <UTooltip :text="action.tooltip(row)">
                                         <UButton
-                                            v-if="action.condition(row)"
                                             size="2xs"
                                             :color="action.color(row)"
                                             variant="ghost"
@@ -214,9 +263,9 @@
                                             />
                                         </UButton>
                                     </UTooltip>
-                                </div>
-                            </div>
-                        </slot>
+                                </template>
+                            </template>
+                        </div>
                     </div>
                 </UCard>
 
@@ -290,12 +339,18 @@
 <script lang="ts" setup>
 import { h } from "vue";
 
-import type { Column, FilterOption, Row, Sort } from "~/components/table/types";
+import type {
+    Column,
+    FilterOption,
+    Row,
+    Sort,
+    TableAction,
+} from "~/components/table/types";
 
 const props = defineProps({
     actions: {
         default: () => [],
-        type: Array,
+        type: Array as PropType<TableAction[]>,
     },
     columns: {
         required: true,

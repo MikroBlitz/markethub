@@ -31,6 +31,8 @@
                         placeholder="Select roles"
                         value-attribute="value"
                         option-attribute="label"
+                        :searchable="search"
+                        searchable-placeholder="Search role..."
                     />
                 </UFormGroup>
 
@@ -100,13 +102,16 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "#ui/types";
 
+import type { Option } from "~/components/table/types";
+
 import { schema, type UserSchema, userState } from "~/pages/users/data/schema";
 
 const props = defineProps<{
     isOpen: boolean;
     onSubmit: (event: FormSubmitEvent<UserSchema>) => void;
     loading: boolean;
-    options: [];
+    options: Option[];
+    search: (query: string) => Promise<Option[]>;
 }>();
 
 const emit = defineEmits<{

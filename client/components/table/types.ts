@@ -18,3 +18,16 @@ export interface Sort {
 }
 
 export type Row = Record<string, any>;
+
+export interface TableAction {
+    condition: () => boolean;
+    icon: (row: any) => string;
+    color: (row: any) => string;
+    onClick: (row: any) => void;
+    tooltip: (row: any) => string;
+}
+
+export type Option = {
+    label: string;
+    value: string;
+};

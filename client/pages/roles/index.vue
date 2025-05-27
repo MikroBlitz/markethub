@@ -16,6 +16,7 @@
                 :loading="loading"
                 :filters="status"
                 :total-items="pageTotal"
+                :actions="actions"
                 @reset-filters="resetFilters"
                 @select="select"
             >
@@ -63,30 +64,6 @@
                         </div>
                     </div>
                 </template>
-
-                <template #actions-data="{ row }">
-                    <div class="flex items-center gap-1">
-                        <div v-for="(action, index) in actions" :key="index">
-                            <template v-if="action.condition()">
-                                <UTooltip :text="action.tooltip(row)">
-                                    <UButton
-                                        size="2xs"
-                                        :color="action.color(row)"
-                                        variant="ghost"
-                                        square
-                                        @click="action.onClick(row)"
-                                    >
-                                        <Icon
-                                            :name="action.icon(row)"
-                                            size="22"
-                                            class="hover:scale-125 transition-all duration-300"
-                                        />
-                                    </UButton>
-                                </UTooltip>
-                            </template>
-                        </div>
-                    </div>
-                </template>
             </TableData>
         </div>
 
@@ -96,6 +73,7 @@
             :on-submit="onSubmit"
             :loading="loading"
             :options="permissionOptions"
+            :search="searchPermissions"
         />
 
         <!-- Delete Modal -->
@@ -114,8 +92,9 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "#ui/types";
 
-import { useDebounce, useTimeoutFn } from "@vueuse/shared";
+import { useDebounce, useDebounceFn, useTimeoutFn } from "@vueuse/shared";
 
+import type { Option } from "~/components/table/types";
 import type { Role, RolesPaginateQuery } from "~/types/codegen/graphql";
 
 import { permissionsPaginate } from "~/graphql/Permission";
@@ -146,25 +125,34 @@ const loading = ref(false);
 const result = ref({ rolesPaginate });
 const rotationRefetch = ref(0);
 
-const permissionOptions = ref<{ label: string; value: string }[]>([]);
-const fetchPermissions = async () => {
+const permissionOptions = ref<Option[]>([]);
+const fetchPermissions = async (q = "") => {
     try {
-        const variables = { first: 100 };
+        const variables = { first: 10, search: q };
         const { data } = await useAsyncQuery(permissionsPaginate, variables);
-
         if (data.value) {
-            const permissions = data.value.permissionsPaginate.data;
-            permissionOptions.value = permissions.map(
+            return data.value.permissionsPaginate.data.map(
                 (permission: { name: string; id: string }) => ({
                     label: permission.name,
                     value: permission.id,
                 }),
             );
         }
+        return [];
     } catch (e) {
         console.error("Failed to fetch permissions", e);
+        return [];
     }
 };
+
+const loadingPermissions = ref(false);
+const searchPermission = async (q: string) => {
+    loadingPermissions.value = true;
+    const result = await fetchPermissions(q);
+    loadingPermissions.value = false;
+    return result;
+};
+const searchPermissions = useDebounceFn(searchPermission, 500);
 
 const fetchData = async () => {
     rotationRefetch.value += 360;

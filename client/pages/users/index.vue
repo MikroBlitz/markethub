@@ -16,6 +16,7 @@
                 :loading="loading"
                 :filters="status"
                 :total-items="pageTotal"
+                :actions="actions"
                 @reset-filters="resetFilters"
                 @select="select"
             >
@@ -51,7 +52,7 @@
                                 <UButton
                                     class="p-2 rounded-full group"
                                     variant="outline"
-                                    @click="refetch"
+                                    @click="fetchData"
                                 >
                                     <UIcon
                                         name="mdi:reload"
@@ -60,30 +61,6 @@
                                     />
                                 </UButton>
                             </UTooltip>
-                        </div>
-                    </div>
-                </template>
-
-                <template #actions-data="{ row }: { row: User }">
-                    <div class="flex items-center gap-1">
-                        <div v-for="(action, index) in actions" :key="index">
-                            <template v-if="action.condition()">
-                                <UTooltip :text="action.tooltip(row)">
-                                    <UButton
-                                        size="2xs"
-                                        :color="action.color(row)"
-                                        variant="ghost"
-                                        square
-                                        @click="action.onClick(row)"
-                                    >
-                                        <Icon
-                                            :name="action.icon(row)"
-                                            size="22"
-                                            class="hover:scale-125 transition-all duration-300"
-                                        />
-                                    </UButton>
-                                </UTooltip>
-                            </template>
                         </div>
                     </div>
                 </template>
@@ -96,6 +73,7 @@
             :on-submit="onSubmit"
             :loading="loading"
             :options="roleOptions"
+            :search="searchRoles"
         />
 
         <!-- Delete Modal -->
@@ -125,8 +103,9 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "#ui/types";
 
-import { useDebounce, useTimeoutFn } from "@vueuse/shared";
+import { useDebounce, useDebounceFn, useTimeoutFn } from "@vueuse/shared";
 
+import type { Option } from "~/components/table/types";
 import type { User, UsersPaginateQuery } from "~/types/codegen/graphql";
 
 import { rolesPaginate } from "~/graphql/Role";
@@ -168,27 +147,34 @@ const loading = ref(false);
 const result = ref({ usersPaginate });
 const rotationRefetch = ref(0);
 
-const roleOptions = ref<{ label: string; value: string }[]>([]);
-const fetchRoles = async () => {
+const roleOptions = ref<Option[]>([]);
+const fetchRoles = async (q = "") => {
     try {
-        const variables = { first: 100 };
+        const variables = { first: 10, search: q };
         const { data } = await useAsyncQuery(rolesPaginate, variables);
-
         if (data.value) {
-            const roles = data.value.rolesPaginate.data;
-            roleOptions.value = roles.map(
+            return data.value.rolesPaginate.data.map(
                 (role: { name: string; id: string }) => ({
                     label: role.name,
                     value: role.id,
                 }),
             );
         }
+        return [];
     } catch (e) {
         console.error("Failed to fetch roles:", e);
+        return [];
     }
 };
 
-const { refetch } = useQuery(usersPaginate, { first: 10 });
+const loadingRoles = ref(false);
+const searchRole = async (q: string) => {
+    loadingRoles.value = true;
+    const result = await fetchRoles(q);
+    loadingRoles.value = false;
+    return result;
+};
+const searchRoles = useDebounceFn(searchRole, 500);
 
 const fetchData = async () => {
     rotationRefetch.value += 360;
@@ -449,6 +435,7 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
     }
 }
 
+// Actions configuration - now passed as props to TableData
 const actions = [
     {
         color: (row: User) => (row.is_active ? "green" : "gray"),
