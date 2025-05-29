@@ -71,13 +71,13 @@
         <FormModal
             v-model:is-open="isOpen"
             :on-submit="onSubmit"
-            :loading="loading"
+            :loading="modalLoading"
         />
 
         <!-- Delete Modal -->
         <ModalConfirm
             v-model:is-open="isDeleteModal"
-            :loading="loading"
+            :loading="modalLoading"
             label="Delete"
             description="Are you sure you want to delete this permission?"
             icon="i-heroicons-exclamation-triangle"
@@ -97,8 +97,8 @@ import type {
     PermissionsPaginateQuery,
 } from "~/types/codegen/graphql";
 
-import { type Schema, formState } from "~/pages/roles/data/schema";
 import FormModal from "~/pages/permissions/components/FormModal.vue";
+import { type Schema, formState } from "~/pages/permissions/data/schema";
 import {
     permissionsPaginate,
     upsertPermission,
@@ -126,6 +126,7 @@ const pageTotal = computed(() => {
 
 const data = ref<Permission[]>([]);
 const loading = ref(false);
+const modalLoading = ref(false);
 const result = ref({ permissionsPaginate });
 const rotationRefetch = ref(0);
 
@@ -186,6 +187,7 @@ function openEditModal(permission: Permission) {
         name: permission.name,
     });
     isOpen.value = true;
+    console.log("edit mode:", permission);
 }
 
 function openDeleteModal(permission: Permission) {
@@ -196,7 +198,7 @@ function openDeleteModal(permission: Permission) {
 async function removePermission(id: string) {
     const { mutate: removePermissionMutation } = useMutation(deletePermission);
     try {
-        loading.value = true;
+        modalLoading.value = true;
         await removePermissionMutation({ id });
         toast.add({
             color: "green",
@@ -212,7 +214,7 @@ async function removePermission(id: string) {
             title: `Error removing Permission: ${e.message}`,
         });
     } finally {
-        loading.value = false;
+        modalLoading.value = false;
         isDeleteModal.value = false;
     }
 }
@@ -226,7 +228,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     };
 
     try {
-        loading.value = true;
+        modalLoading.value = true;
         await savePermission({ input });
         toast.add({
             color: "green",
@@ -242,7 +244,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             title: `Error saving permission: ${e.message}`,
         });
     } finally {
-        loading.value = false;
+        modalLoading.value = false;
         isOpen.value = false;
     }
 }
