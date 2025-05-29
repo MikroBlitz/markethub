@@ -71,7 +71,7 @@
         <FormModal
             v-model:is-open="isOpen"
             :on-submit="onSubmit"
-            :loading="loading"
+            :loading="modalLoading"
             :options="permissionOptions"
             :search="searchPermissions"
         />
@@ -79,7 +79,7 @@
         <!-- Delete Modal -->
         <ModalConfirm
             v-model:is-open="isDeleteModal"
-            :loading="loading"
+            :loading="modalLoading"
             label="Delete"
             description="Are you sure you want to delete this role?"
             icon="i-heroicons-exclamation-triangle"
@@ -122,6 +122,7 @@ const pageTotal = computed(() => {
 
 const data = ref<Role[]>([]);
 const loading = ref(false);
+const modalLoading = ref(false);
 const result = ref({ rolesPaginate });
 const rotationRefetch = ref(0);
 
@@ -228,7 +229,7 @@ function openDeleteModal(role: Role) {
 async function removeRole(id: string) {
     const { mutate: removeRoleMutation } = useMutation(deleteRole);
     try {
-        loading.value = true;
+        modalLoading.value = true;
         await removeRoleMutation({ id });
         toast.add({
             color: "green",
@@ -244,7 +245,7 @@ async function removeRole(id: string) {
             title: `Error removing role: ${e.message}`,
         });
     } finally {
-        loading.value = false;
+        modalLoading.value = false;
         isDeleteModal.value = false;
     }
 }
@@ -268,7 +269,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     };
 
     try {
-        loading.value = true;
+        modalLoading.value = true;
         await saveRole({ input });
         toast.add({
             color: "green",
@@ -284,7 +285,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             title: `Error saving role: ${e.message}`,
         });
     } finally {
-        loading.value = false;
+        modalLoading.value = false;
         isOpen.value = false;
     }
 }

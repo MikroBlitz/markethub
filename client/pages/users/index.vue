@@ -71,7 +71,7 @@
         <FormModal
             v-model:is-open="isOpen"
             :on-submit="onSubmit"
-            :loading="loading"
+            :loading="modalLoading"
             :options="roleOptions"
             :search="searchRoles"
         />
@@ -79,7 +79,7 @@
         <!-- Delete Modal -->
         <ModalConfirm
             v-model:is-open="isDeleteModal"
-            :loading="loading"
+            :loading="modalLoading"
             label="Delete"
             description="Are you sure you want to delete this user?"
             icon="i-heroicons-exclamation-triangle"
@@ -90,7 +90,7 @@
         <!-- Change Active Status Modal -->
         <ModalConfirm
             v-model:is-open="isChangeStatusModal"
-            :loading="loading"
+            :loading="modalLoading"
             label="Switch Status"
             description="Confirm switch status?"
             icon="i-heroicons-information-circle"
@@ -144,6 +144,7 @@ const pageTotal = computed(() => {
 
 const data = ref<User[]>([]);
 const loading = ref(false);
+const modalLoading = ref(false);
 const result = ref({ usersPaginate });
 const rotationRefetch = ref(0);
 
@@ -326,7 +327,7 @@ function openChangeStatusModal(user: User) {
 async function removeUser(id: string) {
     const { mutate: removeUserMutation } = useMutation(deleteUser);
     try {
-        loading.value = true;
+        modalLoading.value = true;
         if (auth.user?.id !== id) {
             await removeUserMutation({ id });
             toast.add({
@@ -351,7 +352,7 @@ async function removeUser(id: string) {
             title: `Error removing user: ${err}`,
         });
     } finally {
-        loading.value = false;
+        modalLoading.value = false;
         isDeleteModal.value = false;
     }
 }
@@ -365,7 +366,7 @@ async function changeStatus(id: string) {
     };
 
     try {
-        loading.value = true;
+        modalLoading.value = true;
         if (auth.user?.id !== id) {
             await changeUserStatus(input);
             toast.add({
@@ -390,7 +391,7 @@ async function changeStatus(id: string) {
             title: `Error: ${err}`,
         });
     } finally {
-        loading.value = false;
+        modalLoading.value = false;
         isChangeStatusModal.value = false;
     }
 }
@@ -413,7 +414,7 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
     };
 
     try {
-        loading.value = true;
+        modalLoading.value = true;
         await saveUser({ input });
         toast.add({
             color: "green",
@@ -430,7 +431,7 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
             title: `Error saving user: ${err}`,
         });
     } finally {
-        loading.value = false;
+        modalLoading.value = false;
         isOpen.value = false;
     }
 }
