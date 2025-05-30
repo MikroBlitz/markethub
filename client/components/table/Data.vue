@@ -5,7 +5,7 @@
             base: '',
             ring: '',
             divide: 'divide-y divide-gray-200 dark:divide-gray-700',
-            header: { padding: 'p-4' },
+            header: { padding: 'p-3' },
             body: {
                 padding: '',
                 base: 'divide-y divide-gray-200 dark:divide-gray-700',
@@ -187,104 +187,117 @@
                 <i class="loader --6" />
             </div>
             <template v-else>
-                <UCard v-for="(row, rowIndex) in data" :key="rowIndex">
-                    <!-- Card Header with potential selection checkbox -->
+                <div class="space-y-2 p-3">
                     <div
-                        class="flex justify-between items-center p-2 bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-800 border-b border-gray-100 dark:border-gray-700"
+                        v-for="(row, rowIndex) in data"
+                        :key="rowIndex"
+                        class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-primary-300 dark:hover:border-primary-600 transition-colors duration-200 overflow-hidden"
                     >
-                        <!-- Primary identifier or first column value -->
+                        <!-- Compact Header -->
                         <div
-                            class="font-medium text-gray-900 dark:text-gray-100 flex items-center"
+                            class="flex justify-between items-center px-4 py-2 border-b border-gray-200 dark:border-gray-800"
                         >
-                            <div class="w-1 h-8 bg-blue-500 rounded-r mr-2.5" />
-                            {{ getPrimaryIdentifier(row as Row) }}
-                        </div>
-
-                        <!-- Selection checkbox if selectable -->
-                        <div v-if="hasSelectableRows" class="ml-2">
-                            <UCheckbox
-                                :model-value="isRowSelected(row as Row)"
-                                color="green"
-                                @change="toggleRowSelection(row as Row)"
-                            />
-                        </div>
-                    </div>
-
-                    <!-- Card Body with column data -->
-                    <div class="px-3 py-2 space-y-1.5">
-                        <div
-                            v-for="column in visibleColumnsForMobile"
-                            :key="column.key"
-                            class="flex justify-between items-center py-1.5 border-b border-dashed border-gray-100 dark:border-gray-700 last:border-none"
-                        >
-                            <span
-                                class="text-xs font-medium text-gray-500 dark:text-gray-400"
-                            >
-                                {{ column.label }}
-                            </span>
-                            <div
-                                class="text-sm font-medium text-gray-900 dark:text-gray-100 ml-2 truncate max-w-[60%] text-right"
-                            >
-                                <template v-if="column.render">
-                                    <component
-                                        :is="getDynamicContent(column, row)"
+                            <div class="flex items-center justify-center gap-2">
+                                <div v-if="hasSelectableRows">
+                                    <UCheckbox
+                                        :model-value="isRowSelected(row as Row)"
+                                        color="primary"
+                                        @change="toggleRowSelection(row as Row)"
                                     />
-                                </template>
-                                <template v-else>
-                                    {{ row[column.key] }}
-                                </template>
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <div
+                                        class="size-2 bg-primary-500 rounded-full"
+                                    />
+                                    <div
+                                        class="font-medium text-gray-900 dark:text-gray-100"
+                                    >
+                                        {{ getPrimaryIdentifier(row as Row) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Compact Actions -->
+                            <div
+                                v-if="actions && actions.length > 0"
+                                class="bg-gray-50 rounded-lg dark:bg-gray-800 p-1 flex justify-center border-t border-gray-100 dark:border-gray-800"
+                            >
+                                <div class="flex gap-2">
+                                    <template
+                                        v-for="(action, index) in actions"
+                                        :key="index"
+                                    >
+                                        <template v-if="action.condition()">
+                                            <UTooltip
+                                                :text="action.tooltip(row)"
+                                            >
+                                                <UButton
+                                                    size="sm"
+                                                    :color="action.color(row)"
+                                                    variant="ghost"
+                                                    square
+                                                    class="hover:scale-105 transition-transform duration-200"
+                                                    @click="action.onClick(row)"
+                                                >
+                                                    <Icon
+                                                        :name="action.icon(row)"
+                                                        size="18"
+                                                    />
+                                                </UButton>
+                                            </UTooltip>
+                                        </template>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Compact Body -->
+                        <div class="px-4 py-2 space-y-1">
+                            <div
+                                v-for="column in visibleColumnsForMobile"
+                                :key="column.key"
+                                class="flex justify-between items-center py-1"
+                            >
+                                <span
+                                    class="text-xs text-gray-500 dark:text-gray-400 font-medium"
+                                >
+                                    {{ column.label }}
+                                </span>
+                                <div
+                                    class="text-sm text-gray-900 dark:text-gray-100 font-medium ml-2 truncate max-w-[60%] text-right"
+                                >
+                                    <template v-if="column.render">
+                                        <component
+                                            :is="getDynamicContent(column, row)"
+                                        />
+                                    </template>
+                                    <template v-else>
+                                        {{ row[column.key] }}
+                                    </template>
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Card Footer with actions -->
-                    <div
-                        v-if="actions && actions.length > 0"
-                        class="bg-gray-100 dark:bg-gray-800 p-2 flex justify-center"
-                    >
-                        <div class="flex gap-2 items-center">
-                            <template
-                                v-for="(action, index) in actions"
-                                :key="index"
-                            >
-                                <template v-if="action.condition()">
-                                    <UTooltip :text="action.tooltip(row)">
-                                        <UButton
-                                            size="2xs"
-                                            :color="action.color(row)"
-                                            variant="ghost"
-                                            square
-                                            @click="action.onClick(row)"
-                                        >
-                                            <Icon
-                                                :name="action.icon(row)"
-                                                size="22"
-                                                class="hover:scale-125 transition-all duration-300"
-                                            />
-                                        </UButton>
-                                    </UTooltip>
-                                </template>
-                            </template>
-                        </div>
-                    </div>
-                </UCard>
-
-                <!-- Empty state -->
+                <!-- Compact Empty State -->
                 <div v-if="data.length === 0" class="p-8 text-center">
-                    <div class="p-6 rounded-lg inline-block mb-2">
+                    <div
+                        class="bg-gray-100 dark:bg-gray-800 p-4 rounded-xl inline-block mb-3"
+                    >
                         <Icon
                             name="i-heroicons-inbox"
-                            class="mx-auto h-10 w-10 text-gray-400"
+                            class="mx-auto h-8 w-8 text-gray-400"
                         />
                     </div>
                     <h3
-                        class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100"
+                        class="font-medium text-gray-900 dark:text-gray-100 mb-1"
                     >
                         No results found
                     </h3>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Try adjusting your search or filter to find what you're
-                        looking for.
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        Try adjusting your search or filter.
                     </p>
                 </div>
             </template>
