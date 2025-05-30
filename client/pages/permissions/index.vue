@@ -24,7 +24,7 @@
                     <div class="flex w-full items-center justify-between">
                         <div class="flex items-center gap-2">
                             <Icon
-                                name="mdi:user-key-outline"
+                                name="mdi:user-lock-outline"
                                 class="text-gray-900 dark:text-emerald-500"
                                 size="40"
                             />
@@ -68,8 +68,12 @@
         </div>
 
         <!-- Form -->
-        <FormModal
+        <ModalForm
             v-model:is-open="isOpen"
+            title="Permission Form"
+            :form-schema="formSchema"
+            :zod-schema="zodSchema"
+            :state="formState"
             :on-submit="onSubmit"
             :loading="modalLoading"
         />
@@ -97,8 +101,11 @@ import type {
     PermissionsPaginateQuery,
 } from "~/types/codegen/graphql";
 
-import FormModal from "~/pages/permissions/components/FormModal.vue";
-import { type Schema, formState } from "~/pages/permissions/data/schema";
+import {
+    type Schema,
+    formState,
+    schema,
+} from "~/pages/permissions/data/schema";
 import {
     permissionsPaginate,
     upsertPermission,
@@ -108,7 +115,6 @@ import {
 import { columns, filter } from "./data/columns";
 
 const auth = useAuthStore();
-const toast = useToast();
 const selectedColumns = ref(columns);
 const selectedRows = ref<Permission[]>([]);
 
@@ -118,6 +124,10 @@ const pageCount = ref(10);
 const search = ref("");
 const selectedFilters = ref([]);
 const debouncedSearch = useDebounce(search, 500);
+
+const isOpen = ref(false);
+const isDeleteModal = ref(false);
+const selectedPermission = ref<Permission | null>(null);
 
 const pageTotal = computed(() => {
     if (!result.value?.permissionsPaginate?.paginatorInfo) return 0;
@@ -129,6 +139,8 @@ const loading = ref(false);
 const modalLoading = ref(false);
 const result = ref({ permissionsPaginate });
 const rotationRefetch = ref(0);
+const formSchema = computed(() => schema());
+const zodSchema = computed(() => formZodSchema(formSchema.value));
 
 const fetchData = async () => {
     rotationRefetch.value += 360;
@@ -168,10 +180,6 @@ function select(row: Permission) {
     }
 }
 
-const isOpen = ref(false);
-const isDeleteModal = ref(false);
-const selectedPermission = ref<Permission | null>(null);
-
 function openAddModal() {
     Object.assign(formState, {
         guard_name: "",
@@ -197,26 +205,17 @@ function openDeleteModal(permission: Permission) {
 
 async function removePermission(id: string) {
     const { mutate: removePermissionMutation } = useMutation(deletePermission);
-    try {
-        modalLoading.value = true;
-        await removePermissionMutation({ id });
-        toast.add({
-            color: "green",
-            icon: "i-mdi-check-circle-outline",
-            title: "Permission has been removed",
-        });
-        await fetchData();
-    } catch (e) {
-        console.error("Remove error:", e);
-        toast.add({
-            color: "red",
-            icon: "i-mdi-alert-circle-outline",
-            title: `Error removing Permission: ${e.message}`,
-        });
-    } finally {
-        modalLoading.value = false;
-        isDeleteModal.value = false;
-    }
+    return useGraphQLMutation(
+        "Permission",
+        "deleted",
+        loading,
+        { id },
+        {
+            fetch: fetchData,
+            modal: isDeleteModal,
+            mutation: removePermissionMutation,
+        },
+    );
 }
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
@@ -227,26 +226,17 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         id: selectedPermission.value?.id || undefined,
     };
 
-    try {
-        modalLoading.value = true;
-        await savePermission({ input });
-        toast.add({
-            color: "green",
-            icon: "i-mdi-check-circle-outline",
-            title: "Permission has been saved",
-        });
-        await fetchData();
-    } catch (e) {
-        console.error("Save error:", e);
-        toast.add({
-            color: "red",
-            icon: "i-mdi-alert-circle-outline",
-            title: `Error saving permission: ${e.message}`,
-        });
-    } finally {
-        modalLoading.value = false;
-        isOpen.value = false;
-    }
+    return useGraphQLMutation(
+        "Permission",
+        "saved",
+        modalLoading,
+        { input },
+        {
+            fetch: fetchData,
+            modal: isOpen,
+            mutation: savePermission,
+        },
+    );
 }
 
 const actions = [

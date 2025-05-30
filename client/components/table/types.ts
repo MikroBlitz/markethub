@@ -26,8 +26,3 @@ export interface TableAction {
     onClick: (row: any) => void;
     tooltip: (row: any) => string;
 }
-
-export type Option = {
-    label: string;
-    value: string;
-};

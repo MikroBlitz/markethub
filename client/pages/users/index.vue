@@ -24,7 +24,7 @@
                     <div class="flex w-full items-center justify-between">
                         <div class="flex items-center gap-2">
                             <Icon
-                                name="i-heroicons-user-circle"
+                                name="mdi:user-group-outline"
                                 class="text-gray-900 dark:text-emerald-500"
                                 size="40"
                             />
@@ -68,12 +68,15 @@
         </div>
 
         <!-- Form -->
-        <FormModal
+        <ModalForm
             v-model:is-open="isOpen"
+            title="User Form"
+            :form-schema="formSchema"
+            :zod-schema="zodSchema"
+            :state="formState"
             :on-submit="onSubmit"
             :loading="modalLoading"
-            :options="roleOptions"
-            :search="searchRoles"
+            :option-loading="role.loadingRoles"
         />
 
         <!-- Delete Modal -->
@@ -103,16 +106,14 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "#ui/types";
 
-import { useDebounce, useDebounceFn, useTimeoutFn } from "@vueuse/shared";
+import { useDebounce, useTimeoutFn } from "@vueuse/shared";
 
-import type { Option } from "~/components/table/types";
 import type { User, UsersPaginateQuery } from "~/types/codegen/graphql";
 
-import { rolesPaginate } from "~/graphql/Role";
 import mockData from "~/pages/users/data/mockData.json";
 import { columns, status } from "~/pages/users/data/columns";
-import FormModal from "~/pages/users/components/FormModal.vue";
-import { type UserSchema, userState } from "~/pages/users/data/schema";
+import { useRoleQueryOption } from "~/composables/useRoleQueryOption";
+import { schema, type Schema, formState } from "~/pages/users/data/schema";
 import {
     usersPaginate,
     upsertUser,
@@ -120,10 +121,10 @@ import {
     updateUserStatus,
 } from "~/graphql/User";
 
-const toast = useToast();
 const selectedColumns = ref(columns);
 const selectedRows = ref<User[]>([]);
 const auth = useAuthStore();
+const role = useRoleQueryOption();
 
 const sort = ref({ column: "id", direction: "asc" as "asc" | "desc" });
 const page = ref(1);
@@ -147,35 +148,8 @@ const loading = ref(false);
 const modalLoading = ref(false);
 const result = ref({ usersPaginate });
 const rotationRefetch = ref(0);
-
-const roleOptions = ref<Option[]>([]);
-const fetchRoles = async (q = "") => {
-    try {
-        const variables = { first: 10, search: q };
-        const { data } = await useAsyncQuery(rolesPaginate, variables);
-        if (data.value) {
-            return data.value.rolesPaginate.data.map(
-                (role: { name: string; id: string }) => ({
-                    label: role.name,
-                    value: role.id,
-                }),
-            );
-        }
-        return [];
-    } catch (e) {
-        console.error("Failed to fetch roles:", e);
-        return [];
-    }
-};
-
-const loadingRoles = ref(false);
-const searchRole = async (q: string) => {
-    loadingRoles.value = true;
-    const result = await fetchRoles(q);
-    loadingRoles.value = false;
-    return result;
-};
-const searchRoles = useDebounceFn(searchRole, 500);
+const formSchema = computed(() => schema(role.roleOptions, role.searchRoles));
+const zodSchema = computed(() => formZodSchema(formSchema.value));
 
 const fetchData = async () => {
     rotationRefetch.value += 360;
@@ -281,7 +255,7 @@ function select(row: User) {
 }
 
 function openAddModal() {
-    Object.assign(userState, {
+    Object.assign(formState, {
         email: "",
         first_name: "",
         id: "",
@@ -292,14 +266,14 @@ function openAddModal() {
         phone: "",
         roles: [],
     });
-    fetchRoles();
+    role.initializeRoles();
     isOpen.value = true;
 }
 
 function openEditModal(user: User) {
     selectedUser.value = user;
-    const roleIds = user.roles ? user.roles.map((role) => role.id) : [];
-    Object.assign(userState, {
+    const roleIds = user.roles ? user.roles.map((role) => role?.id) : [];
+    Object.assign(formState, {
         email: user.email || "",
         first_name: user.first_name || "",
         id: user.id || "",
@@ -310,7 +284,7 @@ function openEditModal(user: User) {
         phone: user.phone || "",
         roles: roleIds,
     });
-    fetchRoles();
+    role.initializeRoles();
     isOpen.value = true;
 }
 
@@ -326,35 +300,18 @@ function openChangeStatusModal(user: User) {
 
 async function removeUser(id: string) {
     const { mutate: removeUserMutation } = useMutation(deleteUser);
-    try {
-        modalLoading.value = true;
-        if (auth.user?.id !== id) {
-            await removeUserMutation({ id });
-            toast.add({
-                color: "green",
-                icon: "i-mdi-check-circle-outline",
-                title: "User has been removed",
-            });
-        } else {
-            toast.add({
-                color: "red",
-                icon: "i-mdi-alert-circle-outline",
-                title: "You can't remove yourself",
-            });
-        }
-        await fetchData();
-    } catch (e) {
-        const err = parseGraphQLError(e);
-        console.error("Remove error:", e);
-        toast.add({
-            color: "red",
-            icon: "i-mdi-alert-circle-outline",
-            title: `Error removing user: ${err}`,
-        });
-    } finally {
-        modalLoading.value = false;
-        isDeleteModal.value = false;
-    }
+    return useGraphQLMutation(
+        "User",
+        "deleted",
+        modalLoading,
+        { id },
+        {
+            auth: auth.user?.id,
+            fetch: fetchData,
+            modal: isDeleteModal,
+            mutation: removeUserMutation,
+        },
+    );
 }
 
 async function changeStatus(id: string) {
@@ -364,39 +321,15 @@ async function changeStatus(id: string) {
         id,
         is_active: !selectedUser.value.is_active,
     };
-
-    try {
-        modalLoading.value = true;
-        if (auth.user?.id !== id) {
-            await changeUserStatus(input);
-            toast.add({
-                color: "green",
-                icon: "i-mdi-check-circle-outline",
-                title: "User status has been updated",
-            });
-        } else {
-            toast.add({
-                color: "red",
-                icon: "i-mdi-alert-circle-outline",
-                title: "You can't change status of yourself",
-            });
-        }
-        await fetchData();
-    } catch (e) {
-        const err = parseGraphQLError(e);
-        console.error("Status update error:", e);
-        toast.add({
-            color: "red",
-            icon: "i-mdi-alert-circle-outline",
-            title: `Error: ${err}`,
-        });
-    } finally {
-        modalLoading.value = false;
-        isChangeStatusModal.value = false;
-    }
+    return useGraphQLMutation("User Status", "updated", modalLoading, input, {
+        auth: auth.user?.id,
+        fetch: fetchData,
+        modal: isChangeStatusModal,
+        mutation: changeUserStatus,
+    });
 }
 
-async function onSubmit(event: FormSubmitEvent<UserSchema>) {
+async function onSubmit(event: FormSubmitEvent<Schema>) {
     const { mutate: saveUser } = useMutation(upsertUser);
 
     let roles: string[] = [];
@@ -413,27 +346,17 @@ async function onSubmit(event: FormSubmitEvent<UserSchema>) {
         },
     };
 
-    try {
-        modalLoading.value = true;
-        await saveUser({ input });
-        toast.add({
-            color: "green",
-            icon: "i-mdi-check-circle-outline",
-            title: "User has been saved",
-        });
-        await fetchData();
-    } catch (e) {
-        const err = parseGraphQLError(e);
-        console.error("Save error:", e);
-        toast.add({
-            color: "red",
-            icon: "i-mdi-alert-circle-outline",
-            title: `Error saving user: ${err}`,
-        });
-    } finally {
-        modalLoading.value = false;
-        isOpen.value = false;
-    }
+    return useGraphQLMutation(
+        "User",
+        "saved",
+        modalLoading,
+        { input },
+        {
+            fetch: fetchData,
+            modal: isOpen,
+            mutation: saveUser,
+        },
+    );
 }
 
 // Actions configuration - now passed as props to TableData

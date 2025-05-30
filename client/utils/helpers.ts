@@ -1,4 +1,9 @@
+import { z } from "zod";
 import { Briefcase, Shield, User } from "lucide-vue-next";
+
+import type { FormSchema } from "~/types/fields";
+
+import { schema } from "~/pages/users/data/schema";
 
 export const authContext = () => {
     const authCookie: Ref<{ token: string }> = useCookie("auth", { path: "/" });
@@ -56,3 +61,17 @@ export const getFriendlyDate = (datetimeStr: string): string => {
 
     return date.toLocaleString(undefined, options);
 };
+
+export const formZodSchema = (schema: FormSchema) => {
+    return z.object(
+        schema.fields.reduce(
+            (acc, field) => {
+                acc[field.name] = field.validation || z.any();
+                return acc;
+            },
+            {} as Record<string, z.ZodTypeAny>,
+        ),
+    );
+};
+
+export const phoneRegex = /^(?:\+63|0)?9\d{9}$/;
