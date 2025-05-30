@@ -24,7 +24,7 @@
                     <div class="flex w-full items-center justify-between">
                         <div class="flex items-center gap-2">
                             <Icon
-                                name="mdi:user-key-outline"
+                                name="mdi:user-lock-outline"
                                 class="text-gray-900 dark:text-emerald-500"
                                 size="40"
                             />

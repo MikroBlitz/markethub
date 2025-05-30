@@ -94,7 +94,7 @@ import type { FormSubmitEvent } from "#ui/types";
 
 import { useDebounce, useDebounceFn, useTimeoutFn } from "@vueuse/shared";
 
-import type { Option } from "~/components/table/types";
+import type { FieldOption } from "~/types/fields";
 import type { Role, RolesPaginateQuery } from "~/types/codegen/graphql";
 
 import { permissionsPaginate } from "~/graphql/Permission";
@@ -126,7 +126,7 @@ const modalLoading = ref(false);
 const result = ref({ rolesPaginate });
 const rotationRefetch = ref(0);
 
-const permissionOptions = ref<Option[]>([]);
+const permissionOptions = ref<FieldOption[]>([]);
 const fetchPermissions = async (q = "") => {
     try {
         const variables = { first: 10, search: q };

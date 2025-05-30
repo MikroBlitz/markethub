@@ -34,13 +34,23 @@
                         option-attribute="label"
                         multiple
                         :searchable="search"
+                        :loading="loading"
                         searchable-placeholder="Search permission..."
-                    />
+                    >
+                        <template #leading="{ optionsLoading }">
+                            <UIcon
+                                v-if="optionsLoading"
+                                name="i-heroicons-arrow-path"
+                                class="animate-spin text-gray-500"
+                            />
+                            <UIcon
+                                v-else
+                                name="mdi:shield-check"
+                                class="text-gray-500"
+                            />
+                        </template>
+                    </USelectMenu>
                 </UFormGroup>
-
-                <!--                <UFormGroup label="Guard Name" name="guard_name">-->
-                <!--                    <UInput v-model="formState.guard_name" />-->
-                <!--                </UFormGroup>-->
 
                 <div class="flex justify-end gap-2">
                     <UButton

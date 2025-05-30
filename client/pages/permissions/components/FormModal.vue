@@ -25,10 +25,6 @@
                     <UInput v-model="formState.name" />
                 </UFormGroup>
 
-                <!--                <UFormGroup label="Guard Name" name="guard_name">-->
-                <!--                    <UInput v-model="formState.guard_name" />-->
-                <!--                </UFormGroup>-->
-
                 <div class="flex justify-end gap-2">
                     <UButton
                         color="gray"
@@ -47,7 +43,11 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "#ui/types";
 
-import { schema, type Schema, formState } from "~/pages/permissions/data/schema";
+import {
+    schema,
+    type Schema,
+    formState,
+} from "~/pages/permissions/data/schema";
 
 const props = defineProps<{
     isOpen: boolean;
