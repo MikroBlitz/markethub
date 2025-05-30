@@ -115,6 +115,17 @@
 </template>
 
 <script setup lang="ts">
+const getYear = () => new Date().getFullYear();
+const colorMode = useColorMode();
+const isDark = computed({
+    get() {
+        return colorMode.value === "dark";
+    },
+    set() {
+        colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
+    },
+});
+
 useHead({
     meta: [
         {
@@ -124,17 +135,5 @@ useHead({
         },
     ],
     title: "MarketHub - Community Marketplace",
-});
-
-const getYear = () => new Date().getFullYear();
-
-const colorMode = useColorMode();
-const isDark = computed({
-    get() {
-        return colorMode.value === "dark";
-    },
-    set() {
-        colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
-    },
 });
 </script>
