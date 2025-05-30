@@ -35,6 +35,7 @@
                             v-model="state[field.name]"
                             :type="field.type"
                             :options="field.options"
+                            :multiple="field.multiple || false"
                             :placeholder="
                                 field.placeholder || `Enter ${field.label}`
                             "

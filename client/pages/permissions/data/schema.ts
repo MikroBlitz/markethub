@@ -1,15 +1,23 @@
 import { z } from "zod";
 
-const schema = z.object({
-    guard_name: z.string().optional(),
-    name: z.string().min(1, "Name is required"),
+import type { FormSchema } from "~/types/fields";
+import type { formZodSchema } from "~/utils/helpers";
+
+export const schema = (): FormSchema => ({
+    fields: [
+        {
+            class: "col-span-full",
+            label: "Name",
+            name: "name",
+            type: "text",
+            validation: z.string().min(1, "Name is required"),
+        },
+    ],
 });
 
-type Schema = z.output<typeof schema>;
+export type Schema = z.infer<ReturnType<typeof formZodSchema>>;
 
-const formState = reactive<Partial<Schema>>({
+export const formState = reactive<Partial<Schema>>({
     guard_name: "",
     name: "",
 });
-
-export { schema, formState, type Schema };

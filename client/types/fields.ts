@@ -20,6 +20,7 @@ export interface FormField {
     class?: string;
     type: FieldType;
     required?: boolean;
+    multiple?: boolean;
     placeholder?: string;
     searchable?: boolean;
     options?: FieldOption[];

@@ -4,7 +4,7 @@ import type { FieldOption } from "~/types/fields";
 
 import { rolesPaginate } from "~/graphql/Role";
 
-export function useRoleQuery() {
+export function useRoleQueryOption() {
     const loadingRoles = ref(false);
     const roleOptions = ref<FieldOption[]>([]);
 
@@ -35,11 +35,9 @@ export function useRoleQuery() {
         return result;
     };
 
-    const searchRoles = useDebounceFn(searchRole, 500);
-
-    const initializeRoles = async () => {
-        roleOptions.value = await fetchRoles();
-    };
+    const searchRoles = useDebounceFn(searchRole, 700);
+    const initializeRoles = async () =>
+        (roleOptions.value = await fetchRoles());
 
     return {
         fetchRoles,

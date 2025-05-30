@@ -5,16 +5,16 @@ import type { FieldOption, FormSchema } from "~/types/fields";
 import { type formZodSchema, phoneRegex } from "~/utils/helpers";
 
 export const schema = (
-    roleOptions: Ref<FieldOption[]>,
-    searchRoles: (q: string) => Promise<FieldOption[]>,
+    options: Ref<FieldOption[]>,
+    searchOptions: (q: string) => Promise<FieldOption[]>,
 ): FormSchema => ({
     fields: [
         {
             class: "col-span-full",
             label: "Role",
             name: "roles",
-            onSearch: searchRoles,
-            options: roleOptions.value,
+            onSearch: searchOptions,
+            options: options.value,
             placeholder: "Select a Role",
             searchable: true,
             type: "combobox",
@@ -80,9 +80,9 @@ export const schema = (
     ],
 });
 
-export type UserSchema = z.infer<ReturnType<typeof formZodSchema>>;
+export type Schema = z.infer<ReturnType<typeof formZodSchema>>;
 
-export const userState = reactive<Partial<UserSchema>>({
+export const formState = reactive<Partial<Schema>>({
     email: "",
     first_name: "",
     last_name: "",

@@ -66,14 +66,16 @@
                 </template>
             </TableData>
         </div>
-
         <!-- Form -->
-        <FormModal
+        <ModalForm
             v-model:is-open="isOpen"
+            title="Role Form"
+            :form-schema="formSchema"
+            :zod-schema="zodSchema"
+            :state="formState"
             :on-submit="onSubmit"
             :loading="modalLoading"
-            :options="permissionOptions"
-            :search="searchPermissions"
+            :option-loading="permissionOption.loadingPermissions"
         />
 
         <!-- Delete Modal -->
@@ -92,21 +94,18 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "#ui/types";
 
-import { useDebounce, useDebounceFn, useTimeoutFn } from "@vueuse/shared";
+import { useDebounce, useTimeoutFn } from "@vueuse/shared";
 
-import type { FieldOption } from "~/types/fields";
 import type { Role, RolesPaginateQuery } from "~/types/codegen/graphql";
 
-import { permissionsPaginate } from "~/graphql/Permission";
 import { columns, status } from "~/pages/roles/data/columns";
-import FormModal from "~/pages/roles/components/FormModal.vue";
-import { type Schema, formState } from "~/pages/roles/data/schema";
 import { rolesPaginate, upsertRole, deleteRole } from "~/graphql/Role";
+import { type Schema, formState, schema } from "~/pages/roles/data/schema";
 
-const auth = useAuthStore();
-const toast = useToast();
 const selectedColumns = ref(columns);
 const selectedRows = ref<Role[]>([]);
+const auth = useAuthStore();
+const permissionOption = usePermissionQueryOption();
 
 const sort = ref({ column: "id", direction: "asc" as "asc" | "desc" });
 const page = ref(1);
@@ -114,6 +113,10 @@ const pageCount = ref(10);
 const search = ref("");
 const selectedFilters = ref([]);
 const debouncedSearch = useDebounce(search, 500);
+
+const isOpen = ref(false);
+const isDeleteModal = ref(false);
+const selectedRole = ref<Role | null>(null);
 
 const pageTotal = computed(() => {
     if (!result.value?.rolesPaginate?.paginatorInfo) return 0;
@@ -125,35 +128,13 @@ const loading = ref(false);
 const modalLoading = ref(false);
 const result = ref({ rolesPaginate });
 const rotationRefetch = ref(0);
-
-const permissionOptions = ref<FieldOption[]>([]);
-const fetchPermissions = async (q = "") => {
-    try {
-        const variables = { first: 10, search: q };
-        const { data } = await useAsyncQuery(permissionsPaginate, variables);
-        if (data.value) {
-            return data.value.permissionsPaginate.data.map(
-                (permission: { name: string; id: string }) => ({
-                    label: permission.name,
-                    value: permission.id,
-                }),
-            );
-        }
-        return [];
-    } catch (e) {
-        console.error("Failed to fetch permissions", e);
-        return [];
-    }
-};
-
-const loadingPermissions = ref(false);
-const searchPermission = async (q: string) => {
-    loadingPermissions.value = true;
-    const result = await fetchPermissions(q);
-    loadingPermissions.value = false;
-    return result;
-};
-const searchPermissions = useDebounceFn(searchPermission, 500);
+const formSchema = computed(() =>
+    schema(
+        permissionOption.permissionOptions,
+        permissionOption.searchPermissions,
+    ),
+);
+const zodSchema = computed(() => formZodSchema(formSchema.value));
 
 const fetchData = async () => {
     rotationRefetch.value += 360;
@@ -193,31 +174,29 @@ function select(row: Role) {
     }
 }
 
-const isOpen = ref(false);
-const isDeleteModal = ref(false);
-const selectedRole = ref<Role | null>(null);
-
 function openAddModal() {
     Object.assign(formState, {
         guard_name: "",
         name: "",
         permissions: [],
     });
-    fetchPermissions();
+    permissionOption.initializePermissions();
     isOpen.value = true;
 }
 
 function openEditModal(role: Role) {
     selectedRole.value = role;
+    console.log(role);
     const permissionsIds = role.permissions
-        ? role.permissions.map((permission) => permission.id)
+        ? role.permissions.map((permission) => permission?.id)
         : [];
     Object.assign(formState, {
-        guard_name: role.guard_name,
-        name: role.name,
+        guard_name: role.guard_name || "",
+        id: role.id || "",
+        name: role.name || "",
         permissions: permissionsIds,
     });
-    fetchPermissions();
+    permissionOption.initializePermissions();
     isOpen.value = true;
 }
 
@@ -228,26 +207,17 @@ function openDeleteModal(role: Role) {
 
 async function removeRole(id: string) {
     const { mutate: removeRoleMutation } = useMutation(deleteRole);
-    try {
-        modalLoading.value = true;
-        await removeRoleMutation({ id });
-        toast.add({
-            color: "green",
-            icon: "i-mdi-check-circle-outline",
-            title: "Role has been removed",
-        });
-        await fetchData();
-    } catch (e) {
-        console.error("Remove error:", e);
-        toast.add({
-            color: "red",
-            icon: "i-mdi-alert-circle-outline",
-            title: `Error removing role: ${e.message}`,
-        });
-    } finally {
-        modalLoading.value = false;
-        isDeleteModal.value = false;
-    }
+    return useGraphQLMutation(
+        "Role",
+        "deleted",
+        loading,
+        { id },
+        {
+            fetch: fetchData,
+            modal: isDeleteModal,
+            mutation: removeRoleMutation,
+        },
+    );
 }
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
@@ -268,26 +238,17 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         },
     };
 
-    try {
-        modalLoading.value = true;
-        await saveRole({ input });
-        toast.add({
-            color: "green",
-            icon: "i-mdi-check-circle-outline",
-            title: "Role has been saved",
-        });
-        await fetchData();
-    } catch (e) {
-        console.error("Save error:", e);
-        toast.add({
-            color: "red",
-            icon: "i-mdi-alert-circle-outline",
-            title: `Error saving role: ${e.message}`,
-        });
-    } finally {
-        modalLoading.value = false;
-        isOpen.value = false;
-    }
+    return useGraphQLMutation(
+        "Role",
+        "saved",
+        modalLoading,
+        { input },
+        {
+            fetch: fetchData,
+            modal: isOpen,
+            mutation: saveRole,
+        },
+    );
 }
 
 const actions = [
