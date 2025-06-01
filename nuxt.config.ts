@@ -6,7 +6,7 @@ export default defineNuxtConfig({
         //     default: { httpEndpoint: import.meta.env.API_URL + "/graphql" },
         // },
         clients: {
-            default: { httpEndpoint: "http://54.251.16.200/graphql" },
+            default: { httpEndpoint: "https://markethub.blog/graphql" },
         },
     },
     colorMode: {
