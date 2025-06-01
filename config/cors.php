@@ -20,7 +20,7 @@ return [
     'allowed_methods' => ['*'],
 
 //    'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:3000')],
-    'allowed_origins' => [env('FRONTEND_URL', 'https://dev-market-hub.vercel.app')],
+    'allowed_origins' => explode(',', env('FRONTEND_URL', 'http://localhost:3000,https://dev-market-hub.vercel.app')),
 
     'allowed_origins_patterns' => [],
 
