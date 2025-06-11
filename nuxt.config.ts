@@ -2,11 +2,8 @@
 export default defineNuxtConfig({
     apollo: {
         autoImports: true,
-        // clients: {
-        //     default: { httpEndpoint: import.meta.env.API_URL + "/graphql" },
-        // },
         clients: {
-            default: { httpEndpoint: "https://markethub.blog/graphql" },
+            default: { httpEndpoint: import.meta.env.API_URL + "/graphql" },
         },
     },
     colorMode: {
@@ -39,7 +36,6 @@ export default defineNuxtConfig({
     runtimeConfig: {
         public: {
             API_URL: import.meta.env.API_URL,
-            isLocalhost: import.meta.env.MODE === "development",
         },
     },
     srcDir: "client/",

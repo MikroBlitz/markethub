@@ -1,9 +1,9 @@
 <template>
-    <Table />
+    <ManageRoles />
 </template>
 
 <script setup lang="ts">
-import Table from "~/pages/roles/components/Table.vue";
+import ManageRoles from "./components/manage-role.vue";
 
 definePageMeta({ layout: "app-layout", permission: "view role" });
 useHead({

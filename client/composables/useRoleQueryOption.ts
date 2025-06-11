@@ -10,7 +10,7 @@ export function useRoleQueryOption() {
 
     const fetchRoles = async (q = "") => {
         try {
-            const variables = { first: 10, search: q };
+            const variables = { first: 50, search: q };
             const { data } = await useAsyncQuery(rolesPaginate, variables);
             if (data.value) {
                 return data.value.rolesPaginate.data.map(

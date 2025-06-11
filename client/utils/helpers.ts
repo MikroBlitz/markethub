@@ -3,8 +3,6 @@ import { Briefcase, Shield, User } from "lucide-vue-next";
 
 import type { FormSchema } from "~/types/fields";
 
-import { schema } from "~/pages/users/data/schema";
-
 export const authContext = () => {
     const authCookie: Ref<{ token: string }> = useCookie("auth", { path: "/" });
     if (!authCookie.value?.token) throw new Error("Missing auth token");

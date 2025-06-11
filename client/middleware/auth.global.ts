@@ -1,32 +1,27 @@
 export default defineNuxtRouteMiddleware((to, _from) => {
-    const config = useRuntimeConfig();
+    const auth = useAuthStore();
+    const noAuthRoutes = ["/", "/register"];
+    const router = useRouter();
+    const validRoutes = router
+        .getRoutes()
+        .map((route) => route.path.toLowerCase());
 
-    // TODO: Remove condition if API is hosted
-    if (config.public.isLocalhost) {
-        const auth = useAuthStore();
-        const noAuthRoutes = ["/", "/register"];
-        const router = useRouter();
-        const validRoutes = router
-            .getRoutes()
-            .map((route) => route.path.toLowerCase());
+    const toPath = to.path.toLowerCase();
 
-        const toPath = to.path.toLowerCase();
+    if (!validRoutes.includes(toPath)) return navigateTo("/notfound");
 
-        if (!validRoutes.includes(toPath)) return navigateTo("/notfound");
+    if (
+        !auth.isAuthenticated &&
+        !noAuthRoutes.includes(toPath) &&
+        toPath !== "/login"
+    )
+        return navigateTo("/login");
 
-        if (
-            !auth.isAuthenticated &&
-            !noAuthRoutes.includes(toPath) &&
-            toPath !== "/login"
-        )
-            return navigateTo("/login");
+    if (auth.isAuthenticated && toPath === "/login")
+        return navigateTo("/dashboard");
 
-        if (auth.isAuthenticated && toPath === "/login")
-            return navigateTo("/dashboard");
-
-        const requiredPermission = to.meta?.permission;
-        if (requiredPermission && !auth.can(String(requiredPermission))) {
-            return navigateTo("/unauthorized");
-        }
+    const requiredPermission = to.meta?.permission;
+    if (requiredPermission && !auth.can(String(requiredPermission))) {
+        return navigateTo("/unauthorized");
     }
 });

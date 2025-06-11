@@ -10,7 +10,7 @@ export function usePermissionQueryOption() {
 
     const fetchPermissions = async (q = "") => {
         try {
-            const variables = { first: 10, search: q };
+            const variables = { first: 50, search: q };
             const { data } = await useAsyncQuery(
                 permissionsPaginate,
                 variables,
