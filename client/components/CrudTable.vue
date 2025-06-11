@@ -14,9 +14,9 @@
                 :columns="columns"
                 :data="data"
                 :loading="loading"
-                :filters="status"
+                :filters="filters"
                 :total-items="pageTotal"
-                :actions="actions"
+                :actions="computedActions"
                 @reset-filters="resetFilters"
                 @select="select"
             >
@@ -24,19 +24,21 @@
                     <div class="flex w-full items-center justify-between">
                         <div class="flex items-center gap-2">
                             <Icon
-                                name="mdi:user-group-outline"
+                                :name="config.icon"
                                 class="text-gray-900 dark:text-emerald-500"
                                 size="40"
                             />
                             <h2
                                 class="font-semibold text-xl text-gray-900 dark:text-gray-100 leading-tight"
                             >
-                                Users
+                                {{ config.title }}
                             </h2>
                         </div>
                         <div class="flex gap-2">
-                            <template v-if="auth.can('add user')">
-                                <UTooltip text="Add User">
+                            <template
+                                v-if="auth.can(config.permissions.create)"
+                            >
+                                <UTooltip :text="`Add ${config.singular}`">
                                     <UButton
                                         class="p-2 rounded-full group"
                                         @click="openAddModal"
@@ -67,16 +69,16 @@
             </TableData>
         </div>
 
-        <!-- Form -->
+        <!-- Form Modal -->
         <ModalForm
             v-model:is-open="isOpen"
-            title="User Form"
+            :title="`${config.singular} Form`"
             :form-schema="formSchema"
             :zod-schema="zodSchema"
             :state="formState"
             :on-submit="onSubmit"
             :loading="modalLoading"
-            :option-loading="role.loadingRoles"
+            :option-loading="optionLoading"
         />
 
         <!-- Delete Modal -->
@@ -84,46 +86,72 @@
             v-model:is-open="isDeleteModal"
             :loading="modalLoading"
             label="Delete"
-            description="Are you sure you want to delete this user?"
+            :description="`Are you sure you want to delete this ${config.singular.toLowerCase()}?`"
             icon="i-heroicons-exclamation-triangle"
-            :action="() => removeUser(selectedUser.id)"
+            :action="() => handleDelete(selectedItem.id)"
             color="red"
         />
 
-        <!-- Change Active Status Modal -->
+        <!-- Change Status Modal -->
         <ModalConfirm
+            v-if="config.hasStatus"
             v-model:is-open="isChangeStatusModal"
             :loading="modalLoading"
             label="Switch Status"
             description="Confirm switch status?"
             icon="i-heroicons-information-circle"
-            :action="() => changeStatus(selectedUser.id)"
+            :action="() => handleStatusChange(selectedItem.id)"
             color="blue"
         />
     </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends Record<string, any>">
 import type { FormSubmitEvent } from "#ui/types";
 
 import { useDebounce, useTimeoutFn } from "@vueuse/shared";
 
-import type { User, UsersPaginateQuery } from "~/types/codegen/graphql";
+import type { FormSchema } from "~/types/fields";
 
-import { columns, status } from "~/pages/users/data/columns";
-import { useRoleQueryOption } from "~/composables/useRoleQueryOption";
-import { schema, type Schema, formState } from "~/pages/users/data/schema";
-import {
-    usersPaginate,
-    upsertUser,
-    deleteUser,
-    updateUserStatus,
-} from "~/graphql/User";
+export interface CrudConfig {
+    icon: string;
+    title: string;
+    singular: string;
+    hasStatus?: boolean;
+    permissions: {
+        create: string;
+        view: string;
+        edit: string;
+        delete: string;
+        updateStatus?: string;
+    };
+}
 
-const selectedColumns = ref(columns);
-const selectedRows = ref<User[]>([]);
+export interface CrudOperations<T> {
+    query: any;
+    upsert: any;
+    delete: any;
+    updateStatus?: any;
+    getFormState: (item?: T) => any;
+    prepareSubmitData: (data: any, selectedItem?: T) => any;
+}
+
+interface Props {
+    columns: any[];
+    filters: any[];
+    zodSchema: any;
+    actions?: any[];
+    config: CrudConfig;
+    formSchema: FormSchema;
+    optionLoading?: boolean;
+    operations: CrudOperations<T>;
+}
+
+const props = defineProps<Props>();
+
 const auth = useAuthStore();
-const role = useRoleQueryOption();
+const selectedColumns = ref(props.columns);
+const selectedRows = ref<T[]>([]);
 
 const sort = ref({ column: "id", direction: "asc" as "asc" | "desc" });
 const page = ref(1);
@@ -135,20 +163,69 @@ const debouncedSearch = useDebounce(search, 500);
 const isOpen = ref(false);
 const isDeleteModal = ref(false);
 const isChangeStatusModal = ref(false);
-const selectedUser = ref<User | null>(null);
+const selectedItem = ref<T | null>(null);
 
-const pageTotal = computed(() => {
-    if (!result.value?.usersPaginate?.paginatorInfo) return 0;
-    return result.value.usersPaginate.paginatorInfo.total;
-});
-
-const data = ref<User[]>([]);
+const data = ref<T[]>([]);
 const loading = ref(false);
 const modalLoading = ref(false);
-const result = ref({ usersPaginate });
+const result = ref<any>({});
 const rotationRefetch = ref(0);
-const formSchema = computed(() => schema(role.roleOptions, role.searchRoles));
-const zodSchema = computed(() => formZodSchema(formSchema.value));
+const formState = reactive({});
+
+const pageTotal = computed(() => {
+    const queryKey = Object.keys(result.value)[0];
+    if (!queryKey) return;
+    if (!result.value[queryKey]?.paginatorInfo) return 0;
+    return result.value[queryKey].paginatorInfo.total;
+});
+
+const computedActions = computed(() => {
+    const defaultActions = [];
+
+    if (props.config.hasStatus) {
+        defaultActions.push({
+            color: (row: T) => (row.is_active ? "green" : "gray"),
+            condition: () =>
+                auth.can(props.config.permissions.updateStatus || ""),
+            icon: (row: T) =>
+                row.is_active ? "mdi:toggle-switch" : "mdi:toggle-switch-off",
+            onClick: (row: T) => openChangeStatusModal(row),
+            tooltip: (row: T) =>
+                `Switch status to "${row.is_active ? "Inactive" : "Active"}"`,
+        });
+    }
+
+    defaultActions.push(
+        {
+            color: () => "yellow",
+            condition: () => auth.can(props.config.permissions.view),
+            icon: () => "mdi:eye",
+            onClick: (row: T) => openViewModal(row),
+            tooltip: (row: T) =>
+                `View ${props.config.singular} ${row.name || row.id}`,
+        },
+        {
+            color: () => "blue",
+            condition: () => auth.can(props.config.permissions.edit),
+            icon: () => "mdi:pencil",
+            onClick: (row: T) => openEditModal(row),
+            tooltip: (row: T) =>
+                `Edit ${props.config.singular} ${row.name || row.id}`,
+        },
+        {
+            color: () => "red",
+            condition: () => auth.can(props.config.permissions.delete),
+            icon: () => "mdi:delete",
+            onClick: (row: T) => openDeleteModal(row),
+            tooltip: (row: T) =>
+                `Delete ${props.config.singular} ${row.name || row.id}`,
+        },
+    );
+
+    return props.actions
+        ? [...props.actions, ...defaultActions]
+        : defaultActions;
+});
 
 const fetchData = async () => {
     rotationRefetch.value += 360;
@@ -158,23 +235,28 @@ const fetchData = async () => {
             first: Number(pageCount.value),
             page: page.value,
         };
+
         if (search.value) variables.search = search.value;
         if (sort.value) variables.sort = sort.value;
         if (selectedFilters.value && selectedFilters.value.length > 0) {
             variables.filter = selectedFilters.value;
         }
 
-        const { data: userData } = await useAsyncQuery(
-            usersPaginate,
+        const { data: responseData } = await useAsyncQuery(
+            props.operations.query,
             variables,
         );
 
-        if (userData.value) {
-            result.value = userData.value as UsersPaginateQuery;
-            data.value = result.value.usersPaginate.data;
+        if (responseData.value) {
+            result.value = responseData.value;
+            const queryKey = Object.keys(result.value)[0];
+            data.value = result.value[queryKey].data;
         }
     } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error(
+            `Error fetching ${props.config.title.toLowerCase()}:`,
+            error,
+        );
     } finally {
         useTimeoutFn(() => (loading.value = false), 300);
     }
@@ -186,7 +268,7 @@ const resetFilters = () => {
     sort.value = { column: "id", direction: "asc" as "asc" | "desc" };
 };
 
-function select(row: User) {
+function select(row: T) {
     const index = selectedRows.value.findIndex((item) => item.id === row.id);
     if (index === -1) {
         selectedRows.value.push(row);
@@ -196,53 +278,36 @@ function select(row: User) {
 }
 
 function openAddModal() {
-    Object.assign(formState, {
-        email: "",
-        first_name: "",
-        id: "",
-        is_active: false,
-        last_name: "",
-        middle_name: "",
-        password: "",
-        phone: "",
-        roles: [],
-    });
-    role.initializeRoles();
+    Object.assign(formState, props.operations.getFormState());
     isOpen.value = true;
 }
 
-function openEditModal(user: User) {
-    selectedUser.value = user;
-    const roleIds = user.roles ? user.roles.map((role) => role?.id) : [];
-    Object.assign(formState, {
-        email: user.email || "",
-        first_name: user.first_name || "",
-        id: user.id || "",
-        is_active: user.is_active || false,
-        last_name: user.last_name || "",
-        middle_name: user.middle_name || "",
-        password: "",
-        phone: user.phone || "",
-        roles: roleIds,
-    });
-    role.initializeRoles();
+function openViewModal(item: T) {
+    selectedItem.value = item;
+    Object.assign(formState, props.operations.getFormState(item));
     isOpen.value = true;
 }
 
-function openDeleteModal(user: User) {
-    selectedUser.value = user;
+function openEditModal(item: T) {
+    selectedItem.value = item;
+    Object.assign(formState, props.operations.getFormState(item));
+    isOpen.value = true;
+}
+
+function openDeleteModal(item: T) {
+    selectedItem.value = item;
     isDeleteModal.value = true;
 }
 
-function openChangeStatusModal(user: User) {
-    selectedUser.value = user;
+function openChangeStatusModal(item: T) {
+    selectedItem.value = item;
     isChangeStatusModal.value = true;
 }
 
-async function removeUser(id: string) {
-    const { mutate: removeUserMutation } = useMutation(deleteUser);
+async function handleDelete(id: string) {
+    const { mutate: deleteMutation } = useMutation(props.operations.delete);
     return useGraphQLMutation(
-        "User",
+        props.config.singular,
         "deleted",
         modalLoading,
         { id },
@@ -250,89 +315,61 @@ async function removeUser(id: string) {
             auth: auth.user?.id,
             fetch: fetchData,
             modal: isDeleteModal,
-            mutation: removeUserMutation,
+            mutation: deleteMutation,
         },
     );
 }
 
-async function changeStatus(id: string) {
-    const { mutate: changeUserStatus } = useMutation(updateUserStatus);
-    if (!selectedUser.value) return;
+async function handleStatusChange(id: string) {
+    if (!props.operations.updateStatus || !selectedItem.value) return;
+
+    const { mutate: statusMutation } = useMutation(
+        props.operations.updateStatus,
+    );
     const input = {
         id,
-        is_active: !selectedUser.value.is_active,
-    };
-    return useGraphQLMutation("User Status", "updated", modalLoading, input, {
-        auth: auth.user?.id,
-        fetch: fetchData,
-        modal: isChangeStatusModal,
-        mutation: changeUserStatus,
-    });
-}
-
-async function onSubmit(event: FormSubmitEvent<Schema>) {
-    const { mutate: saveUser } = useMutation(upsertUser);
-
-    let roles: string[] = [];
-    if (event.data.roles) {
-        if (Array.isArray(event.data.roles)) roles = event.data.roles;
-        else roles = [event.data.roles];
-    }
-    const input = {
-        ...event.data,
-        id: selectedUser.value?.id || undefined,
-        password: event.data.password || selectedUser.value?.password,
-        roles: {
-            sync: roles,
-        },
+        is_active: !selectedItem.value.is_active,
     };
 
     return useGraphQLMutation(
-        "User",
+        `${props.config.singular} Status`,
+        "updated",
+        modalLoading,
+        input,
+        {
+            auth: auth.user?.id,
+            fetch: fetchData,
+            modal: isChangeStatusModal,
+            mutation: statusMutation,
+        },
+    );
+}
+
+async function onSubmit(event: FormSubmitEvent<any>) {
+    const { mutate: upsertMutation } = useMutation(props.operations.upsert);
+    const input = props.operations.prepareSubmitData(
+        event.data,
+        selectedItem.value,
+    );
+
+    return useGraphQLMutation(
+        props.config.singular,
         "saved",
         modalLoading,
         { input },
         {
             fetch: fetchData,
             modal: isOpen,
-            mutation: saveUser,
+            mutation: upsertMutation,
         },
     );
 }
-
-const actions = [
-    {
-        color: (row: User) => (row.is_active ? "green" : "gray"),
-        condition: () => auth.can("update user status"),
-        icon: (row: User) =>
-            row.is_active ? "mdi:toggle-switch" : "mdi:toggle-switch-off",
-        onClick: (row: User) => openChangeStatusModal(row),
-        tooltip: (row: User) =>
-            `Switch status to "${row.is_active ? "Inactive" : "Active"}"`,
-    },
-    {
-        color: () => "blue",
-        condition: () => auth.can("edit user"),
-        icon: () => "mdi:pencil",
-        onClick: (row: User) => openEditModal(row),
-        tooltip: (row: User) => `Edit User ${row.name}`,
-    },
-    {
-        color: () => "red",
-        condition: () => auth.can("delete user"),
-        icon: () => "mdi:delete",
-        onClick: (row: User) => openDeleteModal(row),
-        tooltip: (row: User) => `Delete User ${row.name}`,
-    },
-];
 
 onMounted(() => fetchData());
 onBeforeMount(() => fetchData());
 watch(
     [page, pageCount, sort, debouncedSearch, selectedFilters],
     () => fetchData(),
-    {
-        deep: true,
-    },
+    { deep: true },
 );
 </script>

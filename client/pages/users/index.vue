@@ -1,9 +1,9 @@
 <template>
-    <Table />
+    <ManageUser />
 </template>
 
 <script setup lang="ts">
-import Table from "~/pages/users/components/Table.vue";
+import ManageUser from "./components/manage-user.vue";
 
 definePageMeta({ layout: "app-layout", permission: "view user" });
 useHead({

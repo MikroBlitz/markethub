@@ -26,7 +26,7 @@ export const columns: Column[] = [
                     return h(
                         UBadge,
                         {
-                            color: colorMap[role.name] || "blue",
+                            color: colorMap[role.name] || "gray",
                             label: role.name,
                             size: "sm",
                             variant: "solid",

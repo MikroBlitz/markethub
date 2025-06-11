@@ -70,7 +70,7 @@ export const useAuthStore = defineStore(
             return (
                 user.value?.permissions?.some(
                     (permission) =>
-                        permission.name.toLowerCase() ===
+                        permission?.name.toLowerCase() ===
                         permissionName.toLowerCase(),
                 ) ?? false
             );

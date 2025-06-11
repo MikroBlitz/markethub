@@ -1,9 +1,9 @@
 <template>
-    <Table />
+    <ManagePermission />
 </template>
 
 <script setup lang="ts">
-import Table from "~/pages/permissions/components/Table.vue";
+import ManagePermission from "./components/manage-permission.vue";
 
 definePageMeta({ layout: "app-layout", permission: "view permission" });
 useHead({
