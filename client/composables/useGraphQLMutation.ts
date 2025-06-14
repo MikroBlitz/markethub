@@ -1,20 +1,26 @@
-import type { Ref } from "vue";
-
 import { useToast } from "#ui/composables/useToast";
 
-type Action = {
+type Action<
+    TInput = unknown,
+    TFetchResult = unknown,
+    TMutationResult = unknown,
+> = {
     auth?: string | undefined;
-    fetch: () => Promise<any>;
+    fetch: () => Promise<TFetchResult>;
     modal?: Ref<boolean>;
-    mutation: (args: { id: string }) => Promise<any>;
+    mutation: (args: TInput) => Promise<TMutationResult>;
 };
 
-export async function useGraphQLMutation(
+export async function useGraphQLMutation<
+    TInput = unknown,
+    TFetchResult = unknown,
+    TMutationResult = unknown,
+>(
     text: string,
     actionText: string,
     loading: Ref<boolean>,
-    input: any,
-    action: Action,
+    input: TInput,
+    action: Action<TInput, TFetchResult, TMutationResult>,
 ) {
     const toast = useToast();
     try {

@@ -32,7 +32,7 @@ input ConnectRolesRelation {
     delete: [ID]
 }
 
-extend type Query {
+extend type Query @guard {
     roles: [Role]! @all
     rolesPaginate(
         search: String @scope(name: "search")
@@ -40,7 +40,7 @@ extend type Query {
     ): [Role]! @paginate
 }
 
-extend type Mutation {
+extend type Mutation @guard {
     upsertRole(input: RoleInput! @spread): Role! @upsert
     deleteRole(id: [ID!] @eq): [Role] @delete
 }

@@ -55,7 +55,7 @@ input FilterInput {
     label: String
 }
 
-extend type Query {
+extend type Query @guard {
     users: [User]! @all
     usersPaginate(
         first: Int!
@@ -66,7 +66,7 @@ extend type Query {
     ): [User]! @paginate
 }
 
-extend type Mutation {
+extend type Mutation @guard {
     registerUser(input: RegisterInput! @spread): User! @create
     upsertUser(input: UserInput! @spread): User! @upsert
     deleteUser(id: [ID!] @eq): [User] @delete

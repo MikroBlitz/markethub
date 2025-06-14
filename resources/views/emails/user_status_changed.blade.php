@@ -280,7 +280,7 @@
 
         <!-- Content -->
         <div class="content">
-            <p class="greeting">Hello {{ $user->name }},</p>
+            <p class="greeting">Hello {{ $user->name }} ({{ $user->getRoleNames()->join(', ') }})</p>
 
             <!-- Status Card -->
             <div class="status-card {{ $user->is_active ? 'active' : 'inactive' }}">
@@ -312,9 +312,9 @@
                 <p>Need help? Our support team is here to assist you.</p>
 
                 <div class="contact-info">
-                    <a href="mailto:markethub@mail.com" class="contact-link">markethub@mail.com</a>
+                    <a href="mailto:mlcnierras@gmail.com" class="contact-link">mlcnierras@gmail.com</a>
                     <span class="divider">•</span>
-                    <a href="tel:+15551234567" class="contact-link">(555) 123-4567</a>
+                    <a href="phone:+639683373329" class="contact-link">+639683373329</a>
                 </div>
             </div>
         </div>

@@ -73,12 +73,12 @@ class User extends Authenticatable
     public function generateFullName(): string
     {
         $parts = [
-            $this->first_name,
-            $this->middle_name,
-            $this->last_name,
+            trim((string) $this->first_name),
+            trim((string) $this->middle_name),
+            trim((string) $this->last_name),
         ];
 
-        return implode(' ', array_filter(array_map('trim', $parts)));
+        return implode(' ', array_filter($parts));
     }
 
     /* Get all roles for user */

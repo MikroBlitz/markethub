@@ -1,16 +1,17 @@
 import { defineStore } from "pinia";
 
-import type { FormState } from "~/types/global";
 import type { User } from "~/types/codegen/graphql";
+import type { FormState } from "~/types/global";
 
-import { authContext, parseGraphQLError } from "~/utils/helpers";
 import { login as LoginAuth, logout as LogoutAuth } from "~/graphql/Auth";
+import { authContext, parseGraphQLError } from "~/utils/helpers";
 
 export const useAuthStore = defineStore(
     "auth",
     () => {
         const token = ref<string | null>(null);
         const user = ref<User | null>(null);
+        const { onLogin } = useApollo();
 
         async function login(formState: FormState) {
             const { mutate } = useMutation(LoginAuth);
@@ -20,10 +21,13 @@ export const useAuthStore = defineStore(
                     password: formState.password,
                 });
                 const result = response?.data?.login;
-                if (!result) throw new Error("Invalid response from server");
-
-                setUser(result.user, result.token);
-                navigateTo("/dashboard");
+                if (result) {
+                    setUser(result.user, result.token);
+                    await onLogin(result.token);
+                    navigateTo("/dashboard");
+                } else {
+                    throw new Error("Invalid response from server");
+                }
             } catch (e) {
                 console.log(e);
                 throw new Error(parseGraphQLError(e));

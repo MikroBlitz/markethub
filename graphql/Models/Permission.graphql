@@ -30,7 +30,7 @@ input ConnectPermissionsRelation {
     delete: [ID]
 }
 
-extend type Query {
+extend type Query @guard {
     permissions: [Permission]! @all
     permissionsPaginate(
         search: String @scope(name: "search")
@@ -38,7 +38,7 @@ extend type Query {
     ): [Permission]! @paginate
 }
 
-extend type Mutation {
+extend type Mutation @guard {
     upsertPermission(input: PermissionInput! @spread): Permission! @upsert
     deletePermission(id: [ID!] @eq): [Permission] @delete
 }
