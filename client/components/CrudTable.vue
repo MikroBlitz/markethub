@@ -108,46 +108,25 @@
 
 <script setup lang="ts" generic="T extends Record<string, any>">
 import type { FormSubmitEvent } from "#ui/types";
+import type { ZodType, ZodTypeDef } from "zod";
 
 import { useDebounce, useTimeoutFn } from "@vueuse/shared";
 
+import type { CrudConfig, CrudOperations } from "~/components/table/types";
 import type { FormSchema } from "~/types/fields";
 
-export interface CrudConfig {
-    icon: string;
-    title: string;
-    singular: string;
-    hasStatus?: boolean;
-    permissions: {
-        create: string;
-        view: string;
-        edit: string;
-        delete: string;
-        updateStatus?: string;
-    };
-}
-
-export interface CrudOperations<T> {
-    query: any;
-    upsert: any;
-    delete: any;
-    updateStatus?: any;
-    getFormState: (item?: T) => any;
-    prepareSubmitData: (data: any, selectedItem?: T) => any;
-}
-
-interface Props {
-    columns: any[];
-    filters: any[];
-    zodSchema: any;
-    actions?: any[];
+interface Props<T extends Record<string, unknown>> {
+    actions?: Array<Record<string, unknown>>;
+    columns: Array<Record<string, unknown>>;
     config: CrudConfig;
+    filters: Array<Record<string, unknown>>;
     formSchema: FormSchema;
-    optionLoading?: boolean;
     operations: CrudOperations<T>;
+    optionLoading?: Ref<boolean, boolean> | undefined;
+    zodSchema: ZodType<any, ZodTypeDef, any> | undefined;
 }
 
-const props = defineProps<Props>();
+const props = defineProps<Props<any>>();
 
 const auth = useAuthStore();
 const selectedColumns = ref(props.columns);
@@ -227,41 +206,6 @@ const computedActions = computed(() => {
         : defaultActions;
 });
 
-const fetchData = async () => {
-    rotationRefetch.value += 360;
-    try {
-        loading.value = true;
-        const variables: Record<string, any> = {
-            first: Number(pageCount.value),
-            page: page.value,
-        };
-
-        if (search.value) variables.search = search.value;
-        if (sort.value) variables.sort = sort.value;
-        if (selectedFilters.value && selectedFilters.value.length > 0) {
-            variables.filter = selectedFilters.value;
-        }
-
-        const { data: responseData } = await useAsyncQuery(
-            props.operations.query,
-            variables,
-        );
-
-        if (responseData.value) {
-            result.value = responseData.value;
-            const queryKey = Object.keys(result.value)[0];
-            data.value = result.value[queryKey].data;
-        }
-    } catch (error) {
-        console.error(
-            `Error fetching ${props.config.title.toLowerCase()}:`,
-            error,
-        );
-    } finally {
-        useTimeoutFn(() => (loading.value = false), 300);
-    }
-};
-
 const resetFilters = () => {
     search.value = "";
     selectedFilters.value = [];
@@ -304,6 +248,41 @@ function openChangeStatusModal(item: T) {
     isChangeStatusModal.value = true;
 }
 
+async function fetchData() {
+    rotationRefetch.value += 360;
+    try {
+        loading.value = true;
+        const variables: Record<string, unknown> = {
+            first: Number(pageCount.value),
+            page: page.value,
+        };
+
+        if (search.value) variables.search = search.value;
+        if (sort.value) variables.sort = sort.value;
+        if (selectedFilters.value && selectedFilters.value.length > 0) {
+            variables.filter = selectedFilters.value;
+        }
+
+        const { data: responseData } = await useAsyncQuery(
+            props.operations.query,
+            variables,
+        );
+
+        if (responseData.value) {
+            result.value = responseData.value;
+            const queryKey = Object.keys(result.value)[0];
+            data.value = result.value[queryKey].data;
+        }
+    } catch (error) {
+        console.error(
+            `Error fetching ${props.config.title.toLowerCase()}:`,
+            error,
+        );
+    } finally {
+        useTimeoutFn(() => (loading.value = false), 300);
+    }
+}
+
 async function handleDelete(id: string) {
     const { mutate: deleteMutation } = useMutation(props.operations.delete);
     return useGraphQLMutation(
@@ -326,7 +305,7 @@ async function handleStatusChange(id: string) {
     const { mutate: statusMutation } = useMutation(
         props.operations.updateStatus,
     );
-    const input = {
+    const input: Record<string, unknown> = {
         id,
         is_active: !selectedItem.value.is_active,
     };

@@ -20,7 +20,7 @@ export default withNuxt([
         settings: {
             perfectionist: {
                 partitionByComment: true,
-                type: "line-length",
+                type: "alphabetical",
             },
         },
     },

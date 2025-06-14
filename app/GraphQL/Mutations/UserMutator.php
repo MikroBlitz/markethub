@@ -17,16 +17,20 @@ final readonly class UserMutator
         if (Auth::id() === $user->id) {
             throw new \Exception("You can't change your own status.");
         }
-
         if ($user->hasRole('Admin')) {
             throw new \Exception("You cannot disable an Admin user.");
         }
 
         $user->is_active = $args['is_active'];
         $user->save();
-        Mail::to($user->email)->send(new UserStatusChanged($user));
+        $this->notifyUserEmail($user);
 
         return $user;
+    }
+
+    public function notifyUserEmail(User $user): void
+    {
+        Mail::to($user->email)->queue(new UserStatusChanged($user));
     }
 
 }

@@ -1,16 +1,16 @@
-import { z } from "zod";
 import { Briefcase, Shield, User } from "lucide-vue-next";
+import { z } from "zod";
 
 import type { FormSchema } from "~/types/fields";
 
 export const authContext = () => {
-    const authCookie: Ref<{ token: string }> = useCookie("auth", { path: "/" });
-    if (!authCookie.value?.token) throw new Error("Missing auth token");
+    const authStore = useAuthStore();
+    if (!authStore.token) throw new Error("Missing auth token");
 
     return {
         context: {
             headers: {
-                Authorization: `Bearer ${authCookie.value?.token}`,
+                Authorization: `Bearer ${authStore.token}`,
             },
         },
     };

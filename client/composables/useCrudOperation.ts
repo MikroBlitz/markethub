@@ -1,20 +1,26 @@
-export function useCrudOperations<T extends Record<string, any>>(
+export function useCrudOperations<T extends Record<string, unknown>>(
     queries: {
-        paginate: any;
-        upsert: any;
-        delete: any;
-        updateStatus?: any;
+        paginate: <TData = unknown>(params?: unknown) => TData;
+        upsert: <TData = unknown>(data: unknown) => TData;
+        delete: <TData = unknown>(id: unknown) => TData;
+        updateStatus?: <TData = unknown>(params: {
+            id: unknown;
+            status: boolean;
+        }) => TData;
     },
     options?: {
-        getFormState?: (item?: T) => any;
-        prepareSubmitData?: (data: any, selectedItem?: T) => any;
+        getFormState?: (item?: T) => Record<string, unknown>;
+        prepareSubmitData?: (
+            data: Record<string, unknown>,
+            selectedItem?: T,
+        ) => Record<string, unknown>;
         hasRelations?: boolean;
         relationKey?: string;
     },
 ) {
-    const defaultGetFormState = (item?: T) => {
+    const defaultGetFormState = (item?: T): Record<string, unknown> => {
         if (item) {
-            const state: any = {};
+            const state: Record<string, unknown> = {};
             Object.keys(item).forEach((key) => {
                 if (key === "id" || key === "name" || key === "is_active") {
                     state[key] =
@@ -25,7 +31,6 @@ export function useCrudOperations<T extends Record<string, any>>(
             return state;
         } else {
             return {
-                description: "",
                 id: "",
                 is_active: false,
                 name: "",
@@ -33,7 +38,10 @@ export function useCrudOperations<T extends Record<string, any>>(
         }
     };
 
-    const defaultPrepareSubmitData = (data, selectedItem?: T) => {
+    const defaultPrepareSubmitData = (
+        data: Record<string, unknown>,
+        selectedItem?: T,
+    ): Record<string, unknown> => {
         return {
             ...data,
             id: selectedItem?.id || undefined,
