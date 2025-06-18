@@ -20,6 +20,24 @@ export const userFragment = gql`
     }
 `;
 
+export const messageFragment = gql`
+    fragment message on Message {
+        id
+        message
+        sender {
+            id
+            name
+        }
+        receiver {
+            id
+            name
+        }
+        messagesCount
+        created_at
+        updated_at
+    }
+`;
+
 export const roleFragment = gql`
     fragment role on Role {
         id

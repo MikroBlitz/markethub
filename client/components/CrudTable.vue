@@ -25,8 +25,8 @@
                         <div class="flex items-center gap-2">
                             <Icon
                                 :name="config.icon"
-                                class="text-gray-900 dark:text-emerald-500"
-                                size="40"
+                                class="text-gray-900 mr-2 dark:text-emerald-500"
+                                size="30"
                             />
                             <h2
                                 class="font-semibold text-xl text-gray-900 dark:text-gray-100 leading-tight"

@@ -33,6 +33,8 @@ input ConnectPermissionsRelation {
 extend type Query @guard {
     permissions: [Permission]! @all
     permissionsPaginate(
+        first: Int!
+        page: Int
         search: String @scope(name: "search")
         sort: SortInput @scope(name: "sort")
     ): [Permission]! @paginate

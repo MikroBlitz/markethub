@@ -32,7 +32,10 @@ extend type Query {
     inventories(
         search: String @scope(name: "search")
     ): [Inventory]! @all
-    inventoriesPaginate: [Inventory]! @paginate
+    inventoriesPaginate(
+        first: Int!
+        page: Int
+    ): [Inventory]! @paginate
     inventoriesCount: Int! @count(model: "Inventory")
 }
 
