@@ -9,7 +9,10 @@ type User {
     password: String!
     is_active: Boolean!
     is_admin: Boolean! @method(name: "is_admin")
+    usersCount: Int
     roles: [Role]! @morphToMany
+    messages: [Message] @hasMany
+    contacts: [Contact] @hasMany
     permissions: [Permission] @field(resolver: "App\\GraphQL\\Resolvers\\UserResolver@permissions")
     created_at: DateTime!
     updated_at: DateTime!
@@ -31,6 +34,7 @@ input UserInput {
 input ConnectUserRelation {
     id: ID
     connect: ID
+    sync: ID
     upsert: UserInput
     delete: ID
 }
@@ -64,6 +68,7 @@ extend type Query @guard {
         sort: SortInput @scope(name: "sort")
         filter: [FilterInput] @scope(name: "filter")
     ): [User]! @paginate
+    usersCount: Int! @count(model: "User")
 }
 
 extend type Mutation @guard {

@@ -157,90 +157,10 @@
 </template>
 
 <script setup lang="ts">
-import { useTimeoutFn } from "@vueuse/core";
-
 const isOpen = ref(false);
 const route = useRoute();
-const toast = useToast();
-
 const auth = useAuthStore();
-// const isAdmin = inject("isAdmin");
-
-const mainMenuItems = [
-    {
-        icon: "i-heroicons-home",
-        label: "Dashboard",
-        permission: true,
-        to: "/dashboard",
-    },
-    {
-        icon: "i-heroicons-shopping-bag",
-        label: "Products",
-        permission: auth.can("view product"),
-        to: "/products",
-    },
-    {
-        icon: "i-heroicons-shopping-cart",
-        label: "Orders",
-        permission: auth.can("view order"),
-        to: "/orders",
-    },
-    {
-        icon: "i-heroicons-users",
-        label: "Customers",
-        permission: auth.can("view customer"),
-        to: "/customers",
-    },
-];
-
-const adminItems = [
-    {
-        icon: "mdi:user-group-outline",
-        label: "Users",
-        permission: auth.can("view user"),
-        to: "/users",
-    },
-    {
-        icon: "mdi:user-key-outline",
-        label: "Roles",
-        permission: auth.can("view role"),
-        to: "/roles",
-    },
-    {
-        icon: "mdi:user-lock-outline",
-        label: "Permissions",
-        permission: auth.can("view permission"),
-        to: "/permissions",
-    },
-    {
-        icon: "i-heroicons-cog-6-tooth",
-        label: "Settings",
-        permission: auth.can("view setting"),
-        to: "/settings",
-    },
-];
-
-const userMenuItems = [
-    [
-        { icon: "i-heroicons-user-circle", label: "Profile", to: "/dashboard" },
-        { icon: "i-heroicons-cog-6-tooth", label: "Settings", to: "/settings" },
-    ],
-    [
-        {
-            click: () => {
-                auth.logout();
-                useTimeoutFn(() => {
-                    toast.add({
-                        icon: "i-mdi-check-circle-outline",
-                        title: "Logged out successfully",
-                    });
-                }, 500);
-            },
-            icon: "i-heroicons-arrow-right-on-rectangle",
-            label: "Logout",
-        },
-    ],
-];
+const { adminItems, mainMenuItems, userMenuItems } = useLinks();
 
 const isActive = (path: string) => {
     return route.path === path;

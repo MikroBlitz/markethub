@@ -18,16 +18,16 @@ import {
     deletePermission,
 } from "~/graphql/Permission";
 
-import { schema } from "../data/schema";
 import { columns, filter } from "../data/columns";
+import { schema } from "../data/schema";
 
 const crudConfig = useCrudConfig(
     "Permissions", // title
     "Permission", // subtitle
-    "mdi:user-lock-outline", // icon
+    "solar:lock-outline", // icon
     {
         // permissions
-        create: "add permission",
+        create: "create permission",
         delete: "delete permission",
         edit: "edit permission",
         view: "view permission",

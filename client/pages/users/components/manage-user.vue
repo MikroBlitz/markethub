@@ -20,17 +20,17 @@ import {
     updateUserStatus,
 } from "~/graphql/User";
 
-import { schema } from "../data/schema";
 import { columns, status } from "../data/columns";
+import { schema } from "../data/schema";
 
 const role = useRoleQueryOption();
 const crudConfig = useCrudConfig(
     "Users", // title
     "User", // subtitle
-    "mdi:user-group-outline", // icon
+    "solar:users-group-rounded-outline", // icon
     {
         // permissions
-        create: "add user",
+        create: "create user",
         delete: "delete user",
         edit: "edit user",
         updateStatus: "update user status",

@@ -34,7 +34,10 @@ extend type Query {
     brands(
         search: String @scope(name: "search")
     ): [Brand]! @all
-    brandsPaginate: [Brand]! @paginate
+    brandsPaginate(
+        first: Int!
+        page: Int
+    ): [Brand]! @paginate
     brandsCount: Int! @count(model: "Brand")
 }
 

@@ -15,17 +15,17 @@ import type { Role } from "~/types/codegen/graphql";
 
 import { rolesPaginate, upsertRole, deleteRole } from "~/graphql/Role";
 
-import { schema } from "../data/schema";
 import { columns, status } from "../data/columns";
+import { schema } from "../data/schema";
 
 const permission = usePermissionQueryOption();
 const crudConfig = useCrudConfig(
     "Roles", // title
     "Role", // subtitle
-    "mdi:user-key-outline", // icon
+    "solar:key-outline", // icon
     {
         // permissions
-        create: "add role",
+        create: "create role",
         delete: "delete role",
         edit: "edit role",
         view: "view role",

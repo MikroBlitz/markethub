@@ -34,7 +34,10 @@ extend type Query {
     categories(
         search: String @scope(name: "search")
     ): [Category]! @all
-    categoriesPaginate: [Category]! @paginate
+    categoriesPaginate(
+        first: Int!
+        page: Int
+    ): [Category]! @paginate
     categoriesCount: Int! @count(model: "Category")
 }
 

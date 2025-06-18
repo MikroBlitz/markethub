@@ -35,6 +35,8 @@ input ConnectRolesRelation {
 extend type Query @guard {
     roles: [Role]! @all
     rolesPaginate(
+        first: Int!
+        page: Int
         search: String @scope(name: "search")
         sort: SortInput @scope(name: "sort")
     ): [Role]! @paginate

@@ -42,7 +42,10 @@ extend type Query {
     products(
         search: String @scope(name: "search")
     ): [Product]! @all
-    productsPaginate: [Product]! @paginate
+    productsPaginate(
+        first: Int!
+        page: Int
+    ): [Product]! @paginate
     productsCount: Int! @count(model: "Product")
 }
 

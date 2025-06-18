@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -91,6 +92,16 @@ class User extends Authenticatable
     public function is_admin(): bool
     {
         return $this->hasRole('Admin');
+    }
+
+    public function messages(): hasMany
+    {
+        return $this->hasMany(Message::class);
+    }
+
+    public function contacts(): hasMany
+    {
+        return $this->hasMany(Contact::class);
     }
 
     /* Search function for graphql */
